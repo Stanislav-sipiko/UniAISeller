@@ -1,0 +1,16 @@
+[Unit]
+Description=Telegram AI Consultant Bot v6.3
+After=network.target
+
+[Service]
+User=root
+Group=root
+# Актуальный путь проекта v3
+WorkingDirectory=/root/ukrsell_project_v3
+# Путь к интерпретатору внутри venv проекта v3
+ExecStart=/root/ukrsell_project_v3/venv/bin/python main.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
