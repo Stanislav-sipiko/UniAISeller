@@ -1,0 +1,61 @@
+server {
+    listen 80;
+    server_name ukrsellbot.com www.ukrsellbot.com;
+    # Redirect HTTP to HTTPS
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name ukrsellbot.com www.ukrsellbot.com;
+
+    ssl_certificate /etc/nginx/ssl/ukrsellbot.crt;
+    ssl_certificate_key /etc/nginx/ssl/ukrsellbot.key;
+
+    # SSL Optimization
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    # Static Files
+    location / {
+        root /var/www/html;
+        index index.php index.html;
+        try_files $uri $uri/ =404;
+    }
+
+# 1. Раздача фронтенда (HTML)
+    location /catalog {
+        alias /var/www/html/catalog.html;
+        default_type text/html;
+    }
+
+    # 2. API для получения данных из бота
+    location /api/catalog {
+        proxy_pass http://127.0.0.1:8084/catalog;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # Web Admin Interface (Redirected to 8084)
+    location /adminbot/ {
+        proxy_pass http://127.0.0.1:8084/adminbot/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+    }
+	
+    # Bot V4 Webhook (Main.py on port 8084)
+    location /webhook_v4/ {
+        proxy_pass http://127.0.0.1:8084/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+    }
+
+    # Clean up: Removed old locations (webhook, webhook_v2, api/promo) 
+    # to avoid confusion as they are not used in v3.
+}
