@@ -1,8 +1,17 @@
-# /root/ukrsell_v4/core/intelligence.py v7.4.5
+# /root/ukrsell_v4/core/intelligence.py v7.4.6
 import numpy as np
 import re
 import json
 from core.logger import logger, log_event
+
+# Перевод украинских/русских названий животных в английские
+# (нужно для сравнения с EN-значениями поля animal в БД, например ["cat","dog"])
+_ANIMAL_TRANSLATIONS: dict = {
+    "кіт": "cat",    "кішка": "cat",  "кошеня": "cat", "котик": "cat",
+    "кот": "cat",    "кошки": "cat",  "кошка": "cat",
+    "собака": "dog", "пес": "dog",    "цуцик": "dog",  "цуценя": "dog",
+    "щенок": "dog",  "собаки": "dog", "пса": "dog",    "псу": "dog",
+}
 
 def get_stem(text: str) -> str:
     """Извлекает основу слова (минимум 3 символа) для мягкого сравнения."""
@@ -116,7 +125,10 @@ def entity_filter(products: list, intent: dict, intent_mapping: dict = None,
                             found_field_match = True
                             break
                     else:
-                        if str(target_val).lower() in prod_val or get_stem(target_val) in prod_val:
+                        _target = str(target_val).lower()
+                        _target_en = _ANIMAL_TRANSLATIONS.get(_target, _target)
+                        if (_target in prod_val or get_stem(_target) in prod_val
+                                or _target_en in prod_val):
                             found_field_match = True
                             break
 

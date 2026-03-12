@@ -381,23 +381,33 @@ VERDICTS:
 Return ONLY JSON:
 {{"verdict":"...","reason":"one sentence","hallucinated_text":"exact invented text or null"}}
 """
-    try:
-        r = await client.chat.completions.create(
-            model=model,
-            messages=[{"role": "system", "content": "Precise JSON evaluator."},
-                      {"role": "user", "content": prompt}],
-            max_tokens=300, temperature=0.0,
-        )
-        raw = _strip_md(r.choices[0].message.content)
-        v = json.loads(raw)
-        return {**result, **v}
-    except Exception as e:
-        return {**result, "verdict": "error", "reason": str(e), "hallucinated_text": None}
+    max_retries = 4
+    for attempt in range(max_retries):
+        try:
+            r = await client.chat.completions.create(
+                model=model,
+                messages=[{"role": "system", "content": "Precise JSON evaluator."},
+                          {"role": "user", "content": prompt}],
+                max_tokens=300, temperature=0.0,
+            )
+            raw = _strip_md(r.choices[0].message.content)
+            v = json.loads(raw)
+            return {**result, **v}
+        except Exception as e:
+            err_str = str(e)
+            is_rate_limit = "429" in err_str or "rate_limit_exceeded" in err_str.lower()
+            if is_rate_limit and attempt < max_retries - 1:
+                wait_sec = 2 ** (attempt + 1)  # 2s, 4s, 8s
+                print(f"  ⏳ evaluate_single: 429 rate limit, retry {attempt+1}/{max_retries-1} in {wait_sec}s...")
+                await asyncio.sleep(wait_sec)
+                continue
+            return {**result, "verdict": "error", "reason": err_str, "hallucinated_text": None}
+    return {**result, "verdict": "error", "reason": "max retries exceeded", "hallucinated_text": None}
 
 
 async def evaluate_all(client, model: str, results: List[Dict]) -> List[Dict]:
     print(f"\n🔍 Оценка {len(results)} результатов...")
-    semaphore = asyncio.Semaphore(5)
+    semaphore = asyncio.Semaphore(2)  # снижено с 5 до 2 для предотвращения 429
 
     async def bounded(r):
         async with semaphore:

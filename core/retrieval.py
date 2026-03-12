@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/core/retrieval.py v7.5.0
+# /root/ukrsell_v4/core/retrieval.py v7.5.1
 """
 Universal SaaS Retrieval Engine v7.5.0
 
@@ -21,7 +21,7 @@ import asyncio
 from pathlib import Path
 from typing import List, Dict, Optional, Any
 from core.logger import logger, log_event, log_retrieval
-from core.intelligence import entity_filter
+from core.intelligence import entity_filter, get_stem
 
 
 class RetrievalEngine:
@@ -199,10 +199,13 @@ class RetrievalEngine:
             cat_bonus    = 0.3 if cat_lower and (cat_lower == p_cat or cat_lower in p_cat) else 0.0
             brand_mult   = 1.15 if brand in self.top_brands else 1.0
 
-            # v7.5.0: прямое совпадение слов запроса в title
+            # v7.5.0: прямое совпадение слов запроса в title (v7.5.1: stem-aware)
             direct_title_bonus = 0.0
             if query_words:
-                matched = sum(1 for w in query_words if len(w) > 2 and w in title)
+                matched = sum(
+                    1 for w in query_words
+                    if len(w) > 2 and (w in title or get_stem(w) in title)
+                )
                 direct_title_bonus = min(matched * 0.1, 0.3)
 
             final_score = round(

@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/core/confidence.py v1.7.0
+# /root/ukrsell_v4/core/confidence.py v1.7.2
 """
 Confidence Engine v1.7.0
 
@@ -17,6 +17,7 @@ Changelog:
 
 from typing import Dict, Any, List, Optional, Tuple
 from core.logger import logger
+from core.intelligence import _ANIMAL_TRANSLATIONS
 
 
 # ─── Веса компонент ──────────────────────────────────────────────────────────
@@ -153,13 +154,17 @@ def _attr_match_score(entities: Dict, products: List[Dict]) -> float:
                 matched += 1
                 continue
 
-        # Animal match
+        # Animal match (with Ukrainian→English translation for EN-only DB values)
         if animal:
             prod_animals = prod.get("animal") or []
             if isinstance(prod_animals, str):
                 prod_animals = [prod_animals]
             prod_animals_lower = [str(a).lower() for a in prod_animals]
-            if any(animal in pa or pa in animal for pa in prod_animals_lower):
+            animal_en = _ANIMAL_TRANSLATIONS.get(animal, animal)
+            if any(
+                animal in pa or pa in animal or animal_en in pa or pa in animal_en
+                for pa in prod_animals_lower
+            ):
                 matched += 1
                 continue
 
