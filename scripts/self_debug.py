@@ -381,18 +381,31 @@ VERDICTS:
 Return ONLY JSON:
 {{"verdict":"...","reason":"one sentence","hallucinated_text":"exact invented text or null"}}
 """
-    try:
-        r = await client.chat.completions.create(
-            model=model,
-            messages=[{"role": "system", "content": "Precise JSON evaluator."},
-                      {"role": "user", "content": prompt}],
-            max_tokens=300, temperature=0.0,
-        )
-        raw = _strip_md(r.choices[0].message.content)
-        v = json.loads(raw)
-        return {**result, **v}
-    except Exception as e:
-        return {**result, "verdict": "error", "reason": str(e), "hallucinated_text": None}
+    for attempt in range(2):
+        try:
+            r = await client.chat.completions.create(
+                model=model,
+                messages=[{"role": "system", "content": "Precise JSON evaluator. Output ONLY valid JSON object. No markdown, no explanation."},
+                          {"role": "user", "content": prompt}],
+                max_tokens=350, temperature=0.0,
+            )
+            raw = _strip_md(r.choices[0].message.content.strip())
+            # Вырезаем первый JSON-объект если LLM добавил текст вокруг
+            m = re.search(r'\{.*\}', raw, re.DOTALL)
+            if m:
+                raw = m.group(0)
+            v = json.loads(raw)
+            # Валидируем обязательные поля
+            if "verdict" not in v:
+                raise ValueError(f"No 'verdict' in response: {raw[:100]}")
+            return {**result, **v}
+        except Exception as e:
+            if attempt == 0:
+                logger.warning(f"[EVAL] attempt 1 failed: {e} | raw={raw[:120] if 'raw' in dir() else '?'}")
+                await asyncio.sleep(0.5)
+            else:
+                logger.error(f"[EVAL] both attempts failed: {e}")
+                return {**result, "verdict": "error", "reason": str(e), "hallucinated_text": None}
 
 
 async def evaluate_all(client, model: str, results: List[Dict]) -> List[Dict]:
@@ -668,9 +681,11 @@ async def self_correct_loop(
         # Откатываем патч перед следующей итерацией
         _revert_patch_to_ctx(ctx, current_patch)
 
+    last = sc_history[-1] if sc_history else {}
     return {
         "confirmed":   False,
-        "delta":       sc_history[-1].get("delta") if sc_history else 0,
+        "skipped":     not last.get("applied", True),  # True если патч вообще не применялся
+        "delta":       last.get("delta") or 0,
         "iterations":  sc_history,
         "final_patch": current_patch,
     }
@@ -762,8 +777,10 @@ def save_report(
     analysis: Dict,
     sc_result: Dict,
     duration_sec: float,
+    ts: Optional[str] = None,
 ) -> Path:
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    if not ts:
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     REPORT_DIR.mkdir(exist_ok=True)
     json_path = REPORT_DIR / f"self_debug_{slug}_{ts}.json"
     html_path = REPORT_DIR / f"self_debug_{slug}_{ts}.html"
@@ -816,7 +833,7 @@ def save_report(
     sc = sc_result or {}
     if not sc.get("skipped"):
         confirmed = sc.get("confirmed", False)
-        delta     = sc.get("delta", 0)
+        delta     = sc.get("delta") or 0
         print(f"\n🔧  Self-Correction: {'✅ ПОДТВЕРЖДЁН' if confirmed else '❌ не подтверждён'} "
               f"(Δ{delta:+.1f}%)")
 
@@ -873,13 +890,13 @@ def _write_html_report(
         v     = e.get("verdict", "?")
         color = verdict_color.get(v, "#6b7280")
         chain = "🔗" if e.get("is_chain") else ""
-        hall  = f'<span style="color:#f97316">{e.get("hallucinated_text","")[:60]}</span>' \
+        hall  = f'<span style="color:#f97316">{str(e.get("hallucinated_text") or "")[:60]}</span>' \
                 if e.get("hallucinated_text") else ""
         rows_html += (
             f'<tr>'
             f'<td>{chain}{_esc(e.get("query","")[:60])}</td>'
             f'<td>{e.get("query_type","")}</td>'
-            f'<td>{_esc(e.get("expected_title","")[:40])}</td>'
+            f'<td>{_esc(str(e.get("expected_title") or "")[:40])}</td>'
             f'<td style="color:{color};font-weight:bold">{v}</td>'
             f'<td>{e.get("latency_ms","")}ms</td>'
             f'<td>{_esc(e.get("reason","")[:80])}{hall}</td>'
@@ -910,7 +927,7 @@ def _write_html_report(
           <h3>🔧 Self-Correction</h3>
           <p>Статус: <strong style="color:{sc_color}">
             {"✅ ПОДТВЕРЖДЁН" if sc.get("confirmed") else "❌ не подтверждён"}
-          </strong> (Δ{sc.get('delta',0):+.1f}%)</p>
+          </strong> (Δ{sc.get('delta') or 0:+.1f}%)</p>
           <p>Итераций: {len(sc.get('iterations',[]))}</p>
           {"<pre>" + _esc(json.dumps(sc.get("final_patch",{}), ensure_ascii=False, indent=2)) + "</pre>"
            if sc.get("final_patch") else ""}
@@ -1157,39 +1174,70 @@ async def main(slug: str, n_cases: int, enable_sc: bool):
         await kernel.close()
         return
 
+    # Один путь к файлу на весь запуск — checkpoints перезаписывают его
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    REPORT_DIR.mkdir(exist_ok=True)
+    json_path = REPORT_DIR / f"self_debug_{slug}_{ts}.json"
+    _results   = []
+    _evaluated = []
+    _metrics   = {}
+    _analysis  = {}
+    _sc_result = {"skipped": True, "reason": "not_started"}
+
+    def _checkpoint(stage: str):
+        data = {
+            "meta":            {"slug": slug, "timestamp": ts, "stage": stage,
+                                "duration_sec": round(time.perf_counter() - t0, 1)},
+            "metrics":         _metrics,
+            "analysis":        _analysis,
+            "self_correction": _sc_result,
+            "cases":           _evaluated if _evaluated else _results,
+        }
+        try:
+            with open(json_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            print(f"  💾 checkpoint [{stage}] → {json_path.name}")
+        except Exception as e:
+            print(f"  ⚠️  checkpoint save error: {e}")
+
     # 4. Run
-    results = await run_all(kernel, ctx, singles, chains)
+    _results = await run_all(kernel, ctx, singles, chains)
+    _checkpoint("after_run")
 
     # 5. Evaluate
-    evaluated = await evaluate_all(client_fast, model_fast, results)
+    _evaluated = await evaluate_all(client_fast, model_fast, _results)
+    _checkpoint("after_evaluate")
 
     # 6. Metrics
-    metrics = compute_metrics(evaluated)
-    print(f"\n📊 Метрики: pass={metrics.get('pass_rate')}% | "
-          f"hall={metrics.get('hallucination_rate')}% | "
-          f"coverage={metrics.get('coverage_rate')}% | "
-          f"p50={metrics.get('latency_p50_ms')}ms")
+    _metrics = compute_metrics(_evaluated)
+    print(f"\n📊 Метрики: pass={_metrics.get('pass_rate')}% | "
+          f"hall={_metrics.get('hallucination_rate')}% | "
+          f"coverage={_metrics.get('coverage_rate')}% | "
+          f"p50={_metrics.get('latency_p50_ms')}ms")
+    _checkpoint("after_metrics")
 
     # 7. Analyze + Suggest
-    analysis = await analyze_and_suggest(
-        client_heavy, model_heavy, evaluated, metrics, slug
+    _analysis = await analyze_and_suggest(
+        client_heavy, model_heavy, _evaluated, _metrics, slug
     )
+    _checkpoint("after_analysis")
 
     # 8. Self-correction
-    sc_result = {"skipped": True, "reason": "disabled"}
+    _sc_result = {"skipped": True, "reason": "disabled"}
     if enable_sc:
-        failures = [e for e in evaluated
+        failures = [e for e in _evaluated
                     if e.get("verdict") in ("fail", "hallucination", "partial", "negative_fail")]
-        sc_result = await self_correct_loop(
+        _sc_result = await self_correct_loop(
             client_fast, model_fast, model_heavy,
-            kernel, ctx, failures, analysis, slug,
+            kernel, ctx, failures, _analysis, slug,
         )
+        _checkpoint("after_selfcorrect")
     else:
         print("\n⏭️  Self-correction отключён (--no-selfcorrect)")
 
-    # 9. Report
+    # 9. Report — финальный JSON (перезапись) + HTML
     duration = time.perf_counter() - t0
-    save_report(slug, evaluated, metrics, analysis, sc_result, duration)
+    save_report(slug, _evaluated, _metrics, _analysis, _sc_result, duration, ts=ts)
 
     await kernel.close()
     print("\n✅ Self-Debug завершён.")
