@@ -1,0 +1,59 @@
+{
+  "hash": "5f82a78959d20379558c2a6ebdbdc58431a6b3a4ce8114ecea5c273be72a8e0f",
+  "generated_at": 1773150255,
+  "profile": {
+    "source_hash": "5f82a78959d20379558c2a6ebdbdc58431a6b3a4ce8114ecea5c273be72a8e0f",
+    "total_sku": 696,
+    "store_type": "primary_category_store",
+    "main_category": "apparel",
+    "main_category_share": 0.76,
+    "category_distribution": {
+      "grooming": 0.023,
+      "feeding": 0.02,
+      "apparel": 0.759,
+      "hygiene": 0.006,
+      "walking": 0.105,
+      "toys": 0.033,
+      "food": 0.004,
+      "travel": 0.003,
+      "accessories": 0.036,
+      "care": 0.001,
+      "meds": 0.003,
+      "beds & furniture": 0.004,
+      "carriers & travel": 0.001,
+      "carriers": 0.001
+    },
+    "brand_matrix": {
+      "total_brands": 7,
+      "top_brands": ["Waudog", "Dogs Bomba", "Collar", "Animall", "Bororo", "WahoPet", "Tatra"]
+    },
+    "price_analytics": {
+      "min": 43.75,
+      "max": 1461.25,
+      "avg": 442.7
+    },
+    "pet_types": ["dog", "cat"],
+    "expertise_fields": [
+      "accessories",
+      "apparel",
+      "beds & furniture",
+      "care",
+      "carriers",
+      "carriers & travel",
+      "feeding",
+      "food",
+      "grooming",
+      "hygiene",
+      "meds",
+      "toys",
+      "travel",
+      "walking"
+    ],
+    "schema_keys": [
+      "purpose",
+      "subtype"
+    ],
+    "ai_welcome_message": "Магазин LuckyDog спеціалізується на одязі та аксесуарах для собак і котів.\nЯ допоможу:\n• підібрати розмір\n• порівняти моделі\n• знайти найкращу ціну\nЗапитайте про будь-який товар із нашого каталогу! 🐾",
+    "store_context_prompt": "Магазин LuckyDog. Основна категорія: одяг для тварин (76% асортименту). Всього: 696 товарів. Середня ціна: 442 грн. Ціновий діапазон: 44–1461 грн. Спеціалізація: одяг та аксесуари для собак і котів. Бренди: Waudog, Dogs Bomba, Collar, Animall, Bororo, WahoPet, Tatra."
+  }
+}

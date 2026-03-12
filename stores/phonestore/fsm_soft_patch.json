@@ -1,0 +1,281 @@
+{
+  "troll_patterns": [
+    "рш",
+    "ты любишь жареных гвоздей?",
+    "я хочу айфон із моторчиком",
+    "пошукайте телефони з кольором невидимка",
+    "у мене зламався паркан, який телефон найкраще для ремонту?",
+    "чи можна використовувати цей iphone як сковороду для яєчні?",
+    "чи можна замовити піцу маргарита через ваш магазин?",
+    "як перепрошувати мікрохвильову піч через bluetooth?",
+    "чи допоможете полагодити кран за допомогою телефону?",
+    "а чи можна цим телефоном горіхи колоти?",
+    "цей смартфон витримає занурення у лаву?",
+    "чи можна використовувати цей iphone як сковороду?"
+  ],
+  "fsm_errors": [
+    {
+      "request": "рш",
+      "type": "negative_example"
+    },
+    {
+      "timestamp": "2026-03-03 18:50:04",
+      "request": "Ты любишь жареных гвоздей?",
+      "type": "negative_example"
+    },
+    {
+      "timestamp": "2026-03-04 00:46:12",
+      "request": "Я хочу айфон із моторчиком",
+      "type": "negative_example"
+    },
+    {
+      "timestamp": "2026-03-04 01:46:05",
+      "request": "Пошукайте телефони з кольором невидимка",
+      "type": "negative_example"
+    },
+    {
+      "timestamp": "2026-03-04 15:28:07",
+      "request": "У мене зламався паркан, який телефон найкраще для ремонту?",
+      "type": "negative_example"
+    },
+    {
+      "timestamp": "2026-03-04 15:28:15",
+      "request": "Чи можна використовувати цей iPhone як сковороду для яєчні?",
+      "type": "negative_example"
+    },
+    {
+      "timestamp": "2026-03-04 15:28:36",
+      "request": "Чи можна замовити піцу Маргарита через ваш магазин?",
+      "type": "negative_example"
+    },
+    {
+      "timestamp": "2026-03-04 16:14:26",
+      "request": "Як перепрошувати мікрохвильову піч через Bluetooth?",
+      "type": "negative_example"
+    },
+    {
+      "timestamp": "2026-03-04 16:14:28",
+      "request": "Чи допоможете полагодити кран за допомогою телефону?",
+      "type": "negative_example"
+    },
+    {
+      "timestamp": "2026-03-04 16:24:51",
+      "query": "Покажи всі моделі Xiaomi чорного кольору",
+      "reason": "Intent Analysis Error: No available HEAVY LLM. Please await refresh() first.",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 16:24:51",
+      "query": "Які є недорогі смартфони Samsung?",
+      "reason": "Intent Analysis Error: No available HEAVY LLM. Please await refresh() first.",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 16:24:52",
+      "query": "Цей смартфон витримає занурення у лаву?",
+      "reason": "Intent Analysis Error: No available HEAVY LLM. Please await refresh() first.",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 16:24:52",
+      "query": "Поради телефон з гарною камерою до 20000",
+      "reason": "Intent Analysis Error: No available HEAVY LLM. Please await refresh() first.",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 16:24:52",
+      "query": "Які є недорогі смартфони Samsung?",
+      "reason": "Intent Analysis Error: No available HEAVY LLM. Please await refresh() first.",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 16:24:53",
+      "query": "Є в наявності iPhone 15 Pro Max?",
+      "reason": "Intent Analysis Error: No available HEAVY LLM. Please await refresh() first.",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 16:24:53",
+      "query": "Є в наявності iPhone 15 Pro Max?",
+      "reason": "Intent Analysis Error: No available HEAVY LLM. Please await refresh() first.",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 16:24:54",
+      "query": "Покажи всі моделі Xiaomi чорного кольору",
+      "reason": "Intent Analysis Error: No available HEAVY LLM. Please await refresh() first.",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 16:24:54",
+      "query": "Покажи всі моделі Xiaomi чорного кольору",
+      "reason": "Intent Analysis Error: No available HEAVY LLM. Please await refresh() first.",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 16:24:54",
+      "query": "Які є недорогі смартфони Samsung?",
+      "reason": "Intent Analysis Error: No available HEAVY LLM. Please await refresh() first.",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 16:24:55",
+      "query": "Потрібен бюджетний китаєць для дитини",
+      "reason": "Intent Analysis Error: No available HEAVY LLM. Please await refresh() first.",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 16:24:55",
+      "query": "Потрібен бюджетний китаєць для дитини",
+      "reason": "Intent Analysis Error: No available HEAVY LLM. Please await refresh() first.",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 17:21:47",
+      "query": "Цей смартфон витримає занурення у лаву?",
+      "reason": "Intent Analysis Error: 'NoneType' object has no attribute 'get_heavy'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 17:21:49",
+      "query": "Є в наявності iPhone 15 Pro Max?",
+      "reason": "Intent Analysis Error: 'NoneType' object has no attribute 'get_heavy'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 17:21:51",
+      "query": "Покажи всі моделі Xiaomi чорного кольору",
+      "reason": "Intent Analysis Error: 'NoneType' object has no attribute 'get_heavy'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 17:21:56",
+      "query": "Які є недорогі смартфони Samsung?",
+      "reason": "Intent Analysis Error: 'NoneType' object has no attribute 'get_heavy'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 17:22:17",
+      "query": "Мені потрібно викликати сантехніка, ви допоможете?",
+      "reason": "Intent Analysis Error: 'NoneType' object has no attribute 'get_heavy'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 17:22:31",
+      "query": "Є в наявності iPhone 15 Pro Max?",
+      "reason": "Intent Analysis Error: 'NoneType' object has no attribute 'get_heavy'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 17:22:56",
+      "query": "Поради телефон з гарною камерою до 20000",
+      "reason": "Intent Analysis Error: 'NoneType' object has no attribute 'get_heavy'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 17:23:16",
+      "query": "Покажи всі моделі Xiaomi чорного кольору",
+      "reason": "Intent Analysis Error: 'NoneType' object has no attribute 'get_heavy'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 17:23:38",
+      "query": "Які є недорогі смартфони Samsung?",
+      "reason": "Intent Analysis Error: 'NoneType' object has no attribute 'get_heavy'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 17:23:58",
+      "query": "Цей смартфон витримає занурення у лаву?",
+      "reason": "Intent Analysis Error: 'NoneType' object has no attribute 'get_heavy'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 17:24:17",
+      "query": "Є в наявності iPhone 15 Pro Max?",
+      "reason": "Intent Analysis Error: 'NoneType' object has no attribute 'get_heavy'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 17:24:41",
+      "query": "Поради телефон з гарною камерою до 20000",
+      "reason": "Intent Analysis Error: 'NoneType' object has no attribute 'get_heavy'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 17:25:02",
+      "query": "Які є недорогі смартфони Samsung?",
+      "reason": "Intent Analysis Error: 'NoneType' object has no attribute 'get_heavy'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 18:38:40",
+      "request": "А чи можна цим телефоном горіхи колоти?",
+      "type": "negative_example"
+    },
+    {
+      "timestamp": "2026-03-04 18:38:41",
+      "request": "Цей смартфон витримає занурення у лаву?",
+      "type": "negative_example"
+    },
+    {
+      "timestamp": "2026-03-04 19:48:32",
+      "query": "Потрібен бюджетний китаєць для дитини",
+      "reason": "Intent Analysis Error: 'DialogManager' object has no attribute 'get_negative_examples'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 19:48:35",
+      "query": "А чи можна цим телефоном горіхи колоти?",
+      "reason": "Intent Analysis Error: 'DialogManager' object has no attribute 'get_negative_examples'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 19:48:39",
+      "query": "Що краще вибрати для нічної зйомки: iPhone 15 чи S23 Ultra?",
+      "reason": "Intent Analysis Error: 'DialogManager' object has no attribute 'get_negative_examples'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 19:48:43",
+      "query": "Скільки коштує кілограм картоплі у вас?",
+      "reason": "Intent Analysis Error: 'DialogManager' object has no attribute 'get_negative_examples'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 19:49:32",
+      "query": "Що краще вибрати для нічної зйомки: iPhone 15 чи S23 Ultra?",
+      "reason": "Intent Analysis Error: 'DialogManager' object has no attribute 'get_negative_examples'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 19:50:36",
+      "query": "Поради телефон з гарною камерою до 20000",
+      "reason": "Intent Analysis Error: 'DialogManager' object has no attribute 'get_negative_examples'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 19:51:41",
+      "query": "У мене зламався паркан, який телефон найкраще для ремонту?",
+      "reason": "Intent Analysis Error: 'DialogManager' object has no attribute 'get_negative_examples'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 19:52:45",
+      "query": "Потрібен бюджетний китаєць для дитини",
+      "reason": "Intent Analysis Error: 'DialogManager' object has no attribute 'get_negative_examples'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 19:53:49",
+      "query": "Що краще вибрати для нічної зйомки: iPhone 15 чи S23 Ultra?",
+      "reason": "Intent Analysis Error: 'DialogManager' object has no attribute 'get_negative_examples'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-04 20:07:16",
+      "request": "Чи можна використовувати цей iPhone як сковороду?",
+      "type": "negative_example"
+    }
+  ]
+}

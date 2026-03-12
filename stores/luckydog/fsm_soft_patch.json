@@ -1,0 +1,29 @@
+{
+  "troll_patterns": [],
+  "fsm_errors": [
+    {
+      "timestamp": "2026-03-07 04:04:34",
+      "query": "Хочу лежанку для кота",
+      "reason": "Search/Synthesis Error: expected string or bytes-like object, got 'NoneType'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-07 16:33:40",
+      "query": "Хочу лежанку для кота",
+      "reason": "Search/Synthesis Error: 'StoreContext' object has no attribute 'dialog_manager'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-07 16:33:47",
+      "query": "А для собаки?",
+      "reason": "Search/Synthesis Error: 'StoreContext' object has no attribute 'dialog_manager'",
+      "type": "FSM_ERROR"
+    },
+    {
+      "timestamp": "2026-03-07 19:24:53",
+      "query": "не, я хотел лежанку",
+      "reason": "'NoneType' object has no attribute 'lower'",
+      "type": "FSM_ERROR"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "hash": "9cf77e56e454eec0341837c04b39038157358455f98069b938d3ad8dd3002eb0",
+  "generated_at": 1772660988,
+  "profile": {
+    "source_hash": "9cf77e56e454eec0341837c04b39038157358455f98069b938d3ad8dd3002eb0",
+    "total_sku": 1073,
+    "store_type": "mono_vertical",
+    "main_category": "смартфони",
+    "main_category_share": 1.0,
+    "category_distribution": {
+      "смартфони": 0.998,
+      "дитячий смартфон": 0.001,
+      "all": 0.001
+    },
+    "brand_matrix": {
+      "total_brands": 29,
+      "top_brands": [
+        "apple",
+        "xiaomi",
+        "samsung",
+        "google",
+        "oneplus",
+        "oukitel",
+        "blackview",
+        "honor",
+        "ulefone",
+        "motorola"
+      ]
+    },
+    "price_analytics": {
+      "min": 1399.0,
+      "max": 105999.0,
+      "avg": 21627.3
+    },
+    "expertise_fields": [
+      "смартфони",
+      "дитячий смартфон",
+      "all"
+    ],
+    "ai_welcome_message": "Вітаю! Я — консультант магазину ZOOM - МАРКЕТ ЦИФРОВОЇ ТЕХНІКИ. Допоможу вам порівняти моделі смартфонів, підібрати ідеальний варіант для вас і дати незалежну пораду з усіх перспектив. Радий співпраці!"
+  }
+}

@@ -1,0 +1,7 @@
+core/config.py
+logs/
+*.log
+__pycache__/
+venv/
+.env
+stores/*/normalized_products_final.json
