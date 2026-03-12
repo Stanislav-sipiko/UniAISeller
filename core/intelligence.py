@@ -128,19 +128,16 @@ def entity_filter(products: list, intent: dict, intent_mapping: dict = None,
             filtered.append(res)
 
     if not filtered:
-        if category_requested:
-            # Категория явно запрошена, но в базе таких товаров нет.
-            # НЕ делаем fallback — kernel должен выдать "нет товара".
-            logger.warning(
-                f" [INTEL] Zero results after strict filtering. "
-                f"Category '{active_filters['category']}' not found in DB. "
-                f"Suppressing raw-hits fallback."
-            )
-            return []
-        else:
-            # Категория не указана — мягкий fallback на топ-3 raw hits
-            logger.warning(" [INTEL] Zero results after strict filtering. Falling back to raw hits (no category constraint).")
-            return products[:3]
+        # Всегда делаем мягкий fallback на топ-3 raw hits.
+        # Confidence Engine и LLM-промпт с явным CATALOG сами определят релевантность.
+        # Удалена жёсткая ветка «category_requested → return []», которая давала
+        # result_count=0 → mode=NO_RESULTS даже когда товар физически есть в каталоге.
+        logger.warning(
+            f" [INTEL] Zero results after strict filtering "
+            f"(active_filters={list(active_filters.keys())}). "
+            f"Falling back to top-3 raw hits."
+        )
+        return products[:3]
 
     return filtered
 

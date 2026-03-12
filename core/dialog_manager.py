@@ -313,6 +313,14 @@ class DialogManager:
             print(f"🚨 [DM_CRITICAL] Step 1 or 3 TIMEOUT. The Selector is unresponsive.")
             return self._get_fallback_intent(user_text)
         except Exception as e:
+            # При 429 (rate limit) — заносим модель в блэклист чтобы следующий
+            # запрос ушёл к другой модели, а не снова упёрся в TPM-лимит.
+            _err_str = str(e)
+            if "429" in _err_str or "rate_limit_exceeded" in _err_str.lower():
+                _model_for_bl = locals().get("model")
+                if _model_for_bl and hasattr(self, "selector"):
+                    self.selector.report_failure(_model_for_bl, 120)
+                    print(f"⚠️ [DM_TRACE] 429 on {_model_for_bl} → blacklisted 120s")
             print(f"💥 [DM_CRITICAL] Unexpected error in analyze_intent: {type(e).__name__}: {e}")
             import traceback
             traceback.print_exc()

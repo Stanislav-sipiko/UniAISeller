@@ -28,7 +28,9 @@ W_CLARITY  = 0.08   # ясность запроса (кол-во токенов)
 W_DIRECT   = 0.08   # прямое совпадение слов запроса с title
 
 # Пороги режимов
-THRESHOLD_SHOW     = 0.52   # >= → SHOW_PRODUCTS
+# v1.7.1: THRESHOLD_SHOW снижен с 0.52 до 0.45 — устраняет ложные NO_RESULTS
+# для размытых запросов (годування, для кішок и т.п.) при наличии результатов.
+THRESHOLD_SHOW     = 0.45   # >= → SHOW_PRODUCTS  (было 0.52)
 THRESHOLD_CLARIFY  = 0.30   # >= → ASK_CLARIFICATION, иначе NO_RESULTS (только при result_count==0)
 
 SPEC_BONUS         = 0.07   # бонус если intent_cat == main_category магазина
@@ -267,7 +269,9 @@ def decide_mode(
     """
     if result_count == 0:
         return "NO_RESULTS"
-    if confidence >= THRESHOLD_SHOW and sim_score >= 0.35:
+    # v1.7.1: sim_score порог снижен с 0.35 до 0.25 — для случаев когда
+    # final_score низкий из-за отсутствия target/cat-bonus (размытые запросы).
+    if confidence >= THRESHOLD_SHOW and sim_score >= 0.25:
         return "SHOW_PRODUCTS"
     return "ASK_CLARIFICATION"
 

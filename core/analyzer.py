@@ -142,6 +142,15 @@ class Analyzer:
             return intent
 
         except Exception as e:
+            # При 429 (rate limit) — заносим модель в блэклист чтобы следующий
+            # запрос ушёл к другой модели, а не снова уперся в TPM-лимит.
+            _err_str = str(e)
+            if "429" in _err_str or "rate_limit_exceeded" in _err_str.lower():
+                if self.llm_selector:
+                    self.llm_selector.report_failure(model, 120)
+                    logger.warning(
+                        f"[{self.slug}] extract_intent: 429 on {model} → blacklisted 120s"
+                    )
             log_llm_error(
                 self.slug, model=model, provider="selector",
                 error_type=type(e).__name__, error_msg=str(e),
@@ -468,6 +477,14 @@ class Analyzer:
             }
 
         except Exception as e:
+            # При 429 (rate limit) — заносим модель в блэклист.
+            _err_str = str(e)
+            if "429" in _err_str or "rate_limit_exceeded" in _err_str.lower():
+                if self.llm_selector:
+                    self.llm_selector.report_failure(model, 120)
+                    logger.warning(
+                        f"[{self.slug}] synthesize_response: 429 on {model} → blacklisted 120s"
+                    )
             log_llm_error(
                 self.slug, model=model, provider="selector",
                 error_type=type(e).__name__, error_msg=str(e),
