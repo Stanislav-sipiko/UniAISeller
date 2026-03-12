@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/core/confidence.py v1.7.2
+# /root/ukrsell_v4/core/confidence.py v1.7.3
 """
 Confidence Engine v1.7.0
 
@@ -13,11 +13,11 @@ Changelog:
             - Добавлен direct_match_bonus: если title содержит ключевые слова запроса → +0.15
             - Добавлен result_quality_score: учитывает кол-во результатов (1..5+)
             - category_map: множественные EN-значения — берём максимальный prior
+    v1.7.3  animal translations driven by profile["intent_mapping"] (store-agnostic)
 """
 
 from typing import Dict, Any, List, Optional, Tuple
 from core.logger import logger
-from core.intelligence import _ANIMAL_TRANSLATIONS
 
 
 # ─── Веса компонент ──────────────────────────────────────────────────────────
@@ -121,10 +121,12 @@ def _direct_match_score(user_query: str, products: List[Dict]) -> float:
     return round(hits / checked, 4)
 
 
-def _attr_match_score(entities: Dict, products: List[Dict]) -> float:
+def _attr_match_score(entities: Dict, products: List[Dict],
+                      animal_translations: Optional[Dict] = None) -> float:
     """
     Проверяет совпадение извлечённых атрибутов (brand, animal, price_limit) с товарами.
     Возвращает 1.0 если хотя бы один атрибут совпал, 0.0 если нет атрибутов.
+    animal_translations — dict переводов из profile["intent_mapping"]["animal"]["translations"].
     """
     ent = entities or {}
     props = ent.get("properties", {}) or {}
@@ -141,6 +143,7 @@ def _attr_match_score(entities: Dict, products: List[Dict]) -> float:
     if not products:
         return 0.0
 
+    translations = animal_translations or {}
     matched = 0
     for res in products[:3]:
         prod = res.get("product") or res.get("data") or res
@@ -154,15 +157,15 @@ def _attr_match_score(entities: Dict, products: List[Dict]) -> float:
                 matched += 1
                 continue
 
-        # Animal match (with Ukrainian→English translation for EN-only DB values)
+        # Animal match — translations come from profile["intent_mapping"] (store-agnostic)
         if animal:
             prod_animals = prod.get("animal") or []
             if isinstance(prod_animals, str):
                 prod_animals = [prod_animals]
             prod_animals_lower = [str(a).lower() for a in prod_animals]
-            animal_en = _ANIMAL_TRANSLATIONS.get(animal, animal)
+            animal_translated = translations.get(animal, animal)
             if any(
-                animal in pa or pa in animal or animal_en in pa or pa in animal_en
+                animal in pa or pa in animal or animal_translated in pa or pa in animal_translated
                 for pa in prod_animals_lower
             ):
                 matched += 1
@@ -340,10 +343,15 @@ def evaluate(
         f"{intent_cat_en_list or 'not found'}"
     )
 
+    # ── Animal translations from store profile (store-agnostic) ──────────
+    intent_mapping = profile.get("intent_mapping", {})
+    animal_cfg = intent_mapping.get("animal", {})
+    animal_translations = animal_cfg.get("translations", {}) if isinstance(animal_cfg, dict) else {}
+
     # ── Scores ────────────────────────────────────────────────────────────
     sim_score    = _extract_sim_score(products)
     direct_match = _direct_match_score(user_query, products)
-    attr_score   = _attr_match_score(entities, products)
+    attr_score   = _attr_match_score(entities, products, animal_translations=animal_translations)
     result_qual  = _result_quality_score(result_count)
     clarity      = _clarity_score(user_query)
     cat_score, category_prior = _category_score(intent_cat_en_list, top_categories)

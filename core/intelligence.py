@@ -1,17 +1,8 @@
-# /root/ukrsell_v4/core/intelligence.py v7.4.6
+# /root/ukrsell_v4/core/intelligence.py v7.4.7
 import numpy as np
 import re
 import json
 from core.logger import logger, log_event
-
-# Перевод украинских/русских названий животных в английские
-# (нужно для сравнения с EN-значениями поля animal в БД, например ["cat","dog"])
-_ANIMAL_TRANSLATIONS: dict = {
-    "кіт": "cat",    "кішка": "cat",  "кошеня": "cat", "котик": "cat",
-    "кот": "cat",    "кошки": "cat",  "кошка": "cat",
-    "собака": "dog", "пес": "dog",    "цуцик": "dog",  "цуценя": "dog",
-    "щенок": "dog",  "собаки": "dog", "пса": "dog",    "псу": "dog",
-}
 
 def get_stem(text: str) -> str:
     """Извлекает основу слова (минимум 3 символа) для мягкого сравнения."""
@@ -108,12 +99,21 @@ def entity_filter(products: list, intent: dict, intent_mapping: dict = None,
         match = True
 
         for intent_key, target_val in active_filters.items():
-            possible_keys = mapping.get(intent_key, [intent_key])
-            if isinstance(possible_keys, str):
-                possible_keys = [possible_keys]
+            field_cfg = mapping.get(intent_key, intent_key)
+
+            # Support both old format (list/str) and new format (dict with field+translations)
+            if isinstance(field_cfg, dict):
+                possible_keys = [field_cfg.get("field", intent_key)]
+                translations = field_cfg.get("translations", {})
+            else:
+                possible_keys = [field_cfg] if isinstance(field_cfg, str) else (field_cfg or [intent_key])
+                translations = {}
 
             found_field_match = False
             field_exists_in_prod = False
+
+            _target = str(target_val).lower()
+            _target_translated = translations.get(_target, _target)
 
             for attr in possible_keys:
                 if attr in p and p[attr]:
@@ -125,10 +125,8 @@ def entity_filter(products: list, intent: dict, intent_mapping: dict = None,
                             found_field_match = True
                             break
                     else:
-                        _target = str(target_val).lower()
-                        _target_en = _ANIMAL_TRANSLATIONS.get(_target, _target)
                         if (_target in prod_val or get_stem(_target) in prod_val
-                                or _target_en in prod_val):
+                                or _target_translated in prod_val):
                             found_field_match = True
                             break
 
