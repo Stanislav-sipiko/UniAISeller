@@ -2,6 +2,7 @@
 import aiohttp
 import json
 import os
+import re
 import sqlite3
 import datetime
 from typing import Any, Dict, Optional
@@ -235,7 +236,9 @@ class StoreEngine:
                 result = await response.json()
                 if result.get("ok"):
                     msg_id = result.get("result", {}).get("message_id")
-                    self._log_chat_history(str(chat_id), str(msg_id), "assistant", text)
+                    # Сохраняем чистый текст без HTML-тегов, чтобы LLM не путался в именах товаров
+                    clean_text = re.sub(r'<[^>]+>', '', text)
+                    self._log_chat_history(str(chat_id), str(msg_id), "assistant", clean_text)
                 return result
         except Exception as e:
             logger.error(f"[{self.slug}] Telegram Send Error: {e}")

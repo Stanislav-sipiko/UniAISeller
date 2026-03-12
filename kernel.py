@@ -312,7 +312,7 @@ class UkrSellKernel:
         search_status: Optional[str] = None,
         top_categories: Optional[list] = None,
     ) -> str:
-        history_context = ctx.dialog_manager.get_chat_context(user_id, minutes=5)
+        history_context = ctx.dialog_manager.get_chat_context(user_id, minutes=30)
 
         # ── NO_RESULTS — только при реально пустой выдаче ───────────
         if mode == "NO_RESULTS":

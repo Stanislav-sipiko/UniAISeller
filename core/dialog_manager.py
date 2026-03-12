@@ -34,7 +34,7 @@ class DialogManager:
         self.patch_path = os.path.join(self.base_path, "fsm_soft_patch.json")
         self.session_db_path = os.path.join(self.base_path, "sessions.db")
         
-        self._intent_cache = {}
+        self._intent_cache = {}  # {chat_id: {"ts": float, "intent": dict}}
         self._intent_hints = self._load_intent_hints()
         print(f"✅ [DM_INIT] DialogManager v7.5.6 Active. System: {self.slug}")
 
@@ -236,8 +236,12 @@ class DialogManager:
             # ШАГ 3: Выбор модели
             print(f"[DM_TRACE] Step 3: Triggering Selector Tier Selection (Length: {len(user_text)})...")
             t_start_select = time.perf_counter()
-            
-            tier_hint = "heavy" if len(user_text) > 80 else "light"
+
+            # Follow-up: если есть живой кеш для этого чата — используем heavy модель,
+            # т.к. короткие уточнения (< 80 символов) требуют понимания multi-turn контекста.
+            _cached = self._intent_cache.get(str(chat_id))
+            _is_followup = bool(_cached and time.time() - _cached.get("ts", 0) < 2700)
+            tier_hint = "heavy" if (len(user_text) > 80 or _is_followup) else "light"
             if tier_hint == "heavy":
                 selection_coro = self.selector.get_heavy()
             else:
@@ -280,11 +284,16 @@ class DialogManager:
             
             # ШАГ 6: Парсинг и мерж результатов
             raw_intent = safe_extract_json(content)
-            prev_intent = self._intent_cache.get(str(chat_id), {"entities": {}})
+            # TTL: используем кеш только если он не старше 45 минут
+            _cached_entry = self._intent_cache.get(str(chat_id))
+            if _cached_entry and time.time() - _cached_entry.get("ts", 0) < 2700:
+                prev_intent = _cached_entry["intent"]
+            else:
+                prev_intent = {"entities": {}}
             result = merge_followup(prev_intent, raw_intent)
-            
-            # Кэшируем результат
-            self._intent_cache[str(chat_id)] = result
+
+            # Кэшируем результат с временной меткой
+            self._intent_cache[str(chat_id)] = {"ts": time.time(), "intent": result}
             print(f"[DM_TRACE] <<< EXIT: Intent analysis complete. Action: {result.get('action')}")
 
             # Записываем результат в рейтинг

@@ -95,7 +95,7 @@ def entity_filter(products: list, intent: dict, intent_mapping: dict = None,
     logger.debug(f" [INTEL] Dynamic Filtering (Map active): {active_filters}")
 
     for res in products:
-        p = res.get("data") if "data" in res else res
+        p = res.get("data") or res.get("product") or res
         match = True
 
         for intent_key, target_val in active_filters.items():
@@ -156,6 +156,8 @@ def merge_followup(prev_intent: dict, new_intent: dict) -> dict:
     Склейка контекста диалога.
     FIX FU-05: не перезаписываем category если новое значение — мусорная generic-категория
     от LLM, а предыдущий контекст содержит реальную категорию.
+    FIX FU-06: topic-reset — если юзер сменил тему (новая категория ≠ старая и не мусор),
+    сбрасываем накопленные brand/price_limit которые не применимы к новому предмету.
     """
     merged = prev_intent.copy()
     new_ents = new_intent.get("entities", {})
@@ -165,6 +167,24 @@ def merge_followup(prev_intent: dict, new_intent: dict) -> dict:
 
     merged_ents = merged.get("entities", {}).copy()
     garbage_vals = {"no brand", "unknown", "none", "null", "any", "n/a", "", "no_brand"}
+
+    # Topic-reset: если пришла реальная новая категория, отличная от предыдущей —
+    # сбрасываем brand и price_limit, чтобы не смешивать контекст разных товаров.
+    new_cat_raw = new_ents.get("category", "")
+    prev_cat_raw = merged_ents.get("category", "")
+    if (
+        new_cat_raw
+        and str(new_cat_raw).lower() not in garbage_vals
+        and str(new_cat_raw).lower() not in _GARBAGE_CATEGORIES
+        and prev_cat_raw
+        and get_stem(str(new_cat_raw)) != get_stem(str(prev_cat_raw))
+    ):
+        logger.debug(
+            f"[merge_followup] Topic reset: '{prev_cat_raw}' → '{new_cat_raw}'. "
+            f"Clearing accumulated brand/price_limit."
+        )
+        merged_ents.pop("brand", None)
+        merged_ents.pop("price_limit", None)
 
     for key, val in new_ents.items():
         if not val or str(val).lower() in garbage_vals:
