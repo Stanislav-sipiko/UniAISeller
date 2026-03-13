@@ -1,3 +1,4 @@
+# /root/core/retrieval_engine.py v7.8.6
 import os
 import json
 import faiss
@@ -21,6 +22,8 @@ class RetrievalEngine:
         - COMPATIBILITY: Handles both JSON-list and JSON-object metadata sources.
         - CI/CD: Prevents RuntimeErrors during metadata indexing.
         - FIX: Updated log_retrieval signature to include after_price_filter.
+        - FIX: FAISS query shape (1, dim) and IP similarity scoring.
+        - OPTIMIZATION: Improved search_text concatenation and increased recall (k=80).
     """
     def __init__(self, ctx: Any, shared_model: Any = None):
         self.ctx = ctx
@@ -167,7 +170,7 @@ class RetrievalEngine:
         for hit in hits:
             p = hit["product"]
             score = hit["score"]
-            norm_sim = 1.0 / (1.0 + score)
+            norm_sim = max(0.0, float(score))
             
             cat_bonus = 0.0
             p_cat = str(p.get("category", "")).lower()
@@ -229,13 +232,28 @@ class RetrievalEngine:
             detected_cat = inner_ents.get("category")
             if not detected_cat: detected_cat = self._detect_category(normalized_query)
 
-            search_text = target if len(target) > 3 else normalized_query
-            q_emb = self.model.encode(f"query: {search_text}", normalize_embeddings=True).astype('float32')
+            search_text = f"{normalized_query} {target}".strip()
+            
+            q_emb = self.model.encode(
+                f"query: {search_text}",
+                normalize_embeddings=True
+            )
+            q_emb = np.array(q_emb, dtype="float32").reshape(1, -1)
+
+            logger.debug(
+                f"[{self.slug}] FAISS_DEBUG "
+                f"index_size={self.index.ntotal} "
+                f"query_norm={np.linalg.norm(q_emb):.3f}"
+            )
 
             STOP = {"купити", "хочу", "знайти", "ціна", "є", "маєте", "собаки", "кота", "для", "який", "яка"}
             query_words = [w for w in normalized_query.split() if len(w) > 2 and w not in STOP]
 
-            scores, idxs = self.index.search(np.expand_dims(q_emb, axis=0), 50)
+            scores, idxs = self.index.search(q_emb, 80)
+            
+            logger.debug(
+                f"[{self.slug}] FAISS_TOP_SCORES {scores[0][:5]}"
+            )
 
             raw_hits = []
             for score, idx in zip(scores[0], idxs[0]):
