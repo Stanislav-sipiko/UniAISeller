@@ -1,8 +1,9 @@
-# /root/ukrsell_v4/core/store_context.py v7.1.2
+# /root/ukrsell_v4/core/store_context.py v7.2.0
 import json
 import re
 import time
 import os
+import asyncio
 from typing import List, Dict, Any, Optional
 from core.logger import logger, log_event
 from core.llm_selector import LLMSelector
@@ -10,11 +11,14 @@ from core.store_profiler import StoreProfiler
 
 class StoreContext:
     """
-    Universal Store Context v7.1.2 (Schema-Aware).
-    - Dynamic Schema: Loads and exposes shop-specific attribute keys for Analyzer.
-    - Integrated Filtering: Apply filters based on dynamic metadata.
-    - Asset Sync: Manages ready-state for asynchronous initialization.
-    - Zero Omission: Full script with safe fallback for LLM responses.
+    Universal Store Context v7.2.0 (Taxonomy-Aware & Schema-Aware).
+    
+    Changelog:
+        v7.1.2  Schema-Aware filtering and dynamic metadata.
+        v7.2.0  [TAXONOMY UPDATE]
+                - Интеграция Catalog Taxonomy Layer (cluster_products.json).
+                - Построение subtype_index для O(1) роутинга.
+                - Сохранение полной функциональности v7.1.2.
     """
 
     def __init__(self, base_path: str, db_engine: Any, llm_selector: LLMSelector, kernel: Any = None):
@@ -38,47 +42,112 @@ class StoreContext:
         self.threshold_main = 0.35
         self.threshold_low = 0.22
         self.currency = "грн"
-        self.category_map: dict = {}     # UA/RU → EN DB-ключи, из category_map.json
-        self.search_synonyms: dict = {}  # EN категория → синонимы, из search_synonyms.json
+        self.category_map: dict = {}     # UA/RU → EN DB-ключи
+        self.search_synonyms: dict = {}  # EN категория → синонимы
+        
+        # Taxonomy & Clusters
+        self.taxonomy_data = {}
+        self.subtype_index = {} # Плоский индекс для O(1) поиска (Catalog Router)
+        
         self.is_ready = False
+        self.data_ready = asyncio.Event()
 
-        # Передаём shared selector — StoreProfiler не создаёт свой LLMSelector
+        # Передаём shared selector
         self.profiler = StoreProfiler(self.base_path, selector=llm_selector)
 
     async def initialize(self) -> bool:
-        """Asynchronously loads store profile, configurations and metadata schema."""
+        """Asynchronously loads store profile, configurations, taxonomy and metadata schema."""
         try:
+            # 1. Загрузка базовых конфигов
             self.config = self._load_local_config()
             self.profile = await self.profiler.load_or_build()
             self.schema_keys = self._load_schema_keys()
-            logger.info(f"[{self.slug}] Loaded {len(self.schema_keys)} schema keys for intent extraction.")
+            
+            # 2. Определение языка и локализация
             self.language = self.config.get("language") or self._detect_language()
             self.prompts = self._load_local_prompts()
+            
+            # 3. Параметры поиска
             self.threshold_main = float(self.config.get("threshold_main", 0.35))
             self.threshold_low = float(self.config.get("threshold_low", 0.22))
             self.currency = self.config.get("currency", "грн")
+            
+            # 4. Загрузка маппингов и синонимов
             self.category_map = self._load_json_config("category_map.json", required=False)
             self.search_synonyms = self._load_json_config("search_synonyms.json", required=False)
+            
+            # 5. [NEW] Catalog Taxonomy Layer
+            self.taxonomy_data = self._load_json_config("cluster_products.json", required=False)
+            self._build_taxonomy_index()
+
             if self.category_map:
                 logger.info(f"[{self.slug}] category_map loaded: {len(self.category_map)} entries.")
-            else:
-                logger.info(f"[{self.slug}] category_map.json not found — category matching by stem only.")
+            
+            logger.info(f"[{self.slug}] StoreContext initialized. Language: {self.language}")
+            
             self.is_ready = True
+            self.data_ready.set()
             return True
+            
         except Exception as e:
             logger.error(f"[{self.slug}] Critical error during StoreContext initialization: {e}")
             return False
+
+    def _build_taxonomy_index(self):
+        """Создает быстрый маппинг subtype -> category/animal для Catalog Router."""
+        if not self.taxonomy_data:
+            return
+        
+        count = 0
+        for category, subtypes in self.taxonomy_data.items():
+            for item in subtypes:
+                st_name = item.get("subtype", "").lower()
+                if st_name:
+                    # Сохраняем структуру для быстрого доступа
+                    self.subtype_index[st_name] = {
+                        "category": category,
+                        "animal": item.get("animal", []),
+                        "count": item.get("count", 0)
+                    }
+                    count += 1
+        logger.info(f"[{self.slug}] Taxonomy index built: {count} subtypes indexed.")
+
+    def get_taxonomy_hint(self, query: str) -> Optional[Dict]:
+        """
+        Catalog Router logic.
+        Проверяет, упоминается ли какой-либо подтип из таксономии в запросе пользователя.
+        """
+        if not self.subtype_index:
+            return None
+            
+        q = query.lower()
+        # Ищем самое длинное совпадение, чтобы избежать ложных срабатываний на коротких словах
+        matches = []
+        for subtype, info in self.subtype_index.items():
+            if subtype in q:
+                matches.append({"subtype": subtype, **info})
+        
+        if not matches:
+            return None
+            
+        # Возвращаем совпадение с самым длинным названием подтипа
+        return max(matches, key=lambda x: len(x["subtype"]))
 
     def _load_schema_keys(self) -> List[str]:
         """Loads available attribute keys from schema.json or store_profile.json."""
         schema_path = os.path.join(self.base_path, "schema.json")
         profile_path = os.path.join(self.base_path, "store_profile.json")
+        
+        # Сначала пробуем schema.json
         if os.path.exists(schema_path):
             try:
                 with open(schema_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                    return data.get("keys", [])
+                    keys = data.get("product_attributes", []) or data.get("keys", [])
+                    if keys: return keys
             except Exception: pass
+            
+        # Фолбэк на store_profile.json
         if os.path.exists(profile_path):
             try:
                 with open(profile_path, 'r', encoding='utf-8') as f:
@@ -95,6 +164,7 @@ class StoreContext:
         brands_list = p.get("brand_matrix", {}).get("top_brands", [])
         brands = ", ".join(brands_list[:5]) if brands_list else "різні бренди"
         prices = p.get("price_analytics", {})
+        
         bio = (
             f"Магазин: {self.slug}. Спеціалізація: {main_cat} (всього {total} SKU). "
             f"Основні бренди: {brands}. "
@@ -109,10 +179,11 @@ class StoreContext:
         try:
             with open(data_path, 'r', encoding='utf-8') as f:
                 products = json.load(f)
-            sample_text = " ".join([str(p.get('title', '')) for p in products[:15]]).lower()
-            if any(char in sample_text for char in "іїєґ"): return "Ukrainian"
-            if any(char in sample_text for char in "ыэёъ"): return "Russian"
-            return "Ukrainian"
+                if not products: return "Ukrainian"
+                sample_text = " ".join([str(p.get('title', '')) for p in products[:15]]).lower()
+                if any(char in sample_text for char in "іїєґ"): return "Ukrainian"
+                if any(char in sample_text for char in "ыэёъ"): return "Russian"
+                return "Ukrainian"
         except Exception: return "Ukrainian"
 
     def _load_local_config(self) -> Dict[str, Any]:
@@ -129,8 +200,19 @@ class StoreContext:
         defaults = {
             "search_header": "Чудовий вибір! Ось результати:" if is_ukr else "Отличный выбор! Вот результаты:",
             "view_button": "Дивитись" if is_ukr else "Смотреть",
-            "not_found": "Нічого не знайдено." if is_ukr else "Ничего не найдено."
+            "not_found": "Нічого не знайдено." if is_ukr else "Ничего не найдено.",
+            "price_label": "Ціна" if is_ukr else "Цена"
         }
+        # Пытаемся загрузить из fsm_soft_patch или prompts.json
+        patch_path = os.path.join(self.base_path, "fsm_soft_patch.json")
+        if os.path.exists(patch_path):
+            try:
+                with open(patch_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    custom = data.get("prompts", {})
+                    if custom: return {**defaults, **custom}
+            except Exception: pass
+            
         prompts_path = os.path.join(self.base_path, "prompts.json")
         if os.path.exists(prompts_path):
             try:
@@ -143,14 +225,12 @@ class StoreContext:
     async def get_human_intro(self, query: str, product_count: int) -> str:
         """
         Generates a persona-driven intro sentence via LLM using selector tiers.
-        Always returns a non-empty string.
-        No hardcoded models.
         """
         if not self.config.get("use_llm_persona", True) or not self.selector:
             return self.prompts.get("search_header", "Ось результати:")
 
         try:
-            # Выбираем Tier LLM через селектор в зависимости от длины запроса
+            # Выбираем Tier LLM через селектор
             if len(query) > 40:
                 client, model = await self.selector.get_heavy()
             else:
@@ -159,26 +239,24 @@ class StoreContext:
             lang_note = "Пиши на русском языке." if self.language == "Russian" else "Пиши українською мовою."
             system_prompt = (
                 f"{self.get_store_bio()}\nYou are a sales consultant. {lang_note} "
-                f"Customer asked: '{query}'. Found {product_count} items in our catalog. "
-                "Write ONE short, energetic intro sentence with 1 emoji. "
-                "STRICT RULE: Do NOT mention any specific product names, brands, or prices — "
-                "those will be listed below. Only set the mood."
+                f"Customer asked: '{query}'. Found {product_count} items. "
+                "Write ONE short, energetic sentence with 1 emoji."
             )
 
             response = await client.chat.completions.create(
                 model=model,
                 messages=[{"role": "system", "content": system_prompt}],
-                max_tokens=80
+                max_tokens=80,
+                temperature=0.7
             )
 
             content = getattr(response.choices[0].message, 'content', None)
             if content and isinstance(content, str) and content.strip():
-                return content.strip()
-            else:
-                return self.prompts.get("search_header", "Ось результати:")
+                return content.strip().replace('"', '')
+            return self.prompts.get("search_header", "Ось результати:")
 
         except Exception as e:
-            print(f"💥 [SC_ERROR] get_human_intro fallback activated: {type(e).__name__}: {e}")
+            logger.error(f"[{self.slug}] get_human_intro error: {e}")
             return self.prompts.get("search_header", "Ось результати:")
 
     def _load_json_config(self, filename: str, required: bool = False) -> dict:
@@ -192,30 +270,42 @@ class StoreContext:
             with open(path, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 # Фильтруем служебные ключи _comment*
-                return {k: v for k, v in data.items() if not k.startswith("_")}
+                if isinstance(data, dict):
+                    return {k: v for k, v in data.items() if not k.startswith("_")}
+                return data
         except Exception as e:
             logger.error(f"[{self.slug}] Failed to load '{filename}': {e}")
             return {}
 
     def validate_query_features(self, raw_features: Dict) -> Dict:
+        """Валидация и нормализация извлеченных сущностей."""
         validated = {
             "category": raw_features.get("category"),
             "price_limit": None,
             "brand": raw_features.get("brand"),
+            "animal": raw_features.get("animal"),
             "dynamic_filters": {}
         }
+        
+        # Парсинг цены
         price = raw_features.get("price_limit") or raw_features.get("max_price")
         if price:
             try:
-                digits = re.findall(r'[\d.]+', str(price).replace(',', '.'))
-                validated["price_limit"] = float(digits[0]) if digits else None
+                if isinstance(price, (int, float)):
+                    validated["price_limit"] = float(price)
+                else:
+                    digits = re.findall(r'[\d.]+', str(price).replace(',', '.'))
+                    validated["price_limit"] = float(digits[0]) if digits else None
             except: pass
-        props = raw_features.get("properties", {})
+            
+        # Маппинг динамических свойств
+        props = raw_features.get("properties", {}) or raw_features.get("attributes", {})
         if isinstance(props, dict):
             for k, v in props.items():
                 if k in self.schema_keys:
                     validated["dynamic_filters"][k] = v
+                    
         return validated
 
     def __repr__(self):
-        return f"<StoreContext {self.slug} ready={self.is_ready}>"
+        return f"<StoreContext {self.slug} ready={self.is_ready} taxonomy={len(self.subtype_index)}>"

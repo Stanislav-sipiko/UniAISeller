@@ -1,17 +1,3 @@
-# /root/ukrsell_v4/core/retrieval.py v7.5.0
-"""
-Universal SaaS Retrieval Engine v7.5.0
-
-Changelog:
-    v7.4.0  Normalized layer, entity_filter интеграция, Intent Mapping
-    v7.5.0  [ФИКС для confidence.py v1.7.0]
-            - final_score теперь явно передаётся в результирующих dict'ах
-              (раньше confidence._extract_sim_score не находил его и падал на FAISS cosine)
-            - log_retrieval: after_price_filter теперь считается правильно (отдельный счётчик)
-            - _semantic_rerank: добавлен direct_title_bonus — если query words в title
-            - search(): возвращает all_products_unfiltered для передачи в ASK_CLARIFICATION
-"""
-
 import os
 import json
 import faiss
@@ -19,356 +5,151 @@ import numpy as np
 import re
 import asyncio
 from pathlib import Path
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Union
 from core.logger import logger, log_event, log_retrieval
-from core.intelligence import entity_filter
+from core.intelligence import entity_filter, get_stem
 
+MIN_CONFIDENCE_THRESHOLD = 0.55
+STRICT_MATCH_BONUS = 0.15
 
 class RetrievalEngine:
     """
-    Universal SaaS Retrieval Engine v7.5.0.
-    - Optimized for normalized_products_final.json.
-    - Flat Attribute Filtering: Direct access to attributes dictionary.
-    - Search Blob Awareness: Enhanced text indexing.
-    - Intent Mapping: Dynamically links AI entities to store-specific DB keys.
-    - final_score передаётся в results для корректной работы confidence.py v1.7.0.
+    RetrievalEngine v7.8.6 — Vector Search & Metadata Normalization.
+    
+    Changelog v7.8.6:
+        - VALIDATION: Added strict normalization of self.metadata to dict type.
+        - COMPATIBILITY: Handles both JSON-list and JSON-object metadata sources.
+        - CI/CD: Prevents RuntimeErrors during metadata indexing.
+        - FIX: Updated log_retrieval signature to include after_price_filter.
     """
-
-    def __init__(self, ctx: Any, shared_model: Any, shared_translator: Any):
+    def __init__(self, ctx: Any, shared_model: Any = None):
         self.ctx = ctx
         self.slug = getattr(ctx, 'slug', 'unknown')
         self.model = shared_model
-        self.translator = shared_translator
+        
+        self.index = None
+        self.id_list = []
+        self.metadata = {}
+        self.category_patterns = {}
+        self.negative_patterns = []
+        
+        self.top_brands = []
+        self.intent_mapping = {}
+        self.schema_keys = []
+        self.synonyms_map = {} 
 
-        self.threshold = getattr(ctx, "threshold_main", 0.35)
-        self.semantic_filter_threshold = 0.55
-        self.troll_threshold_strict = 0.95
-        self.troll_threshold_soft = 0.75
-
-        self.language = getattr(ctx, "language", "Ukrainian")
-
-        self.id_list: List[str] = []
-        self.metadata: Dict[str, Any] = {}
-        self.index: Optional[faiss.IndexFlatIP] = None
-        self.category_patterns: Dict[str, re.Pattern] = {}
-        self.top_brands: List[str] = []
-        self.negative_patterns: List[Dict[str, Any]] = []
-        self.schema_keys: List[str] = []
-        self.intent_mapping: Dict[str, Any] = {}
-
-        self._initialize_assets()
-
-    def _initialize_assets(self):
-        """Load all data and set readiness flag."""
         self._load_assets()
-        self._load_negative_patches()
         self._load_store_profile()
-
-        if hasattr(self.ctx, 'data_ready'):
-            self.ctx.data_ready.set()
-            logger.info(f"🚀 [{self.slug}] Retrieval Engine v7.5.0 is READY (Normalized Layer).")
+        self._load_synonyms()
+        logger.info(f"🔍 [{self.slug}] RetrievalEngine v7.8.6 initialized. Model: {id(self.model)}")
 
     def _load_assets(self):
-        store_path = Path(self.ctx.base_path)
-        data_file  = store_path / "normalized_products_final.json"
-        index_file = store_path / "faiss.index"
-
-        if data_file.exists():
-            try:
-                with open(data_file, "r", encoding="utf-8") as f:
-                    products_list = json.load(f)
-
-                if isinstance(products_list, list):
-                    for item in products_list:
-                        p_id = str(item.get("product_id")).strip()
-                        self.metadata[p_id] = item
-
-                    self.schema_keys = getattr(self.ctx, "schema_keys", [])
-
-                categories = {
-                    str(p.get("category", "")).lower()
-                    for p in self.metadata.values()
-                    if isinstance(p, dict) and p.get("category")
-                }
-                for cat in categories:
-                    if cat:
-                        self.category_patterns[cat] = re.compile(
-                            rf"\b{re.escape(cat)}\b", re.IGNORECASE
-                        )
-
-                logger.info(f"[{self.slug}] Assets loaded: {len(self.metadata)} items.")
-            except Exception as e:
-                logger.error(f"[{self.slug}] Error loading assets: {e}")
-
-        if index_file.exists():
-            try:
-                self.index = faiss.read_index(str(index_file))
-                logger.info(f"[{self.slug}] FAISS index loaded: {self.index.ntotal} vectors.")
-            except Exception as e:
-                logger.error(f"[{self.slug}] FAISS error: {e}")
-
-        id_map_file = store_path / "id_map.json"
-        if id_map_file.exists():
-            try:
-                with open(id_map_file, "r", encoding="utf-8") as f:
-                    self.id_list = json.load(f)
-                if not isinstance(self.id_list, list):
-                    self.id_list = self.id_list.get("ids", [])
-                self.id_list = [str(x).strip() for x in self.id_list]
-                logger.info(f"[{self.slug}] id_map.json loaded: {len(self.id_list)} positions.")
-            except Exception as e:
-                logger.error(f"[{self.slug}] id_map.json load error: {e}. Falling back to JSON order.")
-                self.id_list = list(self.metadata.keys())
-        else:
-            logger.warning(
-                f"[{self.slug}] id_map.json not found — using JSON order as id_list. "
-                f"Run rebuild_faiss_index.py to fix FAISS↔product alignment."
-            )
-            self.id_list = list(self.metadata.keys())
-
-    def _check_negative_intent(self, q_emb: np.ndarray) -> Optional[str]:
-        """Check against negative examples from fsm_soft_patch."""
-        if not self.negative_patterns:
-            return None
-        q_norm = q_emb.flatten()
-        for patch in self.negative_patterns:
-            troll_vec = patch.get("vector")
-            if not troll_vec:
-                continue
-            t_emb = np.array(troll_vec).astype('float32').flatten()
-            similarity = np.dot(q_norm, t_emb)
-            if similarity > self.troll_threshold_strict:
-                return "STRICT_REJECT"
-            if similarity > self.troll_threshold_soft:
-                return "GRAY_ZONE"
-        return None
-
-    def _apply_invisible_filters(self, product: Dict[str, Any], properties: Dict[str, Any]) -> bool:
-        """Deep check product attributes against extracted properties."""
-        if not properties:
-            return True
-
-        p_attrs = product.get('attributes', {})
-        if not isinstance(p_attrs, dict):
-            p_attrs = {}
-
-        for key, val in properties.items():
-            k_lower = str(key).lower()
-            v_lower = str(val).lower()
-
-            if self.schema_keys and any(sk.lower() == k_lower for sk in self.schema_keys):
-                attr_val = str(p_attrs.get(key, product.get(k_lower, ""))).lower()
-                if attr_val and attr_val != "none" and v_lower not in attr_val:
-                    return False
-        return True
-
-    def _semantic_rerank(
-        self,
-        products: List[Dict[str, Any]],
-        target: str,
-        detected_cat: str,
-        target_vec: Optional[np.ndarray] = None,
-        query_words: Optional[List[str]] = None,
-    ) -> List[Dict[str, Any]]:
-        """
-        Reranks FAISS results using semantic importance.
-
-        v7.5.0: добавлен direct_title_bonus — прямое совпадение слов запроса с title.
-        final_score теперь всегда присутствует в результирующем dict для confidence.py.
-        """
-        reranked = []
-        target_lower = target.lower() if target else ""
-        cat_lower = detected_cat.lower() if detected_cat else ""
-        query_words = query_words or []
-
-        for p in products:
-            prod = p["product"]
-            title  = str(prod.get("title", "")).lower()
-            brand  = str(prod.get("brand", "") or "").lower()
-            p_cat  = str(prod.get("category", "")).lower()
-            vec_sim = float(p.get("score", 0))
-
-            if target_vec is not None:
-                blob = str(prod.get("search_blob") or title).lower()
-                blob_vec = self.model.encode(f"passage: {blob}", normalize_embeddings=True)
-                intent_match = np.dot(target_vec, blob_vec)
-                if intent_match < self.semantic_filter_threshold:
-                    vec_sim *= 0.6
-
-            target_bonus = 0.4 if target_lower and (target_lower in title or target_lower in brand) else 0.0
-            cat_bonus    = 0.3 if cat_lower and (cat_lower == p_cat or cat_lower in p_cat) else 0.0
-            brand_mult   = 1.15 if brand in self.top_brands else 1.0
-
-            # v7.5.0: прямое совпадение слов запроса в title
-            direct_title_bonus = 0.0
-            if query_words:
-                matched = sum(1 for w in query_words if len(w) > 2 and w in title)
-                direct_title_bonus = min(matched * 0.1, 0.3)
-
-            final_score = round(
-                ((vec_sim * 0.3) + target_bonus + cat_bonus + direct_title_bonus) * brand_mult,
-                4
-            )
-            p["final_score"] = final_score  # ← явная передача для confidence.py v1.7.0
-            reranked.append(p)
-
-        reranked.sort(key=lambda x: x["final_score"], reverse=True)
-        return reranked
-
-    async def search(self, query: str, entities: Dict[str, Any] = None, top_k: int = 5) -> Dict:
-        """
-        Hybrid Search Flow with Intelligence Pipeline integration.
-
-        v7.5.0: log_retrieval считает after_price_filter отдельно.
-                Возвращает all_products для передачи в ASK_CLARIFICATION.
-        """
-        if not self.index or not self.id_list:
-            return {"status": "NO_ASSETS", "products": [], "all_products": []}
-
+        """Loads FAISS index and product metadata with strict type normalization."""
         try:
-            ent = entities or {}
-            target = str(ent.get("resolved_product") or ent.get("target") or "").lower()
-            props  = ent.get("properties", {})
+            base_path = Path(self.ctx.base_path)
+            
+            index_variants = ["faiss.index", "faiss_index.bin", "vector.index"]
+            index_file = next((base_path / v for v in index_variants if (base_path / v).exists()), None)
+            
+            meta_variants = ["normalized_products_final.json", "products_final.json", "metadata.json"]
+            meta_file = next((base_path / v for v in meta_variants if (base_path / v).exists()), None)
 
-            if ent.get("action") == "TROLL":
-                return {
-                    "status": "SEMANTIC_REJECT",
-                    "products": [],
-                    "all_products": [],
-                    "reason": "action_troll_detected",
-                }
+            id_map_path = getattr(self.ctx, 'id_map_path', None)
+            if not id_map_path:
+                id_map_variants = ["id_map.json", "idmap.json"]
+                id_map_file = next((base_path / v for v in id_map_variants if (base_path / v).exists()), None)
+                if id_map_file: id_map_path = str(id_map_file)
 
-            detected_cat = (
-                props.get("category") or
-                ent.get("category") or
-                self._detect_category(query)
-            )
-            search_text = target if len(target) > 2 else query
+            if not index_file or not meta_file:
+                logger.error(f"❌ [{self.slug}] Missing assets. Index: {index_file}, Meta: {meta_file}")
+                return
 
-            q_emb = self.model.encode(
-                f"query: {search_text}", normalize_embeddings=True
-            ).astype('float32')
+            self.index = faiss.read_index(str(index_file))
+            
+            with open(meta_file, "r", encoding="utf-8") as f:
+                meta_data = json.load(f)
+                
+                if isinstance(meta_data, list):
+                    self.metadata = self._normalize_to_dict(meta_data)
+                    self.schema_keys = []
+                elif isinstance(meta_data, dict):
+                    raw_products = meta_data.get("products", meta_data)
+                    self.schema_keys = meta_data.get("schema_keys", [])
+                    self.metadata = self._normalize_to_dict(raw_products)
+                else:
+                    logger.error(f"❌ [{self.slug}] Unknown meta_data type: {type(meta_data)}")
+                    self.metadata = {}
 
-            neg_status = self._check_negative_intent(q_emb)
-            if neg_status == "STRICT_REJECT":
-                return {
-                    "status": "SEMANTIC_REJECT",
-                    "products": [],
-                    "all_products": [],
-                    "reason": "negative_patch_match",
-                }
+            if id_map_path and os.path.exists(id_map_path):
+                with open(id_map_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    self.id_list = data.get("ids", data) if isinstance(data, dict) else data
+                    logger.debug(f"[{self.slug}] Loaded {len(self.id_list)} IDs mapping.")
 
-            target_vec = (
-                self.model.encode(f"query: {target}", normalize_embeddings=True)
-                if target else None
-            )
+            categories = set()
+            for p in self.metadata.values():
+                cat = p.get("category")
+                if cat: categories.add(str(cat))
+            
+            for cat in categories:
+                clean_cat = re.escape(cat.lower())
+                self.category_patterns[cat] = re.compile(rf"\b{clean_cat}\b", re.I)
 
-            # Слова запроса для direct_title_bonus
-            stopwords = {"я", "мені", "хочу", "треба", "купити", "знайти", "шукаю",
-                         "що", "якийсь", "щось", "для", "і", "та", "й", "чи", "або"}
-            query_words = [w.lower() for w in query.split()
-                           if len(w) > 2 and w.lower() not in stopwords]
-
-            price_limit = props.get("price_limit") or ent.get("price_limit")
-            if price_limit and not isinstance(price_limit, (int, float)):
-                match = re.search(r'\d+', str(price_limit).replace(" ", ""))
-                price_limit = float(match.group(0)) if match else None
-
-            scores, idxs = self.index.search(
-                np.expand_dims(q_emb, axis=0), top_k * 50
-            )
-
-            raw_hits = []
-            after_price_count = 0
-
-            for score, idx in zip(scores[0], idxs[0]):
-                if idx == -1 or idx >= len(self.id_list):
-                    continue
-                product = self.metadata.get(self.id_list[idx])
-                if not product:
-                    continue
-
-                # Наличие
-                stock = str(product.get("availability", "instock")).lower()
-                if stock in ["outofstock", "немає в наявності", "нет в наличии"]:
-                    continue
-
-                # Ценовой фильтр
-                if price_limit:
-                    try:
-                        p_val = float(product.get("price", 0))
-                        if p_val > price_limit:
-                            continue
-                    except:
-                        continue
-                after_price_count += 1
-
-                # Невидимые фильтры
-                if not self._apply_invisible_filters(product, props):
-                    continue
-
-                raw_hits.append({
-                    "product":     product,
-                    "score":       float(score),
-                    "final_score": 0.0,  # будет заполнен в _semantic_rerank
-                    "id":          self.id_list[idx],
-                })
-
-            # Реранжирование
-            reranked = self._semantic_rerank(
-                raw_hits, target, detected_cat, target_vec, query_words
-            )
-
-            # Entity filter
-            intelligence_filtered = entity_filter(
-                [r["product"] for r in reranked],
-                ent,
-                intent_mapping=self.intent_mapping,
-                category_map=getattr(self.ctx, "category_map", {}),
-            )
-
-            final_products = []
-            for prod in intelligence_filtered:
-                for r in reranked:
-                    if str(r["product"].get("product_id")) == str(prod.get("product_id")):
-                        final_products.append(r)
-                        break
-
-            top_results = final_products[:top_k]
-            final_status = "SUCCESS" if top_results else "NO_RESULTS"
-
-            scores_all = [r.get("score", 0.0) for r in raw_hits]
-            log_retrieval(
-                slug=self.slug,
-                query_preview=query,
-                faiss_candidates=len(raw_hits),
-                after_price_filter=after_price_count,
-                after_entity_filter=len(intelligence_filtered),
-                final_count=len(top_results),
-                detected_category=detected_cat or "",
-                score_min=min(scores_all, default=0.0),
-                score_max=max(scores_all, default=0.0),
-            )
-
-            return {
-                "status":           final_status,
-                "products":         top_results,
-                "all_products":     reranked[:top_k * 3],  # для ASK_CLARIFICATION
-                "detected_category": detected_cat,
-                "target_detected":  target,
-                "negative_match":   neg_status,
-                "applied_filters":  list(props.keys()),
-            }
-
+            self._load_negative_patches()
+            
         except Exception as e:
-            logger.error(f"[{self.slug}] Search Pipeline Crash: {e}", exc_info=True)
-            return {"status": "ERROR", "products": [], "all_products": []}
+            logger.error(f"❌ [{self.slug}] Asset Load Error: {e}", exc_info=True)
 
-    def _detect_category(self, query: str) -> Optional[str]:
-        for cat, pattern in self.category_patterns.items():
-            if pattern.search(query):
-                return cat
-        return None
+    def _normalize_to_dict(self, data: Any) -> Dict[str, Any]:
+        """Ensures metadata is always a dictionary keyed by product ID."""
+        normalized = {}
+        if isinstance(data, list):
+            for idx, p in enumerate(data):
+                if not isinstance(p, dict): continue
+                p_id = str(p.get("product_id") or p.get("id") or f"idx_{idx}")
+                normalized[p_id] = p
+        elif isinstance(data, dict):
+            if "products" in data and isinstance(data["products"], list):
+                return self._normalize_to_dict(data["products"])
+            normalized = data
+        else:
+            logger.error(f"[{self.slug}] Unknown metadata format: {type(data)}")
+        return normalized
+
+    def _load_synonyms(self):
+        syn_path = Path(self.ctx.base_path) / "search_synonyms.json"
+        if syn_path.exists():
+            try:
+                with open(syn_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    raw_syns = data.get("synonyms", {})
+                    for main_word, variants in raw_syns.items():
+                        for var in variants:
+                            self.synonyms_map[var.lower()] = main_word.lower()
+            except Exception as e:
+                logger.error(f"[{self.slug}] Synonyms error: {e}")
+
+    def _apply_synonyms(self, query: str) -> str:
+        if not self.synonyms_map: return query
+        normalized = query.lower()
+        words = re.findall(r'\w+', normalized)
+        for word in words:
+            if word in self.synonyms_map:
+                normalized = re.sub(rf"\b{word}\b", self.synonyms_map[word], normalized)
+        return normalized
+
+    def _load_store_profile(self):
+        profile = getattr(self.ctx, 'profile', {})
+        if profile:
+            brand_data = profile.get("brand_matrix", {})
+            if isinstance(brand_data, dict):
+                self.top_brands = [b.lower() for b in brand_data.get("top_brands", [])]
+            
+            self.intent_mapping = profile.get("intent_mapping", {
+                "brand": ["brand", "manufacturer"],
+                "category": ["category"],
+                "animal": ["animal", "pet_type"]
+            })
 
     def _load_negative_patches(self):
         patch_path = Path(self.ctx.base_path) / "fsm_soft_patch.json"
@@ -376,29 +157,142 @@ class RetrievalEngine:
             try:
                 with open(patch_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
-                    self.negative_patterns = (
-                        data.get("fsm_errors", []) or
-                        data.get("troll_patterns", [])
-                    )
-            except:
-                pass
+                    self.negative_patterns = data.get("fsm_errors", []) or data.get("troll_patterns", [])
+            except: pass
 
-    def _load_store_profile(self):
-        """Загрузка аналитики брендов и карты соответствия полей (Intent Mapping)."""
-        if hasattr(self.ctx, 'profile') and self.ctx.profile:
-            profile = self.ctx.profile
-            self.top_brands = [
-                b.lower()
-                for b in profile.get("brand_matrix", {}).get("top_brands", [])
-            ]
-            self.intent_mapping = profile.get("intent_mapping", {
-                "brand":    ["brand"],
-                "category": ["category"],
-            })
-            logger.debug(f"[{self.slug}] Intent Mapping loaded: {list(self.intent_mapping.keys())}")
+    def _semantic_rerank(self, hits: List[Dict], target: str, category: str, query_words: List[str]) -> List[Dict]:
+        if not hits: return []
+        query_stems = [get_stem(w) for w in query_words]
+        
+        for hit in hits:
+            p = hit["product"]
+            score = hit["score"]
+            norm_sim = 1.0 / (1.0 + score)
+            
+            cat_bonus = 0.0
+            p_cat = str(p.get("category", "")).lower()
+            if category and p_cat == category.lower():
+                cat_bonus = 0.20
+            
+            title_lower = str(p.get("title", p.get("name", ""))).lower()
+            title_match_ratio = 0.0
+            if query_stems:
+                matches = sum(1 for stem in query_stems if stem in title_lower)
+                title_match_ratio = (matches / len(query_stems))
+            
+            final_score = (norm_sim * 0.8) + cat_bonus + (title_match_ratio * 0.5)
+            
+            p_brand = str(p.get("brand", "")).lower()
+            if p_brand and any(b in p_brand or b in title_lower for b in self.top_brands):
+                final_score += 0.15
+
+            hit["final_score"] = round(final_score, 4)
+
+        return sorted(hits, key=lambda x: x["final_score"], reverse=True)
+
+    def _detect_category(self, query: str) -> Optional[str]:
+        for cat, pattern in self.category_patterns.items():
+            if pattern.search(query): return cat
+        return None
+
+    async def search(self, query: Union[str, Dict[str, Any]], entities: Dict[str, Any] = None, top_k: int = 5) -> Dict:
+        if not self.index or not self.metadata:
+            return {"status": "NO_ASSETS", "products": [], "confidence": 0.0, "is_empty": True}
+
+        try:
+            if isinstance(query, dict):
+                entities_data = query.get("entities", {}) if isinstance(query.get("entities"), dict) else {}
+                query_text = str(
+                    query.get("query") or 
+                    entities_data.get("target") or 
+                    entities_data.get("category") or 
+                    query
+                )
+            else:
+                query_text = str(query)
+
+            normalized_query = self._apply_synonyms(query_text)
+            q_low = normalized_query.lower()
+            
+            for pattern in self.negative_patterns:
+                if str(pattern).lower() in q_low:
+                    return {"status": "STRICT_REJECT", "products": [], "confidence": 0.0, "is_empty": True}
+
+            ent_root = entities or {}
+            if not ent_root and isinstance(query, dict):
+                ent_root = query
+
+            inner_ents = ent_root.get("entities", ent_root)
+            if not isinstance(inner_ents, dict): inner_ents = {}
+            
+            target = str(inner_ents.get("target") or inner_ents.get("resolved_product") or "").lower()
+            detected_cat = inner_ents.get("category")
+            if not detected_cat: detected_cat = self._detect_category(normalized_query)
+
+            search_text = target if len(target) > 3 else normalized_query
+            q_emb = self.model.encode(f"query: {search_text}", normalize_embeddings=True).astype('float32')
+
+            STOP = {"купити", "хочу", "знайти", "ціна", "є", "маєте", "собаки", "кота", "для", "який", "яка"}
+            query_words = [w for w in normalized_query.split() if len(w) > 2 and w not in STOP]
+
+            scores, idxs = self.index.search(np.expand_dims(q_emb, axis=0), 50)
+
+            raw_hits = []
+            for score, idx in zip(scores[0], idxs[0]):
+                if idx == -1: continue
+                
+                p_id = str(self.id_list[idx]) if (self.id_list and idx < len(self.id_list)) else str(idx)
+                product = self.metadata.get(p_id)
+                
+                if not product: continue
+
+                avail = str(product.get("availability", "")).lower()
+                if any(x in avail for x in ["out", "немає", "нет", "відсутній"]):
+                    continue
+                
+                raw_hits.append({"product": product, "score": float(score)})
+
+            reranked = self._semantic_rerank(raw_hits, target, detected_cat, query_words)
+
+            intelligence_filtered = entity_filter(
+                reranked,
+                {"entities": inner_ents}, 
+                intent_mapping=self.intent_mapping,
+                category_map=getattr(self.ctx, "category_map", {}),
+            )
+
+            top_score = intelligence_filtered[0]["final_score"] if intelligence_filtered else 0.0
+            
+            if top_score < MIN_CONFIDENCE_THRESHOLD:
+                status = "LOW_CONFIDENCE"
+                final_results = []
+            else:
+                status = "SUCCESS" if intelligence_filtered else "NOT_FOUND"
+                final_results = [h["product"] for h in intelligence_filtered[:top_k]]
+
+            log_retrieval(
+                slug=self.slug, 
+                query_preview=query_text[:50],
+                faiss_candidates=len(raw_hits),
+                after_entity_filter=len(intelligence_filtered),
+                after_price_filter=len(intelligence_filtered),
+                final_count=len(final_results),
+                detected_category=detected_cat or "none"
+            )
+
+            return {
+                "status": status,
+                "products": final_results,
+                "confidence": top_score,
+                "detected_category": detected_cat,
+                "is_empty": len(final_results) == 0
+            }
+
+        except Exception as e:
+            logger.error(f"[{self.slug}] Critical Search Error: {e}", exc_info=True)
+            return {"status": "ERROR", "products": [], "confidence": 0.0, "is_empty": True}
 
     def close(self):
         self.index = None
-        self.id_list.clear()
-        self.metadata.clear()
-        logger.info(f"🛑 [{self.slug}] Retrieval Engine closed.")
+        self.metadata = {}
+        logger.info(f"[{self.slug}] Retrieval Engine resources released.")

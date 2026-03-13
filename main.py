@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/main.py v6.4.6
+# /root/ukrsell_v4/main.py v7.8.3
 import uvicorn
 import asyncio
 import os
@@ -14,17 +14,23 @@ from db_migrations import run_all_migrations
 LOG_FILE_PATH = os.path.join(BASE_DIR, "logs", "ukrsell_v4.log")
 
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """
+    Системный жизненный цикл приложения.
+    v7.8.3: Внедрена инициализация ядра с общей моделью эмбеддингов.
+    """
     global kernel
-    logger.info("🚀 Starting UkrSell Gateway lifespan sequence (v6.4.6)...")
+    logger.info("🚀 Starting UkrSell Gateway lifespan sequence (v7.8.3)...")
     try:
+        # Инициализация ядра
         kernel = UkrSellKernel()
-        logger.info("⚙️ Running async kernel initialization...")
+        logger.info("⚙️ Running async kernel initialization (Models, Registry, LLM Stacks)...")
+        
+        # Полная асинхронная подготовка всех компонентов
         await kernel.initialize()
         
-        # Применяем миграции БД ко всем магазинам
+        # Применяем миграции БД ко всем загруженным магазинам
         run_all_migrations(kernel)
         
         if hasattr(kernel, 'selector'):
@@ -33,6 +39,7 @@ async def lifespan(app: FastAPI):
         
         active_slugs = kernel.get_all_active_slugs()
         logger.info(f"✅ Platform ready. Stores loaded: {len(active_slugs)}")
+        
         yield 
     except Exception as e:
         logger.critical(f"FATAL: Failed to launch system kernel: {e}", exc_info=True)
@@ -43,8 +50,11 @@ async def lifespan(app: FastAPI):
             await kernel.close()
             logger.info("✅ UkrSell v4 system completely stopped.")
 
-app = FastAPI(title="UkrSell v4 Single Gateway", version="6.4.6", lifespan=lifespan)
+
+# Инициализация FastAPI с поддержкой lifespan
+app = FastAPI(title="UkrSell v4 Single Gateway", version="7.8.3", lifespan=lifespan)
 kernel: UkrSellKernel = None
+
 
 # --- Секция управления логами (Admin UI) ---
 
@@ -101,8 +111,10 @@ async def view_logs_page():
     """
     return HTMLResponse(content=html_content)
 
+
 @app.post("/admin/logs/clear")
 async def clear_log_file():
+    """Безопасная очистка файла логов."""
     try:
         if os.path.exists(LOG_FILE_PATH):
             with open(LOG_FILE_PATH, "w", encoding="utf-8") as f:
@@ -113,22 +125,30 @@ async def clear_log_file():
         logger.error(f"Failed to clear log: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 # --- Webhook Routing ---
 
 @app.post("/webhook/{slug}")
 async def telegram_webhook(slug: str, request: Request, background_tasks: BackgroundTasks):
+    """
+    Основная точка входа для Telegram Webhooks.
+    Маршрутизирует запросы на соответствующие StoreEngine через ядро.
+    """
     if kernel is None:
         raise HTTPException(status_code=503, detail="Kernel not initialized")
 
     slug = slug.lower()
+    # Проверка активности магазина в реестре
     if slug not in kernel.get_all_active_slugs():
+        logger.warning(f"⚠️ Received webhook for unknown/inactive store: {slug}")
         raise HTTPException(status_code=404, detail="Store not found")
 
     try:
         update = await request.json()
-        if not update: return {"status": "empty"}
+        if not update: 
+            return {"status": "empty"}
         
-        # Передаем обработку в фоновую задачу, чтобы не блокировать ответ Telegram
+        # Передаем обработку в фоновую задачу, чтобы Telegram не ждал завершения генерации LLM
         background_tasks.add_task(kernel.handle_webhook, slug, update)
         
         log_event("GATEWAY_ROUTED", {
@@ -136,17 +156,45 @@ async def telegram_webhook(slug: str, request: Request, background_tasks: Backgr
             "update_id": update.get("update_id"),
             "user_id": update.get("message", {}).get("from", {}).get("id")
         })
+        
         return {"status": "accepted", "store": slug}
     except Exception as e:
-        logger.error(f"Gateway error: {e}")
+        logger.error(f"Gateway Routing error for {slug}: {e}")
         return {"status": "error"}
+
 
 @app.get("/health")
 async def health():
-    if kernel is None: return {"status": "initializing"}
+    """Endpoint для мониторинга работоспособности сервиса."""
+    if kernel is None: 
+        return {"status": "initializing"}
+    
     active_stores = kernel.get_all_active_slugs()
-    return {"status": "online", "active_stores": active_stores}
+    llm_status = "READY"
+    if hasattr(kernel, 'selector'):
+        status_map = kernel.selector.get_status()
+        if all(v == "OFFLINE" for v in status_map.values()):
+            llm_status = "ALL_LLM_OFFLINE"
+
+    return {
+        "status": "online", 
+        "version": "7.8.3",
+        "llm_status": llm_status,
+        "active_stores_count": len(active_stores),
+        "active_stores": active_stores
+    }
+
 
 if __name__ == "__main__":
-    # Запуск через uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, access_log=False)
+    # Запуск через uvicorn (рекомендуется для продакшена)
+    # Настройки хоста и порта могут быть переопределены через ENV переменные
+    host = os.environ.get("GATEWAY_HOST", "0.0.0.0")
+    port = int(os.environ.get("GATEWAY_PORT", 8000))
+    
+    uvicorn.run(
+        "main:app", 
+        host=host, 
+        port=port, 
+        access_log=False, 
+        workers=1 # Ядро UkrSellKernel должно работать в одном процессе для управления кэшем
+    )

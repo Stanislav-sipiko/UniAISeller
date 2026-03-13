@@ -1,233 +1,246 @@
-# /root/ukrsell_v4/core/intelligence.py v7.4.5
+# /root/ukrsell_v4/core/intelligence.py v7.6.2
+"""
+UkrSell Intelligence Module v7.6.2
+- Entity Extraction, Normalization & Smart Filtering.
+- Optimized for Llama-3.1-8b simplified intent outputs.
+- Resilient to category synonym shifts.
+"""
+
 import numpy as np
 import re
 import json
+from typing import List, Dict, Any, Optional, Union
 from core.logger import logger, log_event
 
 def get_stem(text: str) -> str:
-    """Извлекает основу слова (минимум 3 символа) для мягкого сравнения."""
-    if not text: return ""
+    """
+    Извлекает основу слова для мягкого сравнения. 
+    v7.6.2: Оптимизировано для UA/RU морфологии.
+    """
+    if not text: 
+        return ""
+    
+    # Приведение к нижнему регистру и очистка
     word = str(text).lower().strip()
-    # Убираем типичные окончания (украинский/русский/английский)
-    word = re.sub(r'(и|ы|і|а|я|ов|ам|ами|ів|у|е|ом|s|es|ed|ing)$', '', word)
+    
+    # Удаление спецсимволов
+    word = re.sub(r'[^\w\s]', '', word)
+    
+    # Расширенный список окончаний (важен порядок: от длинных к коротким)
+    # Удаляем типичные окончания прилагательных и существительных UA/RU
+    suffixes = r'(атор|ами|іця|иця|ов|ам|ів|ий|ый|ое|ая|ие|ы|і|а|я|у|е|ом|різ|лов|чик|s|es|ed|ing|ка|ок|ик|ою|є|ї|ої|их|ых|им|ым)$'
+    word = re.sub(suffixes, '', word)
+    
     return word if len(word) >= 3 else word
 
 def safe_extract_json(text: str) -> dict:
-    """Извлекает JSON из текста, игнорируя мусор вокруг."""
+    """
+    Извлекает JSON из мусорного текста LLM.
+    v7.6.2: Добавлена нормализация ключей (llama fix).
+    """
+    if not text:
+        return {"action": "SEARCH", "entities": {}}
+        
+    text = text.strip()
+    result = {"action": "SEARCH", "entities": {}}
+    
     try:
+        # 1. Поиск блока {...}
         match = re.search(r"(\{.*\})", text, re.DOTALL)
         if match:
-            return json.loads(match.group(1))
-        return json.loads(text)
+            json_str = match.group(1).replace('\t', ' ')
+            result = json.loads(json_str)
+        else:
+            # Попытка прямого парсинга
+            result = json.loads(text)
     except Exception as e:
-        logger.error(f" [INTEL] JSON Extraction Error: {e} | Raw text: {text[:100]}...")
-        return {"action": "SEARCH", "entities": {}}
+        # 2. Попытка закрыть оборванный JSON
+        if text.startswith("{") and not text.endswith("}"):
+            try:
+                result = json.loads(text + "}")
+            except:
+                pass
+        else:
+            logger.warning(f"[INTEL] JSON Extraction failed: {e}")
+            log_event("JSON_PARSE_ERROR", {"error": str(e), "text": text[:200]}, level="warning")
 
-def semantic_guard(products: list, threshold: float = 1.15) -> list:
-    """Отсеивает по FAISS Distance (L2)."""
-    before_count = len(products)
-    filtered = [res for res in products if res.get("score", 999) < threshold]
-    logger.debug(f" [INTEL] Semantic Guard: {before_count} -> {len(filtered)} (threshold: {threshold})")
+    # 3. Латентная нормализация ключей (Llama-3.1-8b Fix)
+    # Если LLM прислала "brand_name" вместо "brand" или "type" вместо "subtype"
+    if "entities" in result:
+        ents = result["entities"]
+        mapping_fixes = {
+            "brand_name": "brand",
+            "product_type": "subtype",
+            "type": "subtype",
+            "color_name": "color",
+            "pet": "animal"
+        }
+        for wrong_key, right_key in list(mapping_fixes.items()):
+            if wrong_key in ents and right_key not in ents:
+                ents[right_key] = ents.pop(wrong_key)
+                
+    return result
+
+def semantic_guard(products: list, threshold: float = 0.30) -> list:
+    """
+    Отсеивает низкокачественные совпадения.
+    """
+    if not products:
+        return []
+    
+    filtered = []
+    for res in products:
+        # Используем final_score (выше = лучше)
+        score = res.get("final_score", 0)
+        if score >= threshold:
+            filtered.append(res)
+            
     return filtered
 
-def entity_filter(products: list, intent: dict, intent_mapping: dict = None,
-                  category_map: dict = None) -> list:
+def entity_filter(products: list, intent: dict, intent_mapping: dict = None, category_map: dict = None) -> list:
     """
-    Универсальный динамический фильтр (Агностик данных).
-    Использует intent_mapping из store_profile.json для связи ключей LLM и БД.
-
-    Исправления v7.4.7:
-      - category_map резолвинг: "одяг" → ["Apparel"] до сравнения с полем category в БД.
-        Без этого LLM-категория на UA/RU не совпадала с EN-значением в normalized_products.
+    Универсальный фильтр товаров. 
+    v7.6.2: Добавлен Double-Pass (Attribute + Title fallback) для борьбы с упрощением LLM.
     """
-    # Ключи, которые НЕ являются атрибутами товара и не должны попадать в фильтр
-    SERVICE_KEYS = {"price_limit", "action", "resolved_product", "target", "properties"}
+    entities = intent.get("entities", intent) 
+    
+    SERVICE_KEYS = {"price_limit", "action", "target", "properties", "excluded_ids", "taxonomy_hint", "category"}
+    GARBAGE_VALUES = {"none", "null", "any", "unknown", "", "все", "любой", "товари"}
 
-    entities = intent.get("entities", {})
-    garbage_values = {"no brand", "unknown", "none", "null", "any", "n/a", "", "не вказано", "no_brand"}
+    # 1. Сбор активных фильтров
+    active_filters = {}
+    for k, v in entities.items():
+        if k in SERVICE_KEYS or v is None:
+            continue
+        val_str = str(v).lower().strip()
+        if val_str and val_str not in GARBAGE_VALUES:
+            active_filters[k] = val_str
 
-    active_filters = {
-        k: v for k, v in entities.items()
-        if k not in SERVICE_KEYS
-        and v is not None
-        and str(v).lower() not in garbage_values
-    }
-
-    if not active_filters or not products:
-        logger.debug(" [INTEL] Entity Filter: No specific entities to filter by.")
+    if not products or not active_filters:
         return products
 
-    # ── Category map резолвинг ──────────────────────────────────────────
-    # LLM возвращает "одяг", "куртка", "шлея" — UA/RU слова.
-    # В БД category хранится на EN: "Apparel", "Walking" и т.д.
-    # Резолвим через category_map ДО фильтрации.
-    if category_map and "category" in active_filters:
-        raw_cat = str(active_filters["category"]).lower().strip()
-        # Убираем служебные ключи из category_map
-        resolved = category_map.get(raw_cat)
-        if resolved:
-            # resolved может быть list ["Apparel"] или str "Apparel"
-            if isinstance(resolved, list):
-                # Берём первый — наиболее специфичный
-                active_filters["category"] = resolved[0]
-            else:
-                active_filters["category"] = resolved
-            logger.debug(f" [INTEL] Category resolved: '{raw_cat}' → '{active_filters['category']}'")
-        else:
-            # Не нашли в category_map — пробуем регистронезависимый поиск
-            for map_key, map_val in category_map.items():
-                if map_key.startswith("_"):
-                    continue
-                if raw_cat in map_key or map_key in raw_cat:
-                    active_filters["category"] = map_val[0] if isinstance(map_val, list) else map_val
-                    logger.debug(f" [INTEL] Category fuzzy-resolved: '{raw_cat}' → '{active_filters['category']}'")
-                    break
-            else:
-                # Совсем не нашли — убираем category из фильтров, пусть FAISS сам ищет
-                logger.debug(f" [INTEL] Category '{raw_cat}' not in category_map → removing filter")
-                del active_filters["category"]
-    # ────────────────────────────────────────────────────────────────────
-
-    category_requested = "category" in active_filters
-    mapping = intent_mapping or {k: [k] for k in active_filters.keys()}
+    # 2. Подготовка маппинга полей
+    mapping = intent_mapping or {
+        "brand": ["brand", "manufacturer", "vendor"],
+        "color": ["color", "colour", "color_ref"],
+        "animal": ["animal", "pet_type", "for_animals"],
+        "subtype": ["subtype", "product_type"]
+    }
 
     filtered = []
-    logger.debug(f" [INTEL] Dynamic Filtering (Map active): {active_filters}")
+    excluded_ids = set(str(i) for i in (intent.get("excluded_ids") or []))
 
-    for res in products:
-        p = res.get("data") or res.get("product") or res
-        match = True
+    for hit in products:
+        p = hit.get("product") if isinstance(hit, dict) and "product" in hit else hit
+        p_id = str(p.get("product_id") or p.get("id", ""))
+        
+        if p_id in excluded_ids:
+            continue
 
-        for intent_key, target_val in active_filters.items():
-            possible_keys = mapping.get(intent_key, [intent_key])
-            if isinstance(possible_keys, str):
-                possible_keys = [possible_keys]
+        p_attrs = p.get("attributes") or {}
+        p_title = str(p.get("title", "")).lower()
+        
+        match_count = 0
+        total_filters = len(active_filters)
 
-            found_field_match = False
-            field_exists_in_prod = False
+        for ent_key, ent_val in active_filters.items():
+            ent_stem = get_stem(ent_val)
+            target_fields = mapping.get(ent_key, [ent_key])
+            if isinstance(target_fields, str): target_fields = [target_fields]
+            
+            field_match = False
+            # А) Проверка в атрибутах
+            for field in target_fields:
+                val_in_prod = p.get(field) or p_attrs.get(field)
+                if val_in_prod:
+                    vals = [str(x).lower() for x in (val_in_prod if isinstance(val_in_prod, list) else [val_in_prod])]
+                    if any(ent_val in v or ent_stem in get_stem(v) for v in vals):
+                        field_match = True
+                        break
+            
+            # Б) Fallback: Проверка в заголовке
+            if not field_match:
+                if ent_val in p_title or ent_stem in get_stem(p_title):
+                    field_match = True
+            
+            if field_match:
+                match_count += 1
 
-            for attr in possible_keys:
-                if attr in p and p[attr]:
-                    field_exists_in_prod = True
-                    prod_val = str(p[attr]).lower()
+        # Решение о соответствии: позволяем 1 промах, если фильтров много (Soft Matching)
+        if match_count == total_filters:
+            filtered.append(hit)
+        elif total_filters >= 3 and match_count >= (total_filters - 1):
+            filtered.append(hit)
 
-                    if intent_key == "category":
-                        if get_stem(target_val) in get_stem(prod_val):
-                            found_field_match = True
-                            break
-                    else:
-                        if str(target_val).lower() in prod_val or get_stem(target_val) in prod_val:
-                            found_field_match = True
-                            break
-
-            if field_exists_in_prod and not found_field_match:
-                match = False
-                break
-
-        if match:
-            filtered.append(res)
-
-    if not filtered:
-        if category_requested:
-            # Категория явно запрошена, но в базе таких товаров нет.
-            # НЕ делаем fallback — kernel должен выдать "нет товара".
-            logger.warning(
-                f" [INTEL] Zero results after strict filtering. "
-                f"Category '{active_filters['category']}' not found in DB. "
-                f"Suppressing raw-hits fallback."
-            )
-            return []
-        else:
-            # Категория не указана — мягкий fallback на топ-3 raw hits
-            logger.warning(" [INTEL] Zero results after strict filtering. Falling back to raw hits (no category constraint).")
-            return products[:3]
+    # 3. Emergency Fallback: если фильтры убили всё, возвращаем топ по вектору (при высоком скоре)
+    if not filtered and products:
+        top_hit_score = products[0].get("final_score", 0)
+        if top_hit_score > 0.8:
+            logger.info(f"[INTEL] Entity filters too strict for high-score hit ({top_hit_score}). Using vector top.")
+            return products[:2]
 
     return filtered
 
-# Категории, которые LLM возвращает как generic-мусор (не реальные DB-категории)
-_GARBAGE_CATEGORIES = {
-    "тварина", "тварини", "вид виробу", "одяг для тварин", "розмір одягу для тварин",
-    "розмір", "виробник", "матеріал", "колір", "стать тварини",
-    "animal", "product type", "clothing for animals", "size",
-}
-
-def merge_followup(prev_intent: dict, new_intent: dict) -> dict:
+def merge_followup(prev_intent: dict, new_intent: dict, category_map: dict = None) -> dict:
     """
-    Склейка контекста диалога.
-    FIX FU-05: не перезаписываем category если новое значение — мусорная generic-категория
-    от LLM, а предыдущий контекст содержит реальную категорию.
-    FIX FU-06: topic-reset — если юзер сменил тему (новая категория ≠ старая и не мусор),
-    сбрасываем накопленные brand/price_limit которые не применимы к новому предмету.
+    Склеивает контекст.
+    v7.6.2: Добавлена проверка синонимов категорий через category_map.
     """
     merged = prev_intent.copy()
     new_ents = new_intent.get("entities", {})
+    prev_ents = prev_intent.get("entities", {})
+    
+    # Нормализация категорий для сравнения
+    def norm_cat(c):
+        c = str(c or "").lower().strip()
+        if category_map:
+            for cat_id, cat_data in category_map.items():
+                names = [str(cat_id).lower()]
+                if isinstance(cat_data, dict):
+                    names.append(str(cat_data.get("name", "")).lower())
+                if c in names: return str(cat_id).lower()
+        return get_stem(c)
 
-    if "entities" not in merged:
-        merged["entities"] = {}
+    new_cat_norm = norm_cat(new_ents.get("category"))
+    prev_cat_norm = norm_cat(prev_ents.get("category"))
 
-    merged_ents = merged.get("entities", {}).copy()
-    garbage_vals = {"no brand", "unknown", "none", "null", "any", "n/a", "", "no_brand"}
-
-    # Topic-reset: если пришла реальная новая категория, отличная от предыдущей —
-    # сбрасываем brand и price_limit, чтобы не смешивать контекст разных товаров.
-    new_cat_raw = new_ents.get("category", "")
-    prev_cat_raw = merged_ents.get("category", "")
-    if (
-        new_cat_raw
-        and str(new_cat_raw).lower() not in garbage_vals
-        and str(new_cat_raw).lower() not in _GARBAGE_CATEGORIES
-        and prev_cat_raw
-        and get_stem(str(new_cat_raw)) != get_stem(str(prev_cat_raw))
-    ):
-        logger.debug(
-            f"[merge_followup] Topic reset: '{prev_cat_raw}' → '{new_cat_raw}'. "
-            f"Clearing accumulated brand/price_limit."
-        )
-        merged_ents.pop("brand", None)
-        merged_ents.pop("price_limit", None)
-
-    for key, val in new_ents.items():
-        if not val or str(val).lower() in garbage_vals:
-            continue  # пустое — пропускаем
-
-        # Для category: не перезаписываем хорошее значение мусорным
-        if key == "category":
-            prev_cat = merged_ents.get("category", "")
-            new_cat_lower = str(val).lower().strip()
-            if new_cat_lower in _GARBAGE_CATEGORIES:
-                # Новая категория — мусор. Сохраняем предыдущую если она была
-                if prev_cat:
-                    logger.debug(f"[merge_followup] Ignoring garbage category '{val}', keeping '{prev_cat}'")
-                    continue
-                else:
-                    # Предыдущей не было — пишем null, пусть FAISS сам ищет
-                    merged_ents[key] = None
-                    continue
-
-        merged_ents[key] = val
+    # Если категория действительно сменилась (а не просто синоним)
+    if new_cat_norm and prev_cat_norm and new_cat_norm != prev_cat_norm:
+        logger.debug(f"[INTEL] Context Reset: Category changed to {new_ents.get('category')}")
+        merged_ents = {"category": new_ents["category"]}
+        if "animal" in prev_ents: merged_ents["animal"] = prev_ents["animal"]
+    else:
+        merged_ents = prev_ents.copy()
+        
+    # Наложение новых сущностей
+    for k, v in new_ents.items():
+        if v is not None and str(v).lower() not in {"none", "null", "any", ""}:
+            merged_ents[k] = v
 
     merged["entities"] = merged_ents
     merged["action"] = new_intent.get("action", "SEARCH")
-    # Пробрасываем response_text для CHAT/TROLL
-    if new_intent.get("response_text"):
-        merged["response_text"] = new_intent["response_text"]
+    
+    # Слияние черного списка ID
+    new_excl = new_intent.get("excluded_ids", [])
+    prev_excl = prev_intent.get("excluded_ids", [])
+    merged["excluded_ids"] = list(set(str(i) for i in (new_excl + prev_excl)))
+
     return merged
 
 def deduplicate_products(products: list, top_k: int = 5) -> list:
-    """Дедупликация по имени товара."""
+    """
+    Убирает дубликаты по нормализованному заголовку.
+    """
+    if not products:
+        return []
     seen = set()
-    deduped = []
-    for res in products:
-        # Поддержка форматов: {"data": ...}, {"product": ...}, плоский словарь
-        if isinstance(res, dict):
-            p = res.get("data") or res.get("product") or res
-        else:
-            p = res
-        name = p.get("name") or p.get("title", "")
-        if not name: continue
-        key = re.sub(r'[^\w]', '', str(name).lower())
-        if key not in seen:
-            seen.add(key)
-            deduped.append(res)
-        if len(deduped) >= top_k: break
-    return deduped
+    result = []
+    for hit in products:
+        p = hit.get("product") if isinstance(hit, dict) and "product" in hit else hit
+        name = re.sub(r'[^\w]', '', str(p.get("title", "")).lower())
+        if name not in seen:
+            seen.add(name)
+            result.append(hit)
+        if len(result) >= top_k:
+            break
+    return result

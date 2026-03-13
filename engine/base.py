@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/engine/base.py v5.1.6
+# /root/ukrsell_v4/engine/base.py
 import aiohttp
 import json
 import os
@@ -16,12 +16,14 @@ from core.analyzer import Analyzer
 
 class StoreEngine:
     """
-    Universal store business logic orchestrator v5.1.6.
-    Fixed: Full restoration of send_products (fallback mechanism).
-    Fixed: Support for both 'price_limit' and 'max_price' from LLM.
-    Added: AI Persona priority (Profile > Context > Default).
-    Implemented: Zero Omission (Full script).
-    Fixed: parse_mode changed to HTML for unified recommendation support.
+    Universal store business logic orchestrator v5.1.7.
+    
+    Changelog v5.1.7:
+        - FIXED: Synchronized Kernel call to use 'query' instead of 'user_query'.
+        - FIXED: Full restoration of send_products (fallback mechanism).
+        - FIXED: Support for both 'price_limit' and 'max_price' from LLM.
+        - ADDED: AI Persona priority (Profile > Context > Default).
+        - SYNC: Unified HTML parse_mode for all recommendation deliveries.
     """
     def __init__(self, ctx: StoreContext):
         self.ctx = ctx
@@ -43,12 +45,11 @@ class StoreEngine:
             logger.error(f"[{self.slug}] CRITICAL: LLMSelector not found in context!")
             
         # Компоненты берём из ctx — они созданы в kernel.py/engine_factory().
-        # StoreEngine НЕ создаёт своих копий, чтобы не было дублей в памяти.
         self.retrieval      = getattr(ctx, 'retrieval', None)
         self.dialog_manager = getattr(ctx, 'dialog_manager', None)
         self.analyzer       = getattr(ctx, 'analyzer', None)
 
-        # Защита: если kernel не заполнил ctx (прямой инстанс вне платформы) — создаём сами
+        # Защита: если kernel не заполнил ctx — создаём сами
         if self.retrieval is None:
             logger.warning(f"[{self.slug}] retrieval not in ctx — creating fallback instance.")
             self.retrieval = RetrievalEngine(ctx, None, None)
@@ -135,7 +136,7 @@ class StoreEngine:
             await self._session.close()
 
     async def handle_update(self, update: Dict[str, Any]):
-        """Main processing loop v5.1.6."""
+        """Main processing loop v5.1.7."""
         message = update.get("message", {})
         chat_id = message.get("chat", {}).get("id")
         user_info = message.get("from", {})
@@ -185,7 +186,6 @@ class StoreEngine:
                 raise Exception("Kernel reference missing")
 
             entities = decision.get("entities", {})
-            # Integration with intelligence.py filters
             filters = {
                 "brand": entities.get("brand"),
                 "animal": entities.get("animal"),
@@ -194,6 +194,7 @@ class StoreEngine:
             }
             filters = {k: v for k, v in filters.items() if v is not None}
 
+            # SYNC: query argument passed for Kernel v7.8.4+ compatibility
             final_response = await self.kernel.get_recommendations(
                 ctx=self.ctx,
                 query=text,
@@ -204,7 +205,6 @@ class StoreEngine:
 
             # --- Step 3: Response Delivery (Fallback Logic) ---
             if final_response:
-                # FIXED: changed from Markdown to HTML to support kernel output
                 await self.send_message(chat_id, final_response, parse_mode="HTML")
             else:
                 # Fallback to manual list if synthesis failed
@@ -236,7 +236,6 @@ class StoreEngine:
                 result = await response.json()
                 if result.get("ok"):
                     msg_id = result.get("result", {}).get("message_id")
-                    # Сохраняем чистый текст без HTML-тегов, чтобы LLM не путался в именах товаров
                     clean_text = re.sub(r'<[^>]+>', '', text)
                     self._log_chat_history(str(chat_id), str(msg_id), "assistant", clean_text)
                 return result
@@ -255,9 +254,11 @@ class StoreEngine:
             name = data.get("title", data.get("name", "Товар"))
             price = data.get("price", "---")
             link = data.get("link", "")
-            # Using HTML tags for consistency in fallback
             item = f"{idx}. <b>{name}</b>\n{price_label}: {price} {self.currency}"
             if link: item += f" — <a href='{link}'>Купити</a>"
             lines.append(item)
         
         await self.send_message(chat_id, f"{header}\n\n" + "\n\n".join(lines), parse_mode="HTML")
+
+    def __repr__(self):
+        return f"<StoreEngine v5.1.7 slug={self.slug}>"

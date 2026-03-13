@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/core/registry.py v6.1.2
+# /root/ukrsell_v4/core/registry.py v6.2.1
 import re
 import asyncio
 from pathlib import Path
@@ -8,15 +8,14 @@ from core.logger import logger
 
 class StoreRegistry:
     """
-    The Platform Gatekeeper (v6.1.2). 
+    The Platform Gatekeeper (v6.2.1). 
     Responsible for scanning the filesystem, initializing StoreContexts, 
     and maintaining a mapping of active StoreEngines.
     
     Updated:
+    - Target Filtering: Fixed argument name to 'only_slug' to match Kernel v7.8.1 call.
     - Component Injection: Ensures dialog_manager and analyzer are linked to ctx.
     - Explicit Slug Injection: Ensures ctx.slug is available before engine init.
-    - DB Path Logging: Improved visibility of store resources.
-    - Resource Safety: Guarded context initialization.
     """
     SLUG_REGEX = re.compile(r"^[a-z0-9_-]+$")
 
@@ -35,12 +34,16 @@ class StoreRegistry:
         """Check the validity of the store folder name (slug)."""
         return bool(self.SLUG_REGEX.match(slug))
 
-    async def load_all(self, engine_factory: Callable[['StoreContext'], Any], llm_selector: Any):
+    async def load_all(self, engine_factory: Callable[['StoreContext'], Any], llm_selector: Any, only_slug: Optional[str] = None):
         """
         Scans root_path, creates StoreContext for each folder, 
         and initializes StoreEngine via the provided factory.
+        
+        :param only_slug: If provided, only this store will be loaded (e.g., 'luckydog').
         """
         logger.info(f"🚀 Starting store scan in: {self.root_path}")
+        if only_slug:
+            logger.info(f"🎯 Isolation mode active: Only loading [{only_slug}]")
         
         if not self.root_path.exists():
             logger.warning(f"Directory {self.root_path} not found. Creating...")
@@ -56,6 +59,13 @@ class StoreRegistry:
                 continue
 
             slug = folder.name.lower()
+            
+            # --- ФИЛЬТРАЦИЯ МАГАЗИНОВ ---
+            if only_slug and slug != only_slug.lower():
+                # Пропускаем все магазины, кроме целевого
+                continue
+            # ------------------------------------------
+
             if not self._is_valid_slug(slug):
                 logger.error(f"INVALID SLUG: '{slug}'. Skipping...")
                 continue
@@ -88,13 +98,12 @@ class StoreRegistry:
                     logger.error(f"❌ Engine for [{slug}] lacks handle_update() method. Skipping...")
                     continue
 
-                # --- КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: ПРИВЯЗКА КОМПОНЕНТОВ К КОНТЕКСТУ ---
+                # --- ПРИВЯЗКА КОМПОНЕНТОВ К КОНТЕКСТУ ---
                 
                 # Если движок инициализировал DialogManager, пробрасываем его в контекст
                 if hasattr(engine, 'dialog_manager'):
                     ctx.dialog_manager = engine.dialog_manager
                 elif not hasattr(ctx, 'dialog_manager'):
-                    # Если в контексте его нет, создаем заглушку или логируем отсутствие
                     logger.warning(f"⚠️ [{slug}] Engine has no dialog_manager. Checking fallback...")
 
                 # Если движок инициализировал Analyzer, пробрасываем его в контекст
@@ -139,7 +148,6 @@ class StoreRegistry:
         slug = slug.lower()
         if slug in self.engines:
             engine = self.engines[slug]
-            # Try to call resource closing method
             if hasattr(engine, 'close'):
                 try:
                     if asyncio.iscoroutinefunction(engine.close):
@@ -152,10 +160,8 @@ class StoreRegistry:
             
             del self.engines[slug]
             if slug in self.stores:
-                # Clear references to aid garbage collection
                 self.stores[slug].db = None
                 self.stores[slug].kernel = None
-                # Удаляем привязки компонентов
                 if hasattr(self.stores[slug], 'dialog_manager'):
                     self.stores[slug].dialog_manager = None
                 if hasattr(self.stores[slug], 'analyzer'):

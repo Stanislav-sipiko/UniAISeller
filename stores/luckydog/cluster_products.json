@@ -1,0 +1,503 @@
+{
+  "Grooming": [
+    {
+      "subtype": "Кігтеріз",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 2
+    },
+    {
+      "subtype": "Пуходерка",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 2
+    },
+    {
+      "subtype": "Кігтеріз-сікатор",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 1
+    },
+    {
+      "subtype": "Фурмінатор",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 2
+    },
+    {
+      "subtype": "Лапомийка",
+      "animal": [
+        "dog"
+      ],
+      "count": 1
+    },
+    {
+      "subtype": "Шампунь",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 7
+    },
+    {
+      "subtype": "Щітка",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 1
+    }
+  ],
+  "Feeding": [
+    {
+      "subtype": "Поїлка",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 3
+    },
+    {
+      "subtype": "Миска",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 10
+    },
+    {
+      "subtype": "Килимок для злизування",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 1
+    }
+  ],
+  "Apparel": [
+    {
+      "subtype": "Светр",
+      "animal": [
+        "cat",
+        "dog"
+      ],
+      "count": 46
+    },
+    {
+      "subtype": "Комбінезон",
+      "animal": [
+        "dog"
+      ],
+      "count": 56
+    },
+    {
+      "subtype": "Худі",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 84
+    },
+    {
+      "subtype": "Жилет",
+      "animal": [
+        "dog"
+      ],
+      "count": 62
+    },
+    {
+      "subtype": "Дощовик",
+      "animal": [
+        "dog"
+      ],
+      "count": 38
+    },
+    {
+      "subtype": "Куртка",
+      "animal": [
+        "dog"
+      ],
+      "count": 55
+    },
+    {
+      "subtype": "Взуття",
+      "animal": [
+        "dog"
+      ],
+      "count": 25
+    },
+    {
+      "subtype": "Футболка",
+      "animal": [
+        "dog"
+      ],
+      "count": 3
+    },
+    {
+      "subtype": "Попона",
+      "animal": [
+        "dog"
+      ],
+      "count": 8
+    },
+    {
+      "subtype": "Шлея",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 49
+    },
+    {
+      "subtype": "Намордник",
+      "animal": [
+        "dog"
+      ],
+      "count": 20
+    },
+    {
+      "subtype": "Іграшка",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 1
+    },
+    {
+      "subtype": "Нашийник",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 46
+    },
+    {
+      "subtype": "Повідець",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 11
+    },
+    {
+      "subtype": "Повідець-рулетка",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 4
+    },
+    {
+      "subtype": "Толстовка",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 14
+    },
+    {
+      "subtype": "Кофта",
+      "animal": [
+        "dog"
+      ],
+      "count": 2
+    },
+    {
+      "subtype": "Костюм",
+      "animal": [
+        "dog"
+      ],
+      "count": 4
+    }
+  ],
+  "Hygiene": [
+    {
+      "subtype": "Гігієнічні труси",
+      "animal": [
+        "dog"
+      ],
+      "count": 4
+    }
+  ],
+  "Walking": [
+    {
+      "subtype": "Шлея",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 39
+    },
+    {
+      "subtype": "Повідець",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 6
+    },
+    {
+      "subtype": "Нашийник",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 17
+    },
+    {
+      "subtype": "Ремінь безпеки",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 1
+    },
+    {
+      "subtype": "Сворка",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 1
+    },
+    {
+      "subtype": "Намордник",
+      "animal": [
+        "dog"
+      ],
+      "count": 4
+    },
+    {
+      "subtype": "Повідець-рулетка",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 5
+    }
+  ],
+  "Toys": [
+    {
+      "subtype": "М'яка іграшка",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 3
+    },
+    {
+      "subtype": "М'яч",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 4
+    },
+    {
+      "subtype": "Гантель",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 1
+    },
+    {
+      "subtype": "Охолоджувальна іграшка",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 1
+    },
+    {
+      "subtype": "Котяча м'ята",
+      "animal": [
+        "cat"
+      ],
+      "count": 1
+    },
+    {
+      "subtype": "Літаюча тарілка",
+      "animal": [
+        "dog"
+      ],
+      "count": 1
+    },
+    {
+      "subtype": "Палиця",
+      "animal": [
+        "dog"
+      ],
+      "count": 1
+    },
+    {
+      "subtype": "Тренувальне кільце",
+      "animal": [
+        "dog"
+      ],
+      "count": 4
+    },
+    {
+      "subtype": "Іграшка",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 3
+    },
+    {
+      "subtype": "Кістка",
+      "animal": [
+        "dog"
+      ],
+      "count": 1
+    },
+    {
+      "subtype": "М'ята",
+      "animal": [
+        "cat"
+      ],
+      "count": 1
+    }
+  ],
+  "Food": [
+    {
+      "subtype": "Ласощі",
+      "animal": [
+        "dog"
+      ],
+      "count": 3
+    }
+  ],
+  "Travel": [
+    {
+      "subtype": "Автокрісло",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 1
+    },
+    {
+      "subtype": "Автогамак",
+      "animal": [
+        "dog"
+      ],
+      "count": 1
+    }
+  ],
+  "Accessories": [
+    {
+      "subtype": "Миска",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 5
+    },
+    {
+      "subtype": "Переноска",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 2
+    },
+    {
+      "subtype": "Лежак",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 1
+    },
+    {
+      "subtype": "Шлея",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 11
+    },
+    {
+      "subtype": "Нашийник",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 2
+    },
+    {
+      "subtype": "Поводок-рулетка",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 3
+    },
+    {
+      "subtype": "Намордник",
+      "animal": [
+        "dog"
+      ],
+      "count": 1
+    }
+  ],
+  "Care": [
+    {
+      "subtype": "Догляд за лапами",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 1
+    }
+  ],
+  "Meds": [
+    {
+      "subtype": "Краплі від паразитів",
+      "animal": [
+        "dog"
+      ],
+      "count": 2
+    }
+  ],
+  "Beds & Furniture": [
+    {
+      "subtype": "Лежак",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 3
+    }
+  ],
+  "Carriers & Travel": [
+    {
+      "subtype": "Переноска",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 1
+    }
+  ],
+  "Carriers": [
+    {
+      "subtype": "Контейнер-переноска",
+      "animal": [
+        "dog",
+        "cat"
+      ],
+      "count": 1
+    }
+  ]
+}
