@@ -1,0 +1,165 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "query": "Шукаю кігтеріз для кота",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Grooming",
+        "subtype": "Кігтеріз",
+        "animal": "cat"
+      }
+    },
+    {
+      "query": "Нужна пуходерка для собаки",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Grooming",
+        "subtype": "Пуходерка",
+        "animal": "dog"
+      }
+    },
+    {
+      "query": "Купити шампунь для котів",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Grooming",
+        "subtype": "Шампунь",
+        "animal": "cat"
+      }
+    },
+    {
+      "query": "Поїлка для собак",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Feeding",
+        "subtype": "Поїлка",
+        "animal": "dog"
+      }
+    },
+    {
+      "query": "Килимок для злизування",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Feeding",
+        "subtype": "Килимок для злизування"
+      }
+    },
+    {
+      "query": "Теплий светр для мопса або собаки",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Apparel",
+        "subtype": "Светр",
+        "animal": "dog"
+      }
+    },
+    {
+      "query": "Зимовий комбінезон для собаки",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Apparel",
+        "subtype": "Комбінезон",
+        "animal": "dog"
+      }
+    },
+    {
+      "query": "Худі для котів",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Apparel",
+        "subtype": "Худі",
+        "animal": "cat"
+      }
+    },
+    {
+      "query": "Дощовик для французького бульдога",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Apparel",
+        "subtype": "Дощовик",
+        "animal": "dog"
+      }
+    },
+    {
+      "query": "Взуття для собак на зиму",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Apparel",
+        "subtype": "Взуття",
+        "animal": "dog"
+      }
+    },
+    {
+      "query": "Шлея для великої собаки",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Walking",
+        "subtype": "Шлея",
+        "animal": "dog"
+      }
+    },
+    {
+      "query": "Повідець-рулетка для кота",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Walking",
+        "subtype": "Повідець-рулетка",
+        "animal": "cat"
+      }
+    },
+    {
+      "query": "Ремінь безпеки в машину для собак",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Walking",
+        "subtype": "Ремінь безпеки",
+        "animal": "dog"
+      }
+    },
+    {
+      "query": "М'яка іграшка для цуценяти",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Toys",
+        "subtype": "М'яка іграшка",
+        "animal": "dog"
+      }
+    },
+    {
+      "query": "М'ячик для кота з м'ятою",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Toys",
+        "subtype": "М'яч",
+        "animal": "cat"
+      }
+    },
+    {
+      "query": "Ласощі для дресирування собак",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Food",
+        "subtype": "Ласощі",
+        "animal": "dog"
+      }
+    },
+    {
+      "query": "Переноска для великого кота",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Accessories",
+        "subtype": "Переноска",
+        "animal": "cat"
+      }
+    },
+    {
+      "query": "Лежак для котів та собак",
+      "intent": {
+        "action": "SEARCH",
+        "category": "Beds & Furniture",
+        "subtype": "Лежак"
+      }
+    }
+  ]
+}
