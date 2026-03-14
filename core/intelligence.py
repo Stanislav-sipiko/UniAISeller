@@ -4,11 +4,13 @@ UkrSell Intelligence Module v7.6.2
 - Entity Extraction, Normalization & Smart Filtering.
 - Optimized for Llama-3.1-8b simplified intent outputs.
 - Resilient to category synonym shifts.
+- Added Brand/Entity Gating for LuckyDog (brand_ignore support).
 """
 
 import numpy as np
 import re
 import json
+import os
 from typing import List, Dict, Any, Optional, Union
 from core.logger import logger, log_event
 
@@ -65,7 +67,6 @@ def safe_extract_json(text: str) -> dict:
             log_event("JSON_PARSE_ERROR", {"error": str(e), "text": text[:200]}, level="warning")
 
     # 3. Латентная нормализация ключей (Llama-3.1-8b Fix)
-    # Если LLM прислала "brand_name" вместо "brand" или "type" вместо "subtype"
     if "entities" in result:
         ents = result["entities"]
         mapping_fixes = {
@@ -97,10 +98,16 @@ def semantic_guard(products: list, threshold: float = 0.30) -> list:
             
     return filtered
 
-def entity_filter(products: list, intent: dict, intent_mapping: dict = None, category_map: dict = None) -> list:
+def entity_filter(
+    products: list, 
+    intent: dict, 
+    intent_mapping: dict = None, 
+    category_map: dict = None,
+    store_hints: dict = None
+) -> list:
     """
     Универсальный фильтр товаров. 
-    v7.6.2: Добавлен Double-Pass (Attribute + Title fallback) для борьбы с упрощением LLM.
+    v7.6.2: Добавлен Double-Pass и поддержка brand_ignore из intent_hints.json.
     """
     entities = intent.get("entities", intent) 
     
@@ -109,10 +116,20 @@ def entity_filter(products: list, intent: dict, intent_mapping: dict = None, cat
 
     # 1. Сбор активных фильтров
     active_filters = {}
+    brand_ignore_list = []
+    if store_hints and "brand_ignore" in store_hints:
+        brand_ignore_list = [str(b).lower() for b in store_hints["brand_ignore"]]
+
     for k, v in entities.items():
         if k in SERVICE_KEYS or v is None:
             continue
         val_str = str(v).lower().strip()
+        
+        # Специальная проверка для LuckyDog: не фильтровать по породе, если она попала в бренд
+        if k == "brand" and any(b_ign in val_str for b_ign in brand_ignore_list):
+            logger.debug(f"[INTEL] Brand Ignore trigger: {val_str} recognized as species, skipping filter.")
+            continue
+
         if val_str and val_str not in GARBAGE_VALUES:
             active_filters[k] = val_str
 
@@ -166,13 +183,13 @@ def entity_filter(products: list, intent: dict, intent_mapping: dict = None, cat
             if field_match:
                 match_count += 1
 
-        # Решение о соответствии: позволяем 1 промах, если фильтров много (Soft Matching)
+        # Soft Matching: позволяем 1 промах, если фильтров много
         if match_count == total_filters:
             filtered.append(hit)
         elif total_filters >= 3 and match_count >= (total_filters - 1):
             filtered.append(hit)
 
-    # 3. Emergency Fallback: если фильтры убили всё, возвращаем топ по вектору (при высоком скоре)
+    # 3. Emergency Fallback
     if not filtered and products:
         top_hit_score = products[0].get("final_score", 0)
         if top_hit_score > 0.8:
@@ -190,7 +207,6 @@ def merge_followup(prev_intent: dict, new_intent: dict, category_map: dict = Non
     new_ents = new_intent.get("entities", {})
     prev_ents = prev_intent.get("entities", {})
     
-    # Нормализация категорий для сравнения
     def norm_cat(c):
         c = str(c or "").lower().strip()
         if category_map:
@@ -204,7 +220,6 @@ def merge_followup(prev_intent: dict, new_intent: dict, category_map: dict = Non
     new_cat_norm = norm_cat(new_ents.get("category"))
     prev_cat_norm = norm_cat(prev_ents.get("category"))
 
-    # Если категория действительно сменилась (а не просто синоним)
     if new_cat_norm and prev_cat_norm and new_cat_norm != prev_cat_norm:
         logger.debug(f"[INTEL] Context Reset: Category changed to {new_ents.get('category')}")
         merged_ents = {"category": new_ents["category"]}
@@ -212,7 +227,6 @@ def merge_followup(prev_intent: dict, new_intent: dict, category_map: dict = Non
     else:
         merged_ents = prev_ents.copy()
         
-    # Наложение новых сущностей
     for k, v in new_ents.items():
         if v is not None and str(v).lower() not in {"none", "null", "any", ""}:
             merged_ents[k] = v
@@ -220,7 +234,6 @@ def merge_followup(prev_intent: dict, new_intent: dict, category_map: dict = Non
     merged["entities"] = merged_ents
     merged["action"] = new_intent.get("action", "SEARCH")
     
-    # Слияние черного списка ID
     new_excl = new_intent.get("excluded_ids", [])
     prev_excl = prev_intent.get("excluded_ids", [])
     merged["excluded_ids"] = list(set(str(i) for i in (new_excl + prev_excl)))

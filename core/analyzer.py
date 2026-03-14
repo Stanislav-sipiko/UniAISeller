@@ -1,8 +1,8 @@
-# /root/ukrsell_v4/core/analyzer.py v7.8.6
 import logging
 import json
 import asyncio
 import re
+import os
 import time as _time
 from typing import List, Dict, Any, Union, Optional
 from core.llm_selector import LLMSelector
@@ -28,6 +28,7 @@ class Analyzer:
     Analyzer v7.8.6 — Taxonomy-Aware Semantic Intent Parser & Generative Synthesizer.
     
     Changelog v7.8.6:
+        - INTEGRATION: Added Fast Intent Router to load local intent_hints.json and fsm_soft_patch.json.
         - FIX: Added 'history' and 'query' to synthesize_response signature to prevent TypeError.
         - SYNC: Compatible with Kernel v7.8.4 calls passing unexpected keyword arguments.
         - STABILITY: Full source restoration for CI/CD compatibility.
@@ -39,6 +40,7 @@ class Analyzer:
         self.language  = getattr(ctx, 'language', 'Ukrainian')
         self.currency  = getattr(ctx, 'currency', 'грн')
         self.llm_selector = getattr(ctx, 'selector', None)
+        self.base_path = getattr(ctx, 'base_path', f"/root/ukrsell_v4/stores/{self.slug}")
 
         if not self.llm_selector:
             logger.error(f"[{self.slug}] Analyzer CRITICAL: Shared LLMSelector not found in ctx.")
@@ -57,7 +59,22 @@ class Analyzer:
         
         self.allowed_brands = self.profile.get("allowed_brands", [])
 
-        logger.info(f"🛠️ [{self.slug}] Analyzer v7.8.6 (Full Source) initialized.")
+        # Load store-specific logic patches
+        self.store_hints = self._load_local_json("intent_hints.json")
+        self.fsm_patch = self._load_local_json("fsm_soft_patch.json")
+
+        logger.info(f"🛠️ [{self.slug}] Analyzer v7.8.6 (Full Source) initialized with Store Hints.")
+
+    def _load_local_json(self, filename: str) -> Dict[str, Any]:
+        """Загрузка конфигурационных файлов из директории магазина."""
+        path = os.path.join(self.base_path, filename)
+        if os.path.exists(path):
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception as e:
+                logger.error(f"[{self.slug}] Failed to load {filename}: {e}")
+        return {}
 
     async def _wait_for_ready(self):
         """Ожидание готовности ассетов (FAISS и метаданных)."""
@@ -68,6 +85,32 @@ class Analyzer:
                     await asyncio.wait_for(self.ctx.data_ready.wait(), timeout=15.0)
                 except asyncio.TimeoutError:
                     logger.error(f"[{self.slug}] Analyzer: Assets load timeout.")
+
+    def _apply_fast_hints(self, user_query: str, intent: Dict[str, Any]) -> Dict[str, Any]:
+        """Fast Intent Router: применение Regex-подсказок до/после LLM."""
+        if not self.store_hints:
+            return intent
+
+        q_lower = user_query.lower()
+        entities = intent.get("entities", {})
+
+        # 1. Fuzzy Mappings (Regex-based overrides)
+        fuzzy_rules = self.store_hints.get("fuzzy_mappings", [])
+        for rule in fuzzy_rules:
+            pattern = rule.get("pattern")
+            if pattern and re.search(pattern, q_lower):
+                target_cat = rule.get("category")
+                if target_cat:
+                    entities["category"] = target_cat
+                    intent["action"] = "SEARCH"
+
+        # 2. Troll/Negative detection
+        troll_patterns = self.store_hints.get("troll_examples", [])
+        if any(p.lower() in q_lower for p in troll_patterns):
+            intent["action"] = "TROLL"
+
+        intent["entities"] = entities
+        return intent
 
     def _get_current_schema(self) -> List[str]:
         """Получение списка ключей атрибутов из текущей БД товаров для подсказки LLM."""
@@ -101,6 +144,11 @@ class Analyzer:
 
         if not self.llm_selector:
             return {"entities": {"category": None, "brand": None, "price_limit": None}, "action": "SEARCH"}
+
+        # Check FSM Soft Patches for known query errors
+        for error_entry in self.fsm_patch.get("fsm_errors", []):
+            if error_entry.get("query") == user_query:
+                logger.info(f"[{self.slug}] FSM Soft Patch triggered for query: {user_query}")
 
         client, model = await self.llm_selector.get_fast()
         log_model_selected(self.slug, tier="fast", model=model, provider="selector")
@@ -178,6 +226,9 @@ class Analyzer:
             
             intent = safe_extract_json(content)
 
+            # Apply local Store Hints (Regex/Fuzzy)
+            intent = self._apply_fast_hints(user_query, intent)
+
             entities = intent.get("entities", {})
             
             raw_cat = entities.get("category")
@@ -208,8 +259,6 @@ class Analyzer:
             return intent
 
         except Exception as e:
-            # При 429 (rate limit) — заносим модель в блэклист чтобы следующий
-            # запрос ушёл к другой модели, а не снова уперся в TPM-лимит.
             _err_str = str(e)
             if "429" in _err_str or "rate_limit_exceeded" in _err_str.lower():
                 if self.llm_selector:
@@ -360,7 +409,6 @@ class Analyzer:
         if not self.llm_selector:
             return {"text": "Помилка зв'язку з сервером.", "status": "ERROR", "count": 0}
 
-        # Resolve the query: use 'user_query' (old) or 'query' (new Kernel)
         final_query = user_query or query or ""
 
         working_intent = intent or entities or {}
@@ -370,11 +418,13 @@ class Analyzer:
         r_data = search_results or {"status": "NO_RESULTS", "products": []}
         all_vector_hits = products if products is not None else r_data.get("products", [])
         
+        # Filter with store hints (brand_ignore, etc)
         filtered_products = entity_filter(
             all_vector_hits, 
             working_entities, 
             intent_mapping=self.intent_mapping,
-            category_map=self.category_map
+            category_map=self.category_map,
+            store_hints=self.store_hints
         )
         
         if mode is None:
@@ -442,7 +492,6 @@ class Analyzer:
             }
 
         except Exception as e:
-            # При 429 (rate limit) — заносим модель в блэклист.
             _err_str = str(e)
             if "429" in _err_str or "rate_limit_exceeded" in _err_str.lower():
                 if self.llm_selector:

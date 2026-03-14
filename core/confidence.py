@@ -1,4 +1,3 @@
-# /root/ukrsell_v4/core/confidence.py v1.8.2
 """
 Confidence Engine v1.8.2
 
@@ -21,7 +20,7 @@ from core.intelligence import get_stem
 
 # ─── ВЕСОВЫЕ КОЭФФИЦИЕНТЫ ────────────────────────────────────────────────────
 W_SIM      = 0.35   # Семантическое сходство
-W_CAT      = 0.15   # Категорийный соответствие
+W_CAT      = 0.15   # Категорийное соответствие
 W_ATTR     = 0.15   # Атрибутный match (brand/animal/price)
 W_RESULTS  = 0.10   # Количество результатов
 W_CLARITY  = 0.05   # Ясность запроса
@@ -284,10 +283,10 @@ def evaluate(
     # ВОЗВРАЩАЕМ СТРОГО ТВОЮ СТРУКТУРУ
     return {
         "mode":           mode,
-        "confidence":     confidence,
-        "sim_score":      sim_score,
+        "confidence":      confidence,
+        "sim_score":       sim_score,
         "top_categories": top_categories,
-        "all_products":   products, # Важно: Kernel ждет именно этот ключ
+        "all_products":    products, # Важно: Kernel ждет именно этот ключ
         "breakdown": {
             "sim":            sim_score,
             "direct_match":   direct_match,

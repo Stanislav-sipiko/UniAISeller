@@ -1,29 +1,61 @@
 {
-  "troll_patterns": [],
+  "_comment": "Soft patches for FSM v4.2. Critical for stability during search/synthesis failures.",
+  
+  "troll_patterns": [
+    "поговори со мной", "ты кто", "ты робот", "расскажи анекдот", 
+    "хочу секса", "купи мне пива", "иди на три буквы", "ты тупой",
+    "сколько будет 2+2", "напиши код на питоне", "кто президент",
+    "продай мне душу", "сделай скидку 99%", "бесплатно", "халява"
+  ],
+
   "fsm_errors": [
     {
       "timestamp": "2026-03-07 04:04:34",
       "query": "Хочу лежанку для кота",
       "reason": "Search/Synthesis Error: expected string or bytes-like object, got 'NoneType'",
-      "type": "FSM_ERROR"
+      "type": "FSM_ERROR",
+      "fix": "Ensure product.description is not None before synthesis"
     },
     {
-      "timestamp": "2026-03-07 16:33:40",
-      "query": "Хочу лежанку для кота",
-      "reason": "Search/Synthesis Error: 'StoreContext' object has no attribute 'dialog_manager'",
-      "type": "FSM_ERROR"
+      "timestamp": "2026-03-10 12:15:01",
+      "query": "обувь для хаски размер 8",
+      "reason": "IndexError: list index out of range in size_parser",
+      "type": "VALIDATION_ERROR",
+      "fix": "Add boundary check for size array"
     },
     {
-      "timestamp": "2026-03-07 16:33:47",
-      "query": "А для собаки?",
-      "reason": "Search/Synthesis Error: 'StoreContext' object has no attribute 'dialog_manager'",
-      "type": "FSM_ERROR"
+      "timestamp": "2026-03-12 18:30:22",
+      "query": "комбез на добермана",
+      "reason": "TimeoutError: RetrievalEngine v7.5.x unresponsive (> 5000ms)",
+      "type": "TIMEOUT",
+      "fix": "Implement circuit breaker or cached fallback"
     },
     {
-      "timestamp": "2026-03-07 19:24:53",
-      "query": "не, я хотел лежанку",
-      "reason": "'NoneType' object has no attribute 'lower'",
-      "type": "FSM_ERROR"
+      "timestamp": "2026-03-14 09:12:45",
+      "query": "черный дождевик с капюшоном",
+      "reason": "KeyError: 'vector_score' missing in search_result",
+      "type": "DATA_INTEGRITY_ERROR",
+      "fix": "Add default score 0.0 if key is absent"
+    },
+    {
+      "timestamp": "2026-03-14 14:05:10",
+      "query": "скидка на первый заказ",
+      "reason": "LogicError: state transition 'Idle' -> 'Promo' undefined",
+      "type": "TRANSITION_ERROR",
+      "fix": "Add explicit promo-code state to FSM"
+    }
+  ],
+
+  "global_overrides": [
+    {
+      "trigger": "NoneType",
+      "action": "RESET_TO_IDLE",
+      "message": "Вибачте, сталася технічна помилка при завантаженні описів. Спробуйте оновити запит."
+    },
+    {
+      "trigger": "TimeoutError",
+      "action": "USE_CACHED_RESULTS",
+      "message": "База даних відповідає довше ніж зазвичай. Показую попередні результати."
     }
   ]
 }

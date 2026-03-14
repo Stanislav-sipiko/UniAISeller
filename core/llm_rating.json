@@ -1,0 +1,6 @@
+{
+    "meta-llama/llama-4-scout-17b-16e-instruct": 1,
+    "openai/gpt-oss-120b": 2,
+    "moonshotai/kimi-k2-instruct": 3,
+    "groq/compound": 4
+}

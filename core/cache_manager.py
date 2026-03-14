@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/core/cache_manager.py v1.2.2
+# /root/ukrsell_v4/core/cache_manager.py v1.3.0
 import json
 import os
 import time
@@ -10,10 +10,10 @@ from core.logger import logger
 class SemanticCache:
     """
     Store-specific Semantic Cache for FAQ and common queries.
-    v1.2.2: 
+    v1.3.0: 
+    - THRESHOLD: Reduced default threshold to 0.85 for better synonym handling (Stage 4).
+    - LOGGING: Added detailed similarity score logging for HIT/MISS/CLOSE cases.
     - SYNC: Compatible with 'versioned' JSON structure (entries/query/intent).
-    - FIX: Added missing 'time' import for timestamping.
-    - ROBUSTNESS: Handles both string and dict responses in 'intent'.
     - AUTO-REPAIR: Corrupted or incompatible cache files are reset safely.
     """
 
@@ -34,10 +34,12 @@ class SemanticCache:
         self.embeddings: Optional[np.ndarray] = None
         self.cache_version = 1
         
-        # Порог сходства: берем из профиля магазина или используем 0.94 по умолчанию
-        self.threshold = 0.94
+        # Порог сходства (Этап 4): снижен до 0.85 по умолчанию.
+        # Это позволяет ловить фразы типа "как оплатить" и "способы оплаты".
+        self.threshold = 0.85
         if hasattr(self.ctx, 'profile') and isinstance(self.ctx.profile, dict):
-            self.threshold = self.ctx.profile.get("cache_threshold", 0.94)
+            # Если в профиле магазина явно задан порог, используем его, иначе 0.85
+            self.threshold = self.ctx.profile.get("cache_threshold", 0.85)
 
         self._load_cache()
 
@@ -96,7 +98,7 @@ class SemanticCache:
                 if questions:
                     # Кодируем все вопросы сразу (батч-процессинг)
                     self.embeddings = self.model.encode(questions, normalize_embeddings=True)
-                    logger.info(f"[{self.slug}] Semantic Cache loaded: {len(self.cache_data)} items.")
+                    logger.info(f"[{self.slug}] Semantic Cache loaded: {len(self.cache_data)} items (Threshold: {self.threshold}).")
                 else:
                     logger.warning(f"[{self.slug}] Cache found but no valid queries extracted.")
         
@@ -116,20 +118,24 @@ class SemanticCache:
             # Эмбеддинг входящего запроса (нормализованный)
             query_emb = self.model.encode([query], normalize_embeddings=True)
             
-            # Считаем сходство
+            # Считаем косинусное сходство (dot product для нормализованных векторов)
             similarities = np.dot(self.embeddings, query_emb.T).flatten()
             
             best_idx = int(np.argmax(similarities))
             best_score = float(similarities[best_idx])
 
+            # Логика принятия решения
             if best_score >= self.threshold:
-                logger.info(f"[{self.slug}] Semantic Cache HIT (score: {best_score:.4f})")
+                logger.info(f"[{self.slug}] Semantic Cache HIT! Score: {best_score:.4f} (Threshold: {self.threshold})")
                 entry = self.cache_data[best_idx]
                 # Возвращаем intent (новый формат) или answer (старый формат)
                 return entry.get('intent') or entry.get('answer')
             
-            if best_score > 0.85:
-                logger.debug(f"[{self.slug}] Semantic Cache MISS (close: {best_score:.4f})")
+            # Логирование близких промахов для отладки порога
+            if best_score > 0.80:
+                logger.info(f"[{self.slug}] Semantic Cache CLOSE MISS. Score: {best_score:.4f} (Required: {self.threshold})")
+            else:
+                logger.debug(f"[{self.slug}] Semantic Cache MISS. Best score: {best_score:.4f}")
                 
         except Exception as e:
             logger.error(f"[{self.slug}] Error during cache lookup: {e}")
@@ -143,11 +149,15 @@ class SemanticCache:
         if not query or not answer:
             return False
             
-        # Не кэшируем ошибки
-        if isinstance(answer, str) and ("ошибка" in answer.lower() or len(answer) < 5):
+        # Не кэшируем ошибки, технические сообщения или слишком короткие ответы
+        if isinstance(answer, str) and (
+            "ошибка" in answer.lower() or 
+            "вибачте" in answer.lower() or 
+            len(answer) < 10
+        ):
             return False
 
-        # Проверка на дубликаты
+        # Проверка на дубликаты (чтобы не забивать кэш одинаковыми эмбеддингами)
         if self.get_answer(query):
             return False
 
@@ -175,7 +185,7 @@ class SemanticCache:
             else:
                 self.embeddings = np.vstack([self.embeddings, new_emb])
 
-            logger.info(f"[{self.slug}] Cache updated. Total: {len(self.cache_data)}")
+            logger.info(f"[{self.slug}] Cache entry added. Total entries: {len(self.cache_data)}")
             return True
 
         except Exception as e:

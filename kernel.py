@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/kernel.py v7.8.0
+# /root/ukrsell_v4/kernel.py v7.8.2
 import os
 import json
 import asyncio
@@ -17,29 +17,27 @@ from core.retrieval import RetrievalEngine
 from core.store_context import StoreContext
 from core.translator import TextTranslator
 from core.confidence import evaluate as confidence_evaluate
+from core.cache_manager import SemanticCache
 from engine.base import StoreEngine
 
 
 class UkrSellKernel:
     """
-    AI Kernel v7.8.0.
+    AI Kernel v7.8.2.
 
     Архитектурный принцип:
         Ядро универсально — не содержит логики конкретного магазина.
         Все специфические данные (category_map, profile, prompts, currency)
         берутся исключительно из StoreContext.
 
-    Pipeline: запрос → intent → retrieval → confidence → _decide_response_mode
+    Pipeline: запрос → cache_check → intent → retrieval → confidence → _decide_response_mode → cache_add
     Маршрутизация: единая точка _decide_response_mode.
     Рендеринг карточек: _build_template_response (все режимы с товарами).
 
     Changelog:
-        v7.7.1  category_map передаётся в confidence_evaluate (UA/RU→EN резолвинг)
-        v7.7.2  product_url приоритет над url в карточке товара
-        v7.7.3  ASK_CLARIFICATION передаёт all_products в synthesize_response
-        v7.8.0  Рефакторинг: единая маршрутизация _decide_response_mode,
-                убраны дубли веток, log_pipeline_step сохранён для observability,
-                ядро не содержит магазино-специфичной логики
+        v7.8.1  Интеграция SemanticCache: инициализация в engine_factory.
+        v7.8.2  Добавлен перехват кэша в get_recommendations и запись в кэш после генерации ответа.
+                Исправлено отсутствие SemanticCache в импортах.
     """
 
     def __init__(self, model_name: str = 'intfloat/multilingual-e5-small'):
@@ -63,7 +61,7 @@ class UkrSellKernel:
     async def initialize(self):
         """Full async initialization of the kernel."""
         start_time = time.time()
-        logger.info(f"🚀 Initializing UkrSell Kernel v7.8.0. Model: {self.model_name}")
+        logger.info(f"🚀 Initializing UkrSell Kernel v7.8.2. Model: {self.model_name}")
 
         try:
             self.model = SentenceTransformer(self.model_name)
@@ -81,8 +79,9 @@ class UkrSellKernel:
             ctx.kernel = self
             ctx.negative_examples = self._load_store_negative_examples(ctx.base_path)
             ctx.analyzer = Analyzer(ctx)
-            # ИСПРАВЛЕНО: убрали self.translator
-            ctx.retrieval = RetrievalEngine(ctx, self.model) 
+            ctx.retrieval = RetrievalEngine(ctx, self.model)
+            # Инициализация семантического кэша для магазина
+            ctx.semantic_cache = SemanticCache(ctx, self.model)
             return StoreEngine(ctx)
 
         try:
@@ -243,6 +242,14 @@ class UkrSellKernel:
 
         start_time = time.time()
 
+        # ── Semantic Cache Check ────────────────────────────────────
+        if hasattr(ctx, 'semantic_cache'):
+            cached_answer = ctx.semantic_cache.get_answer(query)
+            if cached_answer:
+                log_pipeline_step("SEMANTIC_CACHE_HIT", time.time() - start_time)
+                logger.info(f"[{ctx.slug}] Semantic Cache HIT for: '{query[:30]}...'")
+                return cached_answer
+
         # ── Intent ──────────────────────────────────────────────────
         intent = await ctx.dialog_manager.analyze_intent(query, user_id)
         if not intent.get("entities"):
@@ -294,7 +301,7 @@ class UkrSellKernel:
         )
 
         # ── Unified response routing ─────────────────────────────────
-        return await self._decide_response_mode(
+        response_text = await self._decide_response_mode(
             ctx=ctx,
             mode=mode,
             products=final_products,
@@ -304,6 +311,14 @@ class UkrSellKernel:
             search_status=search_results.get("status"),
             top_categories=confidence_result.get("top_categories", []),
         )
+
+        # ── Save to Semantic Cache ──────────────────────────────────
+        # Сохраняем только качественные ответы SHOW_PRODUCTS или FAQ-подобные ответы
+        if hasattr(ctx, 'semantic_cache') and mode == "SHOW_PRODUCTS" and len(final_products) > 0:
+            ctx.semantic_cache.add(query, response_text)
+            logger.debug(f"[{ctx.slug}] Entry added to semantic cache")
+
+        return response_text
 
     ##############################
     # Unified response router
@@ -433,4 +448,4 @@ class UkrSellKernel:
 
     def __repr__(self):
         stores_count = len(self.registry.get_all_slugs()) if self.registry else 0
-        return f"<UkrSellKernel v7.8.0 stores_active={stores_count}>"
+        return f"<UkrSellKernel v7.8.2 stores_active={stores_count}>"
