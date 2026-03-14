@@ -60,7 +60,7 @@ class UkrSellKernel:
     ##############################
     # Heavy initialization
     ##############################
-    async def initialize(self, target_slug: Optional[str] = None):
+    async def initialize(self):
         """Full async initialization of the kernel."""
         start_time = time.time()
         logger.info(f"🚀 Initializing UkrSell Kernel v7.8.0. Model: {self.model_name}")
@@ -81,7 +81,8 @@ class UkrSellKernel:
             ctx.kernel = self
             ctx.negative_examples = self._load_store_negative_examples(ctx.base_path)
             ctx.analyzer = Analyzer(ctx)
-            ctx.retrieval = RetrievalEngine(ctx, self.model, self.translator)
+            # ИСПРАВЛЕНО: убрали self.translator
+            ctx.retrieval = RetrievalEngine(ctx, self.model) 
             return StoreEngine(ctx)
 
         try:
@@ -220,40 +221,15 @@ class UkrSellKernel:
             logger.error(f"Critical webhook error for {slug}: {e}", exc_info=True)
             return False
 
-
-    ##############################
-    # Debug & Direct access point
-    ##############################
-    async def process_request(
-        self, 
-        user_text: str, 
-        chat_id: str, 
-        ctx: Any, 
-        limit: int = 5
-    ) -> str:
-        """
-        Interface for debugger and external test scripts.
-        Connects the call to the main recommendation pipeline.
-        """
-        if not self.llm_ready.is_set():
-            await asyncio.wait_for(self.llm_ready.wait(), timeout=10.0)
-
-        # Convert chat_id to numeric user_id if possible
-        try:
-            numeric_user_id = int(chat_id) if str(chat_id).isdigit() else None
-        except Exception:
-            numeric_user_id = None
-
-        return await self.get_recommendations(
-            ctx=ctx,
-            query=user_text,
-            top_k=limit,
-            user_id=numeric_user_id
-        )
-
     ##############################
     # Core pipeline
     ##############################
+    async def process_request(self, user_text: str, chat_id: str, ctx: Any, limit: int = 5) -> str:
+        if not self.llm_ready.is_set(): await asyncio.wait_for(self.llm_ready.wait(), timeout=10.0)
+        try: u_id = int(chat_id) if str(chat_id).isdigit() else None
+        except: u_id = None
+        return await self.get_recommendations(ctx=ctx, query=user_text, top_k=limit, user_id=u_id)
+
     async def get_recommendations(
         self,
         ctx: StoreContext,
