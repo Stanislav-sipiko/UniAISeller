@@ -1,250 +1,393 @@
-# /root/ukrsell_v4/scripts/debugger.py v2.4.8
-import asyncio
-import sys
+# /root/ukrsell_v4/kernel.py v7.8.7
 import os
 import json
+import asyncio
 import time
-import logging
-import re
-import argparse
-from pathlib import Path
+import hashlib
 from typing import List, Dict, Any, Optional
-from datetime import datetime, UTC
+from pathlib import Path
+from sentence_transformers import SentenceTransformer
 
-# Настройка путей для работы внутри структуры проекта
-FILE_PATH = Path(__file__).resolve()
-ROOT_DIR = FILE_PATH.parent.parent
+# Project structure imports
+from core.logger import logger, log_event, log_pipeline_step
+from core.config import HF_TOKEN
+from core.llm_selector import LLMSelector
+from core.analyzer import Analyzer
+from core.registry import StoreRegistry
+from core.retrieval import RetrievalEngine
+from core.store_context import StoreContext
+from core.translator import TextTranslator
+from core.confidence import evaluate as confidence_evaluate
+from core.cache_manager import SemanticCache
+from engine.base import StoreEngine
 
-if str(ROOT_DIR) not in sys.path:
-    sys.path.insert(0, str(ROOT_DIR))
 
-# Отключаем лишний логгинг сторонних библиотек для чистоты вывода в консоль
-logging.getLogger("httpx").setLevel(logging.WARNING)
-logging.getLogger("sentence_transformers").setLevel(logging.WARNING)
+class UkrSellKernel:
+    """
+    AI Kernel v7.8.7.
 
-from kernel import UkrSellKernel
-from core.logger import logger
+    Архитектурный принцип:
+        Ядро универсально — не содержит логики конкретного магазина.
+        Все специфические данные (category_map, profile, prompts, currency)
+        берутся исключительно из StoreContext.
 
-# Константы конфигурации
-DEFAULT_SLUG = "luckydog"
-DEFAULT_N_CASES = 3  # Минимальный набор тестов для стабилизации пайплайна
-CHAIN_LENGTH = 4
-CHAINS_RATIO = 0.0   # Отключаем цепочки до исправления багов контекста
-MAX_CATALOG_FOR_LLM = 80
-ANALYSIS_FILE = ROOT_DIR / "logs" / "analysis_selection.jsonl"
+    Changelog:
+        v7.8.5: SYNC: Updated synthesize_response calls to match Analyzer v7.8.6 signature.
+        v7.8.6: SAFETY: Added robust try-except blocks around LLM synthesis with fallback 
+                to template rendering to prevent pipeline crashes.
+        v7.8.7: FIX: Corrected synthesize_response invocation with positional search_results,
+                aligned chat_context usage, and improved confidence input fallback to raw hits.
+                FIX: Added target_slug to initialize() signature for debugger compatibility.
+    """
 
-# --- Вспомогательные функции ---
+    def __init__(self, model_name: str = 'intfloat/multilingual-e5-small'):
+        if HF_TOKEN:
+            os.environ["HF_TOKEN"] = HF_TOKEN
+            logger.info("HF_TOKEN set in environment.")
 
-def save_debug_entry(entry: dict):
-    os.makedirs(os.path.dirname(ANALYSIS_FILE), exist_ok=True)
-    with open(ANALYSIS_FILE, "a", encoding="utf-8") as f:
-        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+        self.model_name = model_name
+        self._request_cache: Dict[str, float] = {}
+        self._cache_ttl = 5
 
-def load_catalog(slug: str) -> List[Dict]:
-    path = ROOT_DIR / "stores" / slug / "normalized_products_final.json"
-    if not path.exists():
-        raise FileNotFoundError(f"Файл каталога не найден по пути: {path}")
-    with open(path, encoding="utf-8") as f:
-        data = json.load(f)
-        print(f"✅ Каталог загружен: {len(data)} товаров")
-        return data
+        self.model = None
+        self.translator = TextTranslator()
+        self.selector = LLMSelector()
+        self.registry = None
+        self.llm_ready = asyncio.Event()
 
-def _catalog_str(products: List[Dict]) -> str:
-    rows = []
-    for p in products:
-        rows.append(
-            f"ID:{p.get('product_id')} | "
-            f"{p.get('title')} | "
-            f"cat:{p.get('category','')} | "
-            f"brand:{p.get('brand','')}"
-        )
-    return "\n".join(rows)
-
-# --- Работа с LLM (Генерация тестов) ---
-
-async def _llm_json_array(client, model, prompt, max_tokens=3000):
-    try:
-        r = await client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": "You are a QA assistant. You generate only valid JSON arrays. No markdown, no triple backticks, just the raw array content."},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=max_tokens,
-            temperature=0.5
-        )
-        raw = r.choices[0].message.content.strip()
-        raw = re.sub(r"```json\s*", "", raw)
-        raw = re.sub(r"```", "", raw)
-        start = raw.find('[')
-        end = raw.rfind(']') + 1
-        if start != -1 and end != 0:
-            raw = raw[start:end]
-        return json.loads(raw)
-    except Exception as e:
-        print(f"❌ Ошибка парсинга JSON от LLM: {e}")
-        return []
-
-async def generate_single_cases(client, model, catalog_sample, n, language):
-    if n <= 0:
-        return []
-    prompt = f"""
-Generate {n} realistic customer queries for a pet shop in {language}. 
-Queries should be natural, as if written by a person in a chat.
-Mix types: 
-1. Direct (exact item names from catalog)
-2. Vague (broad categories or needs)
-3. Brand focus (using brand names from catalog).
-
-CATALOG SAMPLE:
-{_catalog_str(catalog_sample)}
-
-Return ONLY a JSON array of objects:
-[
-  {{"query": "текст запроса", "expected_id": "ID товара или null", "query_type": "direct/vague"}}
-]
-"""
-    return await _llm_json_array(client, model, prompt)
-
-async def generate_chain_cases(client, model, catalog_sample, n_chains, language):
-    # Метод сохранен для целостности структуры, но не вызывается при CHAINS_RATIO = 0
-    if n_chains <= 0:
-        return []
-    prompt = f"""
-Generate {n_chains} conversation chains in {language}.
-Each chain must have exactly {CHAIN_LENGTH} turns.
-CATALOG SAMPLE:
-{_catalog_str(catalog_sample)}
-Return ONLY a JSON array of objects.
-"""
-    chains_data = await _llm_json_array(client, model, prompt)
-    flat_cases = []
-    for chain in chains_data:
-        cid = chain.get("chain_id", f"cid_{int(time.time())}")
-        for t in chain.get("turns", []):
-            flat_cases.append({
-                "query": t["query"],
-                "expected_id": t.get("expected_id"),
-                "is_chain": True,
-                "chain_id": cid,
-                "turn_index": t.get("turn", 0)
-            })
-    return flat_cases
-
-async def generate_test_cases(client, model, products, n, language):
-    sample = products[:MAX_CATALOG_FOR_LLM]
-    n_chains_total = max(0, int(n * CHAINS_RATIO))
-    n_chains_count = n_chains_total // CHAIN_LENGTH
-    n_single = n
-    
-    print(f"⚙️ План генерации: {n_single} проверочных запросов (Chain mode disabled)")
-    singles = await generate_single_cases(client, model, sample, n_single, language)
-    return singles, []
-
-# --- Выполнение тестов ---
-
-async def run_single_test(kernel: UkrSellKernel, ctx: Any, case: dict, chat_id: str):
-    t0 = time.perf_counter()
-    try:
-        response_text = await kernel.process_request(
-            case["query"],
-            chat_id,
-            ctx,
-            5
-        )
-        latency_ms = round((time.perf_counter() - t0) * 1000)
-        entry = {
-            "timestamp": datetime.now(UTC).isoformat(),
-            "query": case["query"],
-            "expected_id": case.get("expected_id"),
-            "latency_ms": latency_ms,
-            "is_chain": case.get("is_chain", False),
-            "chain_id": case.get("chain_id"),
-            "chat_id": chat_id,
-            "status": "SUCCESS"
-        }
-        save_debug_entry(entry)
-        return {**case, "actual_response": response_text, "latency_ms": latency_ms}
-    except Exception as e:
-        print(f"❌ Ошибка ядра на запросе '{case['query']}': {str(e)}")
-        error_entry = {
-            "timestamp": datetime.now(UTC).isoformat(),
-            "query": case["query"],
-            "error": str(e),
-            "status": "ERROR",
-            "chat_id": chat_id
-        }
-        save_debug_entry(error_entry)
-        return {**case, "error": str(e)}
-
-async def run_all_tests(kernel, ctx, singles, chains):
-    results = []
-    if singles:
-        print("\n🚀 Запуск стабилизационных тестов...")
-        for i, case in enumerate(singles):
-            res = await run_single_test(kernel, ctx, case, chat_id=f"debug_fix_{i}")
-            results.append(res)
-            status_icon = "✅" if "actual_response" in res else "❌"
-            print(f"  {status_icon} [{i+1}/{len(singles)}] {case['query'][:50]}...")
-            await asyncio.sleep(0.5)
-    return results
-
-# --- Главный цикл управления ---
-
-async def main(slug: str, n_cases: int):
-    print("="*60)
-    print(f"🛒 UKRSELL V4 STABILITY-FIX DEBUGGER v2.4.8")
-    print(f"📅 Start Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"🎯 Target Store: {slug} | Tests: {n_cases}")
-    print("="*60)
-    kernel = UkrSellKernel()
-    try:
-        products = load_catalog(slug)
-        print(f"⚙️ Инициализация ядра для {slug}...")
-        await kernel.initialize(target_slug=slug)
-        ctx = kernel.registry.get_context(slug)
-        if not ctx:
-            print(f"❌ КРИТИЧЕСКАЯ ОШИБКА: Магазин '{slug}' не найден в реестре.")
-            return
+    async def initialize(self, target_slug: Optional[str] = None):
+        """Full async initialization of the kernel."""
+        start_time = time.time()
+        logger.info(f"🚀 Initializing UkrSell Kernel. Target: {target_slug or 'ALL'}")
         
-        print("🤖 Генерация точечных тестов...")
-        client, model = await kernel.selector.get_fast()
-        language = getattr(ctx, "language", "Ukrainian")
-        singles, chains = await generate_test_cases(client, model, products, n_cases, language)
-        
-        if not singles:
-            print("⚠️ Набор тестов пуст. Проверьте логи и доступ к LLM API.")
-            return
+        try:
+            self.model = SentenceTransformer(self.model_name)
+            logger.info(f"✅ Shared SentenceTransformer [{self.model_name}] loaded successfully.")
+        except Exception as e:
+            logger.critical(f"❌ Failed to load embedding model: {e}")
+            raise
+
+        await self._init_llm_selector()
+
+        self.registry = StoreRegistry(stores_root="/root/ukrsell_v4/stores", kernel=self)
+
+        def engine_factory(ctx: StoreContext):
+            ctx.selector = self.selector
+            ctx.kernel = self
             
-        start_exec = time.perf_counter()
-        all_results = await run_all_tests(kernel, ctx, singles, chains)
-        end_exec = time.perf_counter()
-        
-        total_time = round(end_exec - start_exec, 2)
-        success_count = len([r for r in all_results if "actual_response" in r])
-        error_count = len(all_results) - success_count
-        
-        print("\n" + "="*60)
-        print(f"📊 ИТОГИ ТЕСТИРОВАНИЯ (FIX MODE):")
-        print(f"⏱ Общее время выполнения: {total_time} сек.")
-        print(f"✅ Успешно обработано: {success_count}")
-        print(f"❌ Ошибок выполнения: {error_count}")
-        print(f"📂 Детальный лог сохранен в: {ANALYSIS_FILE}")
-        print("="*60)
-    except Exception as e:
-        print(f"🔥 ФАТАЛЬНАЯ ОШИБКА В МЕЙНЕ: {e}")
-        import traceback
-        traceback.print_exc()
-    finally:
-        await kernel.close()
+            self._validate_store_assets(ctx)
+            
+            # Use dynamic dialog manager if available
+            from core.dialog_manager import DialogManager
+            ctx.dialog_manager = DialogManager(ctx, self.selector) 
+            
+            ctx.cache = SemanticCache(ctx, self.model)
+            ctx.negative_examples = self._load_store_negative_examples(ctx.base_path)
+            ctx.analyzer = Analyzer(ctx)
+            ctx.retrieval = RetrievalEngine(ctx, self.model)
+            
+            return StoreEngine(ctx)
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="UkrSell V4 Kernel Debugger (Stability Mode)")
-    parser.add_argument("slug", nargs="?", default=DEFAULT_SLUG, help="Slug магазина для теста")
-    parser.add_argument("n_cases", nargs="?", type=int, default=DEFAULT_N_CASES, help="Количество тестов")
-    args = parser.parse_args()
-    try:
-        asyncio.run(main(args.slug, args.n_cases))
-    except KeyboardInterrupt:
-        print("\n🛑 Процесс прерван пользователем (Ctrl+C).")
-        sys.exit(0)
+        try:
+            await self.registry.load_all(
+                engine_factory, 
+                self.selector, 
+                only_slug=target_slug
+            )
+            self.llm_ready.set()
+            logger.info(f"✨ Kernel initialization completed in {time.time() - start_time:.2f}s")
+        except Exception as e:
+            logger.error(f"❌ Error during registry.load_all: {e}")
+            raise
+
+    def _validate_store_assets(self, ctx: StoreContext):
+        base = Path(ctx.base_path)
+        assets_found = True
+        
+        if not (base / "faiss.index").exists():
+            logger.error(f"[{ctx.slug}] Missing critical asset: faiss.index")
+            assets_found = False
+            
+        id_map_variants = ["id_map.json", "idmap.json"]
+        actual_id_map = next((v for v in id_map_variants if (base / v).exists()), None)
+        
+        if actual_id_map:
+            ctx.id_map_path = str(base / actual_id_map)
+            logger.debug(f"[{ctx.slug}] Found id_map at {actual_id_map}")
+        else:
+            logger.error(f"[{ctx.slug}] Missing critical asset: id_map.json (checked variants: {id_map_variants})")
+            assets_found = False
+            
+        if not assets_found:
+            logger.warning(f"[{ctx.slug}] Store initialized with MISSING assets. Search might fail.")
+
+    async def _init_llm_selector(self):
+        max_attempts = 3
+        logger.info("📡 Warming up LLM Selector...")
+        for attempt in range(1, max_attempts + 1):
+            try:
+                await self.selector.refresh(force=True)
+                status = self.selector.get_status()
+                if any(v != "OFFLINE" for v in status.values()):
+                    logger.info(f"✅ LLM Stacks ONLINE (attempt {attempt}). Status: {status}")
+                    return
+                logger.warning(f"⏳ LLM Stacks OFFLINE. Retry {attempt}/{max_attempts} in 2s...")
+            except Exception as e:
+                logger.error(f"⚠️ LLM Warmup attempt {attempt} failed: {e}")
+            await asyncio.sleep(2.0)
+        logger.critical("🚨 KERNEL STARTUP CRITICAL: All LLM stacks remain OFFLINE after retries.")
+
+    async def wait_for_store(self, slug: str, timeout: float = 30.0) -> bool:
+        ctx = self.registry.get_context(slug)
+        if not ctx:
+            return False
+        if not hasattr(ctx, 'data_ready'):
+            return True
+        try:
+            if not ctx.data_ready.is_set():
+                logger.info(f"⏳ Waiting for store assets [{slug}]...")
+                await asyncio.wait_for(ctx.data_ready.wait(), timeout=timeout)
+            return True
+        except asyncio.TimeoutError:
+            logger.error(f"❌ Timeout waiting for store {slug} assets.")
+            return False
+
+    def _load_store_negative_examples(self, base_path: str) -> list:
+        patch_path = os.path.join(base_path, "fsm_soft_patch.json")
+        if os.path.exists(patch_path):
+            try:
+                with open(patch_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    if isinstance(data, list):
+                        return data
+                    return data.get("troll_patterns", []) or data.get("fsm_errors", [])
+            except Exception as e:
+                logger.error(f"Error loading negative examples: {e}")
+        return []
+
+    def _is_duplicate(self, user_id: Any, text: str) -> bool:
+        if not text:
+            return False
+        request_hash = hashlib.md5(f"{user_id}:{text}".encode()).hexdigest()
+        now = time.time()
+        self._request_cache = {k: v for k, v in self._request_cache.items() if now - v < self._cache_ttl}
+        if request_hash in self._request_cache:
+            return True
+        self._request_cache[request_hash] = now
+        return False
+
+    async def _normalize_update_language(self, engine: StoreEngine, update: Dict[str, Any]):
+        message = update.get("message", {})
+        text = message.get("text")
+        if not text or len(text.strip()) < 2:
+            return
+        store_lang = getattr(engine.ctx, "language", "Ukrainian")
+        if store_lang == "Ukrainian":
+            try:
+                if await self.translator.detect_language(text) == "ru":
+                    translated = await self.translator.translate(text, target_lang="uk")
+                    if translated and translated.lower() != text.lower():
+                        logger.info(f"[{engine.ctx.slug}] RU→UA: '{text}' → '{translated}'")
+                        update["message"]["original_text"] = text
+                        update["message"]["text"] = translated
+            except Exception as e:
+                logger.error(f"Kernel language normalization error: {e}")
+
+    async def handle_webhook(self, slug: str, update: dict) -> bool:
+        if not self.llm_ready.is_set():
+            try:
+                await asyncio.wait_for(self.llm_ready.wait(), timeout=20.0)
+            except asyncio.TimeoutError:
+                logger.error(f"🚨 LLM readiness timeout for {slug}. Aborting.")
+                return False
+
+        await self.wait_for_store(slug)
+        message = update.get("message", {})
+        user_id = message.get("from", {}).get("id")
+        text = message.get("text", "")
+
+        if self._is_duplicate(user_id, text):
+            return True
+
+        engine = self.registry.get_engine(slug)
+        if not engine:
+            return False
+
+        log_event("WEBHOOK_IN", {"slug": slug, "user_id": user_id})
+        try:
+            await self._normalize_update_language(engine, update)
+            await engine.handle_update(update)
+            return True
+        except Exception as e:
+            logger.error(f"Critical webhook error for {slug}: {e}", exc_info=True)
+            return False
+
+    async def process_request(
+        self,
+        user_text: str,
+        chat_id: Any,
+        ctx: StoreContext,
+        top_k: int = 5
+    ) -> str:
+        start_time = time.time()
+        
+        if hasattr(ctx, 'cache') and ctx.cache:
+            cached_answer = ctx.cache.get_answer(user_text)
+            if cached_answer:
+                log_pipeline_step("SEMANTIC_CACHE", time.time() - start_time, extra={"hit": True})
+                return cached_answer
+
+        intent = await ctx.dialog_manager.analyze_intent(user_text, chat_id)
+        log_pipeline_step("INTENT_ANALYSIS", time.time() - start_time, extra={"intent": intent})
+
+        action = intent.get("action", "SEARCH")
+        if action in ("CHAT", "OFF_TOPIC", "TROLL"):
+            return intent.get("response_text") or "Я можу допомогти вам обрати товари з нашого каталогу."
+
+        retrieval_start = time.time()
+        search_results = await ctx.retrieval.search(query=user_text, entities=intent, top_k=top_k * 4)
+        raw_hits = search_results.get("products", [])
+        log_pipeline_step("RETRIEVAL", time.time() - retrieval_start, extra={"hits": len(raw_hits)})
+
+        pipeline_start = time.time()
+        filtered_products = await ctx.dialog_manager.process_search_pipeline(
+            chat_id=str(chat_id),
+            raw_products=raw_hits,
+            intent=intent,
+            top_k=top_k
+        )
+        log_pipeline_step("INTEL_PIPELINE", time.time() - pipeline_start, extra={"final": len(filtered_products)})
+
+        confidence_products = filtered_products if filtered_products else raw_hits
+        wrapped_search_result = {
+            "products": confidence_products,
+            "detected_category": intent.get("category") or intent.get("entities", {}).get("category")
+        }
+        
+        conf_data = confidence_evaluate(
+            search_result=wrapped_search_result,
+            intent=intent,
+            user_query=user_text,
+            profile=ctx.profile,
+            category_map=ctx.category_map
+        )
+        mode = conf_data["mode"]
+
+        return await self._decide_response_mode(
+            ctx=ctx,
+            mode=mode,
+            products=filtered_products,
+            intent=intent,
+            query=user_text,
+            user_id=chat_id,
+            top_categories=conf_data.get("top_categories", [])
+        )
+
+    async def _decide_response_mode(
+        self,
+        ctx: StoreContext,
+        mode: str,
+        products: list,
+        intent: Dict,
+        query: str,
+        user_id: Any,
+        top_categories: Optional[list] = None,
+    ) -> str:
+        history_context = ctx.dialog_manager.get_chat_context(user_id, minutes=30)
+
+        if mode == "NO_RESULTS":
+            try:
+                synthesis = await ctx.analyzer.synthesize_response(
+                    {"products": []},
+                    intent=intent,
+                    mode="NO_RESULTS",
+                    query=query,
+                    chat_context=history_context
+                )
+                if synthesis and isinstance(synthesis, dict):
+                    return synthesis.get("text", ctx.prompts.get("not_found", "Нічого не знайдено."))
+                return synthesis or ctx.prompts.get("not_found", "Нічого не знайдено.")
+            except Exception as e:
+                logger.error(f"[{ctx.slug}] Synthesis fallback (NO_RESULTS): {e}")
+                return ctx.prompts.get("not_found", "Нічого не знайдено.")
+
+        if mode == "ASK_CLARIFICATION":
+            try:
+                synthesis = await ctx.analyzer.synthesize_response(
+                    {"products": products},
+                    intent=intent,
+                    mode="ASK_CLARIFICATION",
+                    query=query,
+                    chat_context=history_context,
+                    top_categories=top_categories
+                )
+                if synthesis and isinstance(synthesis, dict):
+                    return synthesis.get("text", "Уточніть, будь ласка, ваш запит.")
+                return synthesis or "Уточніть, будь ласка, ваш запит."
+            except Exception as e:
+                logger.error(f"[{ctx.slug}] Synthesis fallback (CLARIFY): {e}")
+                return "Уточніть, будь ласка, ваш запит."
+
+        if mode == "SHOW_PRODUCTS":
+            if intent.get("action") in ("CONSULT", "INFO", "SEARCH"):
+                try:
+                    synthesis_result = await ctx.analyzer.synthesize_response(
+                        {"products": products},
+                        intent=intent,
+                        mode="SHOW_PRODUCTS",
+                        query=query,
+                        chat_context=history_context
+                    )
+                    if synthesis_result:
+                        if isinstance(synthesis_result, dict):
+                            return synthesis_result.get("text")
+                        return synthesis_result
+                except Exception as e:
+                    logger.warning(f"[{ctx.slug}] LLM Synthesis failed, falling back to Template: {e}")
+
+        return await self._build_template_response(ctx, products, query)
+
+    async def _build_template_response(self, ctx: StoreContext, products: list, query: str) -> str:
+        if not products:
+            return ctx.prompts.get("not_found", "Нічого не знайдено.")
+
+        intro = await ctx.get_human_intro(query, len(products))
+        view_label  = ctx.prompts.get("view_button", "Переглянути")
+        price_label = ctx.prompts.get("price_label", "Ціна")
+        parts = [intro, ""]
+
+        for i, p in enumerate(products[:5], 1):
+            if not p:
+                continue
+            name  = p.get("name") or p.get("title", "Товар")
+            price = p.get("price", "---")
+            url   = p.get("product_url") or p.get("url") or "#"
+            parts.append(
+                f"{i}. 🛍 **{name}**\n"
+                f"    {price_label}: {price} {ctx.currency}\n"
+                f"    [{view_label}]({url})"
+            )
+
+        footer = (
+            "Підсказати щось конкретне щодо цих варіантів?"
+            if ctx.language == "Ukrainian"
+            else "Подсказать что-то конкретное по этим вариантам?"
+        )
+        parts.append(f"\n{footer}")
+        return "\n".join(parts)
+
+    async def close(self):
+        logger.info("⏳ Closing Kernel resources...")
+        if self.selector and hasattr(self.selector, 'close'):
+            if asyncio.iscoroutinefunction(self.selector.close):
+                await self.selector.close()
+            else:
+                self.selector.close()
+        logger.info("✅ Kernel resources released.")
+
+    def get_all_active_slugs(self) -> List[str]:
+        return self.registry.get_all_slugs() if self.registry else []
+
+    def __repr__(self):
+        stores_count = len(self.registry.get_all_slugs()) if self.registry else 0
+        return f"<UkrSellKernel v7.8.7 stores_active={stores_count} model={self.model_name}>"
