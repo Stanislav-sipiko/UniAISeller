@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/core/registry.py v6.2.1
+# /root/ukrsell_v4/core/registry.py v8.3.4
 import re
 import asyncio
 from pathlib import Path
@@ -8,14 +8,14 @@ from core.logger import logger
 
 class StoreRegistry:
     """
-    The Platform Gatekeeper (v6.2.1). 
+    The Platform Gatekeeper (v8.3.4). 
     Responsible for scanning the filesystem, initializing StoreContexts, 
     and maintaining a mapping of active StoreEngines.
     
-    Updated:
-    - Target Filtering: Fixed argument name to 'only_slug' to match Kernel v7.8.1 call.
-    - Component Injection: Ensures dialog_manager and analyzer are linked to ctx.
-    - Explicit Slug Injection: Ensures ctx.slug is available before engine init.
+    Changelog v8.3.4:
+    - Sync: Removed redundant data_ready initialization (now handled by Kernel factory).
+    - Cleanup: Deprecated manual component back-injection to favor Kernel's engine_factory.
+    - Reliability: Atomic updates for stores and engines mapping.
     """
     SLUG_REGEX = re.compile(r"^[a-z0-9_-]+$")
 
@@ -39,7 +39,9 @@ class StoreRegistry:
         Scans root_path, creates StoreContext for each folder, 
         and initializes StoreEngine via the provided factory.
         
-        :param only_slug: If provided, only this store will be loaded (e.g., 'luckydog').
+        :param engine_factory: Factory function from Kernel to build the engine.
+        :param llm_selector: LLMSelector instance for model routing.
+        :param only_slug: If provided, only this store will be loaded.
         """
         logger.info(f"🚀 Starting store scan in: {self.root_path}")
         if only_slug:
@@ -60,18 +62,16 @@ class StoreRegistry:
 
             slug = folder.name.lower()
             
-            # --- ФИЛЬТРАЦИЯ МАГАЗИНОВ ---
+            # --- Store Filtering ---
             if only_slug and slug != only_slug.lower():
-                # Пропускаем все магазины, кроме целевого
                 continue
-            # ------------------------------------------
 
             if not self._is_valid_slug(slug):
                 logger.error(f"INVALID SLUG: '{slug}'. Skipping...")
                 continue
 
             try:
-                # 1. Create store context with explicit slug
+                # 1. Create store context
                 ctx = StoreContext(
                     base_path=str(folder), 
                     db_engine=None, 
@@ -80,17 +80,16 @@ class StoreRegistry:
                 )
                 ctx.slug = slug 
                 
-                # Create readiness event BEFORE engine initialization
-                ctx.data_ready = asyncio.Event()
+                # Note: data_ready Event is now managed by engine_factory in Kernel v8.3.4
                 
-                # 2. Async Initialize StoreContext
+                # 2. Async Initialize StoreContext (Loading configs, prompts, etc.)
                 if hasattr(ctx, 'initialize'):
                     success = await ctx.initialize()
                     if not success:
                         logger.error(f"❌ Failed to initialize StoreContext for [{slug}]. Skipping...")
                         continue
                 
-                # 3. Create Engine via factory (Dependency Injection)
+                # 3. Create Engine via factory (Kernel handles Component Injection)
                 engine = engine_factory(ctx)
                 
                 # Verify minimum engine viability
@@ -98,24 +97,10 @@ class StoreRegistry:
                     logger.error(f"❌ Engine for [{slug}] lacks handle_update() method. Skipping...")
                     continue
 
-                # --- ПРИВЯЗКА КОМПОНЕНТОВ К КОНТЕКСТУ ---
-                
-                # Если движок инициализировал DialogManager, пробрасываем его в контекст
-                if hasattr(engine, 'dialog_manager'):
-                    ctx.dialog_manager = engine.dialog_manager
-                elif not hasattr(ctx, 'dialog_manager'):
-                    logger.warning(f"⚠️ [{slug}] Engine has no dialog_manager. Checking fallback...")
-
-                # Если движок инициализировал Analyzer, пробрасываем его в контекст
-                if hasattr(engine, 'analyzer'):
-                    ctx.analyzer = engine.analyzer
-
-                # Если движок создал соединение с БД, сохраняем ссылку в контексте
-                if hasattr(engine, 'db'):
+                # 4. Finalizing Context Links
+                # In v8.3.4, we ensure references are synchronized
+                if hasattr(engine, 'db') and not getattr(ctx, 'db', None):
                     ctx.db = engine.db
-                    logger.debug(f"[{slug}] Database link established.")
-
-                # -------------------------------------------------------------
 
                 new_stores[slug] = ctx
                 new_engines[slug] = engine
@@ -160,6 +145,7 @@ class StoreRegistry:
             
             del self.engines[slug]
             if slug in self.stores:
+                # Cleanup references to prevent memory leaks
                 self.stores[slug].db = None
                 self.stores[slug].kernel = None
                 if hasattr(self.stores[slug], 'dialog_manager'):

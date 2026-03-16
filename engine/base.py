@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/engine/base.py
+# /root/ukrsell_v4/engine/base.py v5.1.9
 import aiohttp
 import json
 import os
@@ -13,16 +13,16 @@ from core.store_context import StoreContext
 from core.retrieval import RetrievalEngine
 from core.dialog_manager import DialogManager
 from core.analyzer import Analyzer
+from engine.keyboards import get_main_menu
 
 class StoreEngine:
     """
-    Universal store business logic orchestrator v5.1.7.
+    Universal store business logic orchestrator v5.1.9.
     
-    Changelog v5.1.7:
-        - FIXED: Synchronized Kernel call to use 'query' instead of 'user_query'.
-        - FIXED: Full restoration of send_products (fallback mechanism).
-        - FIXED: Support for both 'price_limit' and 'max_price' from LLM.
-        - ADDED: AI Persona priority (Profile > Context > Default).
+    Changelog v5.1.9:
+        - FIXED: Integrated engine.keyboards.get_main_menu for dynamic WebView buttons.
+        - FIXED: Switched from inline_keyboard to ReplyKeyboardMarkup (Reply Buttons).
+        - FIXED: Removed hardcoded categories in favor of context-aware dynamic menu.
         - SYNC: Unified HTML parse_mode for all recommendation deliveries.
     """
     def __init__(self, ctx: StoreContext):
@@ -69,14 +69,14 @@ class StoreEngine:
         # Session and DB initialization
         self._session: Optional[aiohttp.ClientSession] = None
 
-
     def _get_ai_welcome(self) -> Optional[str]:
         """Retrieves AI persona message from store profile with fallback."""
         if os.path.exists(self.profile_path):
             try:
                 with open(self.profile_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                    return data.get("profile", {}).get("ai_welcome_message")
+                    # Исправлено: в v4 профиль загружается как плоский JSON или имеет ключ 'ai_welcome_message' в корне
+                    return data.get("ai_welcome_message") or data.get("profile", {}).get("ai_welcome_message")
             except Exception as e:
                 logger.error(f"[{self.slug}] Error reading profile: {e}")
         return None
@@ -136,7 +136,7 @@ class StoreEngine:
             await self._session.close()
 
     async def handle_update(self, update: Dict[str, Any]):
-        """Main processing loop v5.1.7."""
+        """Main processing loop v5.1.9."""
         message = update.get("message", {})
         chat_id = message.get("chat", {}).get("id")
         user_info = message.get("from", {})
@@ -155,8 +155,13 @@ class StoreEngine:
         if text.startswith("/"):
             if text == "/start":
                 ai_welcome = self._get_ai_welcome()
+                # Приоритет: ai_welcome -> prompts.welcome -> fallback text
                 welcome = ai_welcome or getattr(self.ctx, 'prompts', {}).get("welcome", "Привіт! Чим я можу вам допомогти?")
-                await self.send_message(chat_id, welcome, parse_mode="HTML")
+                
+                # Динамическая клавиатура из engine/keyboards.py
+                keyboard = get_main_menu(self.ctx)
+                
+                await self.send_message(chat_id, welcome, parse_mode="HTML", reply_markup=keyboard)
                 self._log_user_activity(str(user_id), username, text, "START", "none")
                 return
 
@@ -226,10 +231,17 @@ class StoreEngine:
             fail_msg = getattr(self.ctx, 'prompts', {}).get("not_found", "Вибачте, сталася помилка.")
             await self.send_message(chat_id, fail_msg, parse_mode="HTML")
 
-    async def send_message(self, chat_id: int, text: str, parse_mode: str = "HTML"):
-        """Sends message with flexible parse_mode support. Default changed to HTML."""
+    async def send_message(self, chat_id: int, text: str, parse_mode: str = "HTML", reply_markup: Optional[Dict] = None):
+        """Sends message with flexible parse_mode support and Keyboard support."""
         url = f"{self.api_url}/sendMessage"
-        payload = {"chat_id": chat_id, "text": text, "parse_mode": parse_mode}
+        payload = {
+            "chat_id": chat_id, 
+            "text": text, 
+            "parse_mode": parse_mode
+        }
+        if reply_markup:
+            payload["reply_markup"] = reply_markup
+
         session = self._get_session()
         try:
             async with session.post(url, json=payload) as response:
@@ -261,4 +273,4 @@ class StoreEngine:
         await self.send_message(chat_id, f"{header}\n\n" + "\n\n".join(lines), parse_mode="HTML")
 
     def __repr__(self):
-        return f"<StoreEngine v5.1.7 slug={self.slug}>"
+        return f"<StoreEngine v5.1.9 slug={self.slug}>"

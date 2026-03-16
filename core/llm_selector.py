@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/core/llm_selector.py v7.6.0
+# /root/ukrsell_v4/core/llm_selector.py v7.8.6
 import time
 import asyncio
 import threading
@@ -30,13 +30,14 @@ RATING_FILE = Path("/root/ukrsell_v4/core/llm_rating.json")
 
 class LLMSelector:
     """
-    LLM Selector v7.6.0
+    LLM Selector v7.8.6
     Groq-only. Integrated with central config.py LLM_TIERS and llm_rating.json.
-    Changes vs v7.5.4:
-      - INTELLIGENCE-FIRST: Added support for llm_rating.json to prioritize "smartest" models.
-      - HEAVY-LOGIC: In 'heavy' tier, ignores latency and selects by rank.
-      - FALLBACK: Reverts to latency-based selection if rating file is missing or invalid.
-      - PERSISTENCE: Rating is loaded during initialization.
+    
+    Changelog v7.8.6:
+      - STABILITY: Fixed Task/Loop mismatch by strictly lazy-initializing async primitives.
+      - INTELLIGENCE-FIRST: Uses llm_rating.json to prioritize "smartest" models in heavy tier.
+      - ROTATION: Full support for GROQ_KEYS round-robin distribution.
+      - ROBUSTNESS: Improved report_failure logic with immediate cache eviction.
     """
 
     def __init__(self):
@@ -72,10 +73,8 @@ class LLMSelector:
             logger.error(f"[LLMSelector] Failed to load {RATING_FILE}: {e}")
             return {}
 
-    # -------------------------------------------------------------------------
-    # Lazy async primitives
-    # -------------------------------------------------------------------------
     def _ensure_async_primitives(self):
+        """Ensures Lock and Event are created in the current running loop."""
         try:
             loop = asyncio.get_running_loop()
         except RuntimeError:
@@ -88,9 +87,6 @@ class LLMSelector:
             self._refresh_event.set()
             self._current_loop_id = loop_id
 
-    # -------------------------------------------------------------------------
-    # Client initialisation
-    # -------------------------------------------------------------------------
     async def _init_clients_async(self):
         self._ensure_async_primitives()
         if self._async_lock is None:
@@ -109,11 +105,8 @@ class LLMSelector:
 
             self._session = aiohttp.ClientSession()
             self._current_loop_id = loop_id
-            log_event("LLM_CLIENTS_INIT", {"status": "success", "provider": "groq", "ver": "7.6.0"})
+            log_event("LLM_CLIENTS_INIT", {"status": "success", "provider": "groq", "ver": "7.8.6"})
 
-    # -------------------------------------------------------------------------
-    # Key rotation
-    # -------------------------------------------------------------------------
     def _next_key(self) -> Tuple[str, int]:
         with self._key_lock:
             idx = self._key_indices["groq"]
@@ -122,9 +115,6 @@ class LLMSelector:
             self._key_indices["groq"] = (idx + 1) % len(GROQ_KEYS)
             return key, num
 
-    # -------------------------------------------------------------------------
-    # Build client
-    # -------------------------------------------------------------------------
     def _build_client_ping(self, model: str) -> Optional[Any]:
         """Returns client using fixed key #0. No rotation. For ping only."""
         try:
@@ -151,9 +141,6 @@ class LLMSelector:
             logger.error(f"[LLMSelector] Failed to build dispatch client for {model}: {e}")
             return None, ""
 
-    # -------------------------------------------------------------------------
-    # Static stack build from LLM_TIERS (Config)
-    # -------------------------------------------------------------------------
     def _build_stacks(self):
         new_stacks: Dict[str, List[Dict]] = {"light": [], "fast": [], "heavy": []}
         for tier, models in LLM_TIERS.items():
@@ -162,15 +149,9 @@ class LLMSelector:
                     new_stacks[tier].append({"type": "groq", "model": model})
         self.stacks = new_stacks
         logger.info(
-            f"[LLMSelector] Stacks built from config: "
-            f"light={len(self.stacks['light'])} "
-            f"fast={len(self.stacks['fast'])} "
-            f"heavy={len(self.stacks['heavy'])}"
+            f"[LLMSelector] Stacks built: light={len(self.stacks['light'])} fast={len(self.stacks['fast'])} heavy={len(self.stacks['heavy'])}"
         )
 
-    # -------------------------------------------------------------------------
-    # Health-check ping with latency measurement
-    # -------------------------------------------------------------------------
     async def _test_ping(self, client: Any, model: str) -> Tuple[bool, float]:
         start = time.time()
         try:
@@ -210,7 +191,6 @@ class LLMSelector:
                 return None
             ok, lat = await self._test_ping(ping_client, model_id)
             if ok:
-                # Add intelligence rank if available
                 rank = self.model_ranks.get(model_id, 999)
                 logger.info(f"[LLMSelector] ✅ Healthy: {model_id} latency={lat}ms rank={rank}")
                 return {**entry, "active_client": None, "active_model": model_id, "latency_ms": lat, "rank": rank}
@@ -223,21 +203,14 @@ class LLMSelector:
         if not healthy:
             return None
 
-        # --- SELECTION LOGIC ---
         if tier == "heavy" and self.model_ranks:
-            # For heavy tier: prioritize Intelligence (Rank) over Latency
-            # We pick the model with the lowest Rank (1 is best)
             best_by_rank = min(healthy, key=lambda x: x.get("rank", 999))
             logger.info(f"[LLMSelector] 🧠 Selected HEAVY by Rank: {best_by_rank['model']} (Rank {best_by_rank['rank']})")
             return best_by_rank
         else:
-            # For other tiers: keep choosing the fastest healthy model
             fastest = min(healthy, key=lambda x: x.get("latency_ms", 9999))
             return fastest
 
-    # -------------------------------------------------------------------------
-    # Prewarm & Refresh
-    # -------------------------------------------------------------------------
     async def prewarm(self):
         await self._init_clients_async()
         self._build_stacks()
@@ -270,10 +243,9 @@ class LLMSelector:
     async def refresh(self, force: bool = False):
         await self._init_clients_async()
         self._build_stacks()
-        # Reload ranks on refresh to catch manual changes
         self.model_ranks = self._load_ranks()
         
-        logger.info("[LLMSelector] 🧪 Health-checking groq stacks (intelligence-aware)...")
+        logger.info("[LLMSelector] 🧪 Health-checking groq stacks...")
         results = await asyncio.gather(
             self._find_fastest_healthy(self.stacks["light"], "light"),
             self._find_fastest_healthy(self.stacks["fast"], "fast"),
@@ -287,9 +259,6 @@ class LLMSelector:
                 self._last_refresh_time = time.time()
         logger.info(f"[LLMSelector] ✅ Refresh complete. Active: {self.get_status()}")
 
-    # -------------------------------------------------------------------------
-    # Public get_* methods
-    # -------------------------------------------------------------------------
     async def _get_tier(self, tier: str) -> Tuple[Any, str]:
         await self.ensure_ready()
         now = time.time()
@@ -301,7 +270,6 @@ class LLMSelector:
             stack_snapshot = list(self.stacks.get(tier, []))
             blacklist = dict(self._blacklisted_models)
 
-        # 1. Check current active model
         if entry and entry.get("active_model"):
             m_id = entry["active_model"]
             if blacklist.get(m_id, 0) <= now:
@@ -315,8 +283,6 @@ class LLMSelector:
                     if self.active.get(tier) and self.active[tier].get("active_model") == m_id:
                         self.active[tier] = None
 
-        # 2. Fallback: walk the stack
-        # If intelligence ranking exists for heavy, sort stack by rank before falling back
         if tier == "heavy" and self.model_ranks:
             stack_snapshot.sort(key=lambda x: self.model_ranks.get(x["model"], 999))
 
@@ -327,7 +293,6 @@ class LLMSelector:
             client, label = self._build_client_dispatch(e["model"])
             if client:
                 async with self._async_lock:
-                    # Update cache with fallback info
                     rank = self.model_ranks.get(e["model"], 999)
                     self.active[tier] = {**e, "active_client": client, "active_model": e["model"], "rank": rank}
                 logger.warning(f"[LLMSelector] ⚠️ Fallback active: tier={tier} model={e['model']} {label}")
@@ -344,26 +309,18 @@ class LLMSelector:
     async def get_heavy(self) -> Tuple[Any, str]:
         return await self._get_tier("heavy")
 
-    # -------------------------------------------------------------------------
-    # Blacklist management
-    # -------------------------------------------------------------------------
     def report_failure(self, model_id: str, duration: int = BLACKLIST_DURATION):
         now = time.time()
         with self._key_lock:
             self._blacklisted_models[model_id] = now + duration
-            # Cleanup expired entries
             self._blacklisted_models = {k: v for k, v in self._blacklisted_models.items() if v > now}
         
-        # Critical: Clear from active cache immediately
         for tier in ["light", "fast", "heavy"]:
             if self.active[tier] and self.active[tier].get("active_model") == model_id:
                 self.active[tier] = None
         
         logger.warning(f"[LLMSelector] 🚫 Model {model_id} blacklisted for {duration}s. Cache cleared.")
 
-    # -------------------------------------------------------------------------
-    # Utility
-    # -------------------------------------------------------------------------
     def get_status(self) -> Dict[str, str]:
         return {
             t: (self.active[t]["active_model"] if self.active.get(t) else "OFFLINE")

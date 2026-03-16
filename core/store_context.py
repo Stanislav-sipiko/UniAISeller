@@ -1,4 +1,5 @@
-# /root/ukrsell_v4/core/store_context.py v7.2.0
+# -*- coding: utf-8 -*-
+# /root/ukrsell_v4/core/store_context.py v7.2.1
 import json
 import re
 import time
@@ -11,14 +12,17 @@ from core.store_profiler import StoreProfiler
 
 class StoreContext:
     """
-    Universal Store Context v7.2.0 (Taxonomy-Aware & Schema-Aware).
+    Universal Store Context v7.2.1 (Agnostic Taxonomy & Schema-Aware).
     
     Changelog:
         v7.1.2  Schema-Aware filtering and dynamic metadata.
         v7.2.0  [TAXONOMY UPDATE]
                 - Интеграция Catalog Taxonomy Layer (cluster_products.json).
                 - Построение subtype_index для O(1) роутинга.
-                - Сохранение полной функциональности v7.1.2.
+        v7.2.1  [AGNOSTIC UPDATE]
+                - Удаление жестко зашитых ссылок на 'animal'.
+                - Динамическая валидация сущностей на основе schema_keys.
+                - Полная совместимость с Analyzer v8.2.x.
     """
 
     def __init__(self, base_path: str, db_engine: Any, llm_selector: LLMSelector, kernel: Any = None):
@@ -76,14 +80,14 @@ class StoreContext:
             self.category_map = self._load_json_config("category_map.json", required=False)
             self.search_synonyms = self._load_json_config("search_synonyms.json", required=False)
             
-            # 5. [NEW] Catalog Taxonomy Layer
+            # 5. Catalog Taxonomy Layer
             self.taxonomy_data = self._load_json_config("cluster_products.json", required=False)
             self._build_taxonomy_index()
 
             if self.category_map:
                 logger.info(f"[{self.slug}] category_map loaded: {len(self.category_map)} entries.")
             
-            logger.info(f"[{self.slug}] StoreContext initialized. Language: {self.language}")
+            logger.info(f"[{self.slug}] StoreContext v7.2.1 initialized. Language: {self.language}")
             
             self.is_ready = True
             self.data_ready.set()
@@ -94,23 +98,28 @@ class StoreContext:
             return False
 
     def _build_taxonomy_index(self):
-        """Создает быстрый маппинг subtype -> category/animal для Catalog Router."""
+        """Создает быстрый агностический маппинг subtype -> context для Catalog Router."""
         if not self.taxonomy_data:
             return
         
         count = 0
         for category, subtypes in self.taxonomy_data.items():
+            if not isinstance(subtypes, list): continue
             for item in subtypes:
                 st_name = item.get("subtype", "").lower()
                 if st_name:
-                    # Сохраняем структуру для быстрого доступа
+                    # Сохраняем все метаданные из кластера для роутинга
                     self.subtype_index[st_name] = {
                         "category": category,
-                        "animal": item.get("animal", []),
                         "count": item.get("count", 0)
                     }
+                    # Динамически копируем любые другие атрибуты (animal, brand, etc)
+                    for key, val in item.items():
+                        if key not in ["subtype", "count", "category"]:
+                            self.subtype_index[st_name][key] = val
+                    
                     count += 1
-        logger.info(f"[{self.slug}] Taxonomy index built: {count} subtypes indexed.")
+        logger.info(f"[{self.slug}] Agnostic taxonomy index built: {count} subtypes indexed.")
 
     def get_taxonomy_hint(self, query: str) -> Optional[Dict]:
         """
@@ -121,16 +130,16 @@ class StoreContext:
             return None
             
         q = query.lower()
-        # Ищем самое длинное совпадение, чтобы избежать ложных срабатываний на коротких словах
         matches = []
         for subtype, info in self.subtype_index.items():
-            if subtype in q:
+            # Используем границы слов для точности
+            if re.search(rf'\b{re.escape(subtype)}\b', q):
                 matches.append({"subtype": subtype, **info})
         
         if not matches:
             return None
             
-        # Возвращаем совпадение с самым длинным названием подтипа
+        # Возвращаем совпадение с самым длинным названием подтипа (самое точное)
         return max(matches, key=lambda x: len(x["subtype"]))
 
     def _load_schema_keys(self) -> List[str]:
@@ -138,7 +147,6 @@ class StoreContext:
         schema_path = os.path.join(self.base_path, "schema.json")
         profile_path = os.path.join(self.base_path, "store_profile.json")
         
-        # Сначала пробуем schema.json
         if os.path.exists(schema_path):
             try:
                 with open(schema_path, 'r', encoding='utf-8') as f:
@@ -147,7 +155,6 @@ class StoreContext:
                     if keys: return keys
             except Exception: pass
             
-        # Фолбэк на store_profile.json
         if os.path.exists(profile_path):
             try:
                 with open(profile_path, 'r', encoding='utf-8') as f:
@@ -203,7 +210,6 @@ class StoreContext:
             "not_found": "Нічого не знайдено." if is_ukr else "Ничего не найдено.",
             "price_label": "Ціна" if is_ukr else "Цена"
         }
-        # Пытаемся загрузить из fsm_soft_patch или prompts.json
         patch_path = os.path.join(self.base_path, "fsm_soft_patch.json")
         if os.path.exists(patch_path):
             try:
@@ -223,30 +229,27 @@ class StoreContext:
         return defaults
 
     async def get_human_intro(self, query: str, product_count: int) -> str:
-        """
-        Generates a persona-driven intro sentence via LLM using selector tiers.
-        """
+        """Generates a persona-driven intro sentence via LLM."""
         if not self.config.get("use_llm_persona", True) or not self.selector:
             return self.prompts.get("search_header", "Ось результати:")
 
         try:
-            # Выбираем Tier LLM через селектор
-            if len(query) > 40:
+            if len(query) > 45:
                 client, model = await self.selector.get_heavy()
             else:
                 client, model = await self.selector.get_fast()
 
             lang_note = "Пиши на русском языке." if self.language == "Russian" else "Пиши українською мовою."
             system_prompt = (
-                f"{self.get_store_bio()}\nYou are a sales consultant. {lang_note} "
+                f"{self.get_store_bio()}\nYou are a professional sales assistant. {lang_note} "
                 f"Customer asked: '{query}'. Found {product_count} items. "
-                "Write ONE short, energetic sentence with 1 emoji."
+                "Write ONE short, friendly and energetic sentence to introduce results. Use 1 emoji."
             )
 
             response = await client.chat.completions.create(
                 model=model,
                 messages=[{"role": "system", "content": system_prompt}],
-                max_tokens=80,
+                max_tokens=100,
                 temperature=0.7
             )
 
@@ -269,7 +272,6 @@ class StoreContext:
         try:
             with open(path, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                # Фильтруем служебные ключи _comment*
                 if isinstance(data, dict):
                     return {k: v for k, v in data.items() if not k.startswith("_")}
                 return data
@@ -278,12 +280,11 @@ class StoreContext:
             return {}
 
     def validate_query_features(self, raw_features: Dict) -> Dict:
-        """Валидация и нормализация извлеченных сущностей."""
+        """Валидация и нормализация сущностей (v7.2.1 Agnostic)."""
         validated = {
             "category": raw_features.get("category"),
             "price_limit": None,
             "brand": raw_features.get("brand"),
-            "animal": raw_features.get("animal"),
             "dynamic_filters": {}
         }
         
@@ -298,12 +299,16 @@ class StoreContext:
                     validated["price_limit"] = float(digits[0]) if digits else None
             except: pass
             
-        # Маппинг динамических свойств
+        # Динамический маппинг свойств на основе разрешенной схемы магазина
         props = raw_features.get("properties", {}) or raw_features.get("attributes", {})
         if isinstance(props, dict):
             for k, v in props.items():
-                if k in self.schema_keys:
+                # Если ключ есть в схеме или является базовым (brand, color, etc)
+                if k in self.schema_keys or k in ["color", "material", "size", "subtype"]:
                     validated["dynamic_filters"][k] = v
+                # Перенос специфических ключей (например, animal в зоомагазине) в динамические фильтры
+                elif k == "animal":
+                    validated["dynamic_filters"]["animal"] = v
                     
         return validated
 
