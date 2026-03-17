@@ -18,16 +18,16 @@ from core.intelligence import (
 
 class DialogManager:
     """
-    Intelligent Sales & Consultation Manager v7.6.4.
+    Intelligent Sales & Consultation Manager v7.6.5.
     UNIVERSAL: Works with multiple store types (pets, phones, auto parts).
     STRICT: Zero Omission mode. Integrated with Confidence Gate v7.6.0.
     
-    Changelog v7.6.4:
+    Changelog v7.6.5:
+        - Added: Zero Omission logging for DB history retrieval (SQL Trace).
+        - Added: Full Prompt & Raw Response logging for Intent Analysis.
+        - Added: Enhanced metadata in INTENT_RESULT event for CI/CD tracking.
         - Fixed: Updated process_search_pipeline signature to match Kernel v7.8.4.
         - Fixed: Updated retrieval.search call to use 'entities' instead of 'intent'.
-        - Added: Support for 'raw_products' argument to prevent TypeError.
-        - Added: Hybrid Intent Temperature logic (HARD_SEARCH vs SOFT_ADVISORY).
-        - Refactored: Integrated deep logging for every decision step.
     """
     def __init__(self, ctx, llm_selector):
         self.ctx = ctx
@@ -42,7 +42,7 @@ class DialogManager:
         self._intent_hints = self._load_intent_hints()
         
         self._init_db()
-        logger.info(f"✅ [DM_INIT] DialogManager v7.6.4 Active. System: {self.slug}")
+        logger.info(f"✅ [DM_INIT] DialogManager v7.6.5 Active. System: {self.slug}")
 
     def _init_db(self):
         try:
@@ -86,10 +86,16 @@ class DialogManager:
         conn = None
         try:
             if not os.path.exists(self.session_db_path):
+                logger.warning(f"⚠️ [DB_TRACE] Session DB missing at {self.session_db_path}")
                 return ""
+            
             conn = sqlite3.connect(self.session_db_path, timeout=10.0)
             cursor = conn.cursor()
             time_threshold = (datetime.now() - timedelta(minutes=minutes)).strftime('%Y-%m-%d %H:%M:%S')
+            
+            # Логируем параметры запроса к БД
+            logger.info(f"📅 [DB_TRACE] Fetching history for {chat_id} since {time_threshold}")
+            
             query = """
                 SELECT role, content FROM chat_history 
                 WHERE chat_id = ? AND timestamp > ?
@@ -97,15 +103,22 @@ class DialogManager:
             """
             cursor.execute(query, (str(chat_id), time_threshold))
             rows = cursor.fetchall()
+            
             if not rows:
+                logger.info(f"ℹ️ [DB_TRACE] No history found for chat_id: {chat_id}")
                 return ""
+            
             history = []
             for row in reversed(rows):
                 label = "Покупець" if row[0] == "user" else "Консультант"
                 if self.language != "Ukrainian":
                     label = "Buyer" if row[0] == "user" else "Consultant"
                 history.append(f"{label}: {row[1]}")
-            return "\n".join(history)
+            
+            full_context = "\n".join(history)
+            logger.info(f"📜 [DB_TRACE] Retrieved {len(rows)} messages. Context snippet: {full_context[:100]}...")
+            return full_context
+            
         except Exception as e:
             logger.error(f"❌ [DM_ERROR] SQL Context retrieval error: {e}")
             return ""
@@ -123,6 +136,7 @@ class DialogManager:
             ''', (str(chat_id), role, content, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
             conn.commit()
             conn.close()
+            logger.info(f"💾 [DB_TRACE] Saved {role} message for {chat_id}")
         except Exception as e:
             logger.error(f"[{self.slug}] History Save Error: {e}")
 
@@ -240,14 +254,28 @@ class DialogManager:
             await asyncio.wait_for(self.selector.ensure_ready(), timeout=5.0)
             chat_context = self.get_chat_context(chat_id)
             patterns = self.get_negative_examples()
+            
             if user_text.lower().strip() in patterns:
+                logger.warning(f"🛡️ [INTENT_TRACE] Fast-Reject: Known Troll Pattern for {chat_id}")
                 return {"action": "TROLL", "temperature": "VIBE_CHECK", "entities": {}, "language": self.language}
+            
             _cached = self._intent_cache.get(str(chat_id))
             _is_followup = bool(_cached and time.time() - _cached.get("ts", 0) < 2700)
+            
             tier_hint = "heavy" if (len(user_text) > 80 or _is_followup) else "light"
             result_obj = await (self.selector.get_heavy() if tier_hint == "heavy" else self.selector.get_light())
-            client, model = result_obj if isinstance(result_obj, tuple) else (result_obj, getattr(result_obj, 'model_name', None))
+            
+            if isinstance(result_obj, tuple):
+                client, model = result_obj
+            else:
+                client = result_obj
+                model = getattr(result_obj, 'model_name', None)
+            
             prompt = self._build_intent_prompt(patterns, chat_context, model)
+            
+            # ZERO OMISSION LOGGING: Печать полного промпта перед отправкой
+            logger.info(f"📤 [INTENT_PROMPT] Chat: {chat_id} | Model: {model} | Body:\n{prompt}\nUser: {user_text}")
+            
             t_start_llm = time.perf_counter()
             response = await client.chat.completions.create(
                 model=model,
@@ -258,40 +286,59 @@ class DialogManager:
                 temperature=0.1,
                 max_tokens=300
             )
+            
             content = getattr(response.choices[0].message, 'content', '{}')
+            
+            # ZERO OMISSION LOGGING: Сырой ответ от модели
+            logger.info(f"📥 [INTENT_RAW_RESPONSE] Chat: {chat_id} | Raw:\n{content}")
+            
             raw_intent = safe_extract_json(content)
+            
             prev_intent = _cached["intent"] if (_is_followup) else {"entities": {}}
             category_map = getattr(self.ctx, 'category_map', {})
+            
             result = merge_followup(prev_intent, raw_intent, category_map=category_map)
+            
             if "temperature" not in result:
                 result["temperature"] = "HARD_SEARCH" if result.get("action") == "SEARCH" else "SOFT_ADVISORY"
+            
             self._intent_cache[str(chat_id)] = {"ts": time.time(), "intent": result}
+            
+            ms_spent = round((time.perf_counter() - t_start_llm) * 1000, 1)
             log_event("INTENT_RESULT", {
                 "slug": self.slug,
+                "chat_id": str(chat_id),
                 "action": result.get("action"),
                 "temperature": result.get("temperature"),
                 "entities": result.get("entities"),
-                "ms": round((time.perf_counter() - t_start_llm) * 1000, 1)
+                "ms": ms_spent,
+                "model": model
             }, session_id=session_id)
+            
             return result
         except Exception as e:
-            logger.error(f"💥 [DM_CRITICAL] Intent analysis failure: {e}")
+            logger.error(f"💥 [DM_CRITICAL] Intent analysis failure: {e}", exc_info=True)
             return self._get_fallback_intent(user_text)
 
     async def process_query(self, user_query: str, chat_id: str, session_id: Optional[str] = None) -> Dict[str, Any]:
         t_total_start = time.perf_counter()
         user_query = str(user_query)
+        
+        logger.info(f"🚀 [QUERY_START] Chat: {chat_id} | Query: {user_query}")
+        
+        self.ctx.current_session_id = session_id
+        
         intent = await self.analyze_intent(user_query, chat_id, session_id=session_id)
         search_results = {"products": [], "status": "SKIPPED"}
+        
         if intent.get("action") in ["SEARCH", "CONSULT"]:
             retrieval = getattr(self.ctx, 'retrieval', None)
             if retrieval:
-                # Фикс: используем entities=intent для совместимости с RetrievalEngine v9.3.0
+                logger.info(f"🔍 [RETRIEVAL_STEP] Triggering search with entities: {intent.get('entities')}")
                 search_results = await retrieval.search(user_query, entities=intent)
             else:
                 logger.error(f"[{self.slug}] Retrieval index missing.")
         
-        # Получаем валидированные товары через обновленный пайплайн
         validated_products = await self.process_search_pipeline(
             chat_id=chat_id, 
             search_response=search_results, 
@@ -322,8 +369,11 @@ class DialogManager:
             "status": response.get("status", "SUCCESS")
         }, session_id=session_id)
         
-        await self.save_history(chat_id, "user", user_query)
-        await self.save_history(chat_id, "assistant", response.get("text", ""))
+        asyncio.create_task(self.save_history(chat_id, "user", user_query))
+        asyncio.create_task(self.save_history(chat_id, "assistant", response.get("text", "")))
+        
+        self.ctx.last_intent = intent
+        
         return response
 
     async def process_search_pipeline(
@@ -335,7 +385,7 @@ class DialogManager:
         raw_products: Optional[List[Dict]] = None
     ) -> List[Dict]:
         """
-        Refined search pipeline v7.6.4.
+        Refined search pipeline v7.6.5.
         Ensures semantic safety and entity matching.
         """
         status = "SUCCESS"
@@ -356,6 +406,7 @@ class DialogManager:
             is_empty = True
             
         if status == "LOW_CONFIDENCE" or is_empty:
+            logger.info(f"🚫 [PIPELINE_TRACE] Skipping processing: status={status}, is_empty={is_empty}")
             return []
             
         try:
@@ -363,15 +414,24 @@ class DialogManager:
             guarded = semantic_guard(products_to_process, threshold=0.55)
             
             # 2. Жёсткая фильтрация по сущностям (категория/бренд)
+            retrieval_layer = getattr(self.ctx, 'retrieval', None)
+            intent_mapping = getattr(retrieval_layer, 'intent_mapping', {}) if retrieval_layer else {}
+            
             filtered = entity_filter(
                 guarded if guarded else products_to_process, 
                 intent,
-                intent_mapping=getattr(getattr(self.ctx, 'retrieval', None), 'intent_mapping', {}),
+                intent_mapping=intent_mapping,
                 category_map=getattr(self.ctx, 'category_map', {}),
             )
             
             # 3. Удаление дублей и лимит
-            return deduplicate_products(filtered, top_k=top_k)
+            final_list = deduplicate_products(filtered, top_k=top_k)
+            logger.info(f"🧪 [PIPELINE_TRACE] Pipeline complete: {len(products_to_process)} -> {len(final_list)} products")
+            return final_list
+            
         except Exception as e:
             logger.error(f"❌ [DM_ERROR] Search pipeline crash: {e}")
             return products_to_process[:top_k]
+
+    def __repr__(self):
+        return f"<DialogManager v7.6.5 slug={self.slug}>"

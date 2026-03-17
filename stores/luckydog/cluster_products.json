@@ -6,7 +6,9 @@
         "dog",
         "cat"
       ],
-      "count": 2
+      "count": 2,
+      "image_main": "https://images.prom.ua/2984809484_w640_h640_kogterez-poperechnyj-dlya.jpg",
+      "url": "https://prom.ua/ua/p1759681090-kogterez-poperechnyj-dlya.html"
     },
     {
       "subtype": "Пуходерка",
@@ -14,7 +16,9 @@
         "dog",
         "cat"
       ],
-      "count": 2
+      "count": 2,
+      "image_main": "https://images.prom.ua/4320622513_w640_h320_schetka-puhoderka-dlya.jpg",
+      "url": "https://prom.ua/ua/p1735177810-schetka-puhoderka-dlya.html"
     },
     {
       "subtype": "Кігтеріз-сікатор",
@@ -22,7 +26,9 @@
         "dog",
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/4237748015_w640_h320_kogterez-sekator-dlya-koshek.jpg",
+      "url": "https://prom.ua/ua/p1759682954-kogterez-sekator-dlya.html"
     },
     {
       "subtype": "Фурмінатор",
@@ -30,14 +36,18 @@
         "dog",
         "cat"
       ],
-      "count": 2
+      "count": 2,
+      "image_main": "https://images.prom.ua/5364001393_w640_h320_schetka-dlya-gruminga.jpg",
+      "url": "https://prom.ua/ua/p1796967836-schetka-dlya-gruminga.html"
     },
     {
       "subtype": "Лапомийка",
       "animal": [
         "dog"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/6700137684_w640_h640_lapomojka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p2645209677-lapomojka-dlya-sobak.html"
     },
     {
       "subtype": "Шампунь",
@@ -45,7 +55,9 @@
         "dog",
         "cat"
       ],
-      "count": 7
+      "count": 7,
+      "image_main": "https://images.prom.ua/4200192903_w640_h640_shampun-animall-dlya.jpg",
+      "url": "https://prom.ua/ua/p1747918526-shampun-animall-dlya.html"
     },
     {
       "subtype": "Щітка",
@@ -53,7 +65,9 @@
         "dog",
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/4338541290_w640_h320_schetka-dlya-mytya.jpg",
+      "url": "https://prom.ua/ua/p1791342321-schetka-dlya-mytya.html"
     }
   ],
   "Feeding": [
@@ -63,7 +77,9 @@
         "dog",
         "cat"
       ],
-      "count": 3
+      "count": 3,
+      "image_main": "https://images.prom.ua/4592604947_w640_h320_poilka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1866991540-poilka-dlya-sobak.html"
     },
     {
       "subtype": "Миска",
@@ -71,7 +87,9 @@
         "dog",
         "cat"
       ],
-      "count": 10
+      "count": 10,
+      "image_main": "https://images.prom.ua/4182142374_w640_h640_miska-labirint-wahopet-slow.jpg",
+      "url": "https://prom.ua/ua/p1741929301-miska-labirint-wahopet.html"
     },
     {
       "subtype": "Килимок для злизування",
@@ -79,7 +97,9 @@
         "dog",
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/5919795210_w640_h320_kovrik-dlya-slizyvaniya.jpg",
+      "url": "https://prom.ua/ua/p2238557893-kovrik-dlya-slizyvaniya.html"
     }
   ],
   "Apparel": [
@@ -89,14 +109,18 @@
         "cat",
         "dog"
       ],
-      "count": 46
+      "count": 46,
+      "image_main": "https://images.prom.ua/6286422029_w640_h320_sviter-dlya-koshek.jpg",
+      "url": "https://prom.ua/ua/p2361859124-sviter-dlya-koshek.html"
     },
     {
       "subtype": "Комбінезон",
       "animal": [
         "dog"
       ],
-      "count": 56
+      "count": 56,
+      "image_main": "https://images.prom.ua/4102002395_w640_h320_zimnij-kombinezon-dlya.jpg",
+      "url": "https://prom.ua/ua/p1368944067-zimnij-kombinezon-dlya.html"
     },
     {
       "subtype": "Худі",
@@ -104,49 +128,63 @@
         "dog",
         "cat"
       ],
-      "count": 84
+      "count": 84,
+      "image_main": "https://images.prom.ua/4933389278_w640_h640_tolstovka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1435197204-tolstovka-dlya-sobak.html"
     },
     {
       "subtype": "Жилет",
       "animal": [
         "dog"
       ],
-      "count": 62
+      "count": 62,
+      "image_main": "https://images.prom.ua/3462578667_w640_h320_tyoplaya-zhiletka-dlya.jpg",
+      "url": "https://prom.ua/ua/p1422482938-tyoplaya-zhiletka-dlya.html"
     },
     {
       "subtype": "Дощовик",
       "animal": [
         "dog"
       ],
-      "count": 38
+      "count": 38,
+      "image_main": "https://images.prom.ua/6156756030_w640_h320_dozhdevik-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p2303632761-dozhdevik-dlya-sobak.html"
     },
     {
       "subtype": "Куртка",
       "animal": [
         "dog"
       ],
-      "count": 55
+      "count": 55,
+      "image_main": "https://images.prom.ua/2970772709_w640_h320_kurtka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1419569003-kurtka-dlya-sobak.html"
     },
     {
       "subtype": "Взуття",
       "animal": [
         "dog"
       ],
-      "count": 25
+      "count": 25,
+      "image_main": "https://images.prom.ua/4393266542_w640_h320_vodonepronitsaemye-rezinovye-sapogi.jpg",
+      "url": "https://prom.ua/ua/p1807881580-vodonepronitsaemye-rezinovye-sapogi.html"
     },
     {
       "subtype": "Футболка",
       "animal": [
         "dog"
       ],
-      "count": 3
+      "count": 3,
+      "image_main": "https://images.prom.ua/5372260131_w640_h320_futbolka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p2091126203-futbolka-dlya-sobak.html"
     },
     {
       "subtype": "Попона",
       "animal": [
         "dog"
       ],
-      "count": 8
+      "count": 8,
+      "image_main": "https://images.prom.ua/3988625444_w640_h320_zimnyaya-zhiletka-popona-dlya.jpg",
+      "url": "https://prom.ua/ua/p1679290444-zimnyaya-zhiletka-popona.html"
     },
     {
       "subtype": "Шлея",
@@ -154,14 +192,18 @@
         "dog",
         "cat"
       ],
-      "count": 49
+      "count": 49,
+      "image_main": "https://images.prom.ua/4594203356_w640_h320_shlejka-z-povodkom.jpg",
+      "url": "https://prom.ua/ua/p1867920007-shlejka-povodkom-dlya.html"
     },
     {
       "subtype": "Намордник",
       "animal": [
         "dog"
       ],
-      "count": 20
+      "count": 20,
+      "image_main": "https://images.prom.ua/3201251690_w640_h640_namordnik-myagkij-collar.jpg",
+      "url": "https://prom.ua/ua/p1440057147-namordnik-myagkij-collar.html"
     },
     {
       "subtype": "Іграшка",
@@ -169,7 +211,9 @@
         "dog",
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/2970775409_w640_h320_trixie-mintfresh-bejsbolnyj.jpg",
+      "url": "https://prom.ua/ua/p1437385974-trixie-mintfresh-bejsbolnyj.html"
     },
     {
       "subtype": "Нашийник",
@@ -177,7 +221,9 @@
         "dog",
         "cat"
       ],
-      "count": 46
+      "count": 46,
+      "image_main": "https://images.prom.ua/3209290189_w640_h640_oshejnik-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1442465442-oshejnik-dlya-sobak.html"
     },
     {
       "subtype": "Повідець",
@@ -185,7 +231,9 @@
         "dog",
         "cat"
       ],
-      "count": 11
+      "count": 11,
+      "image_main": "https://images.prom.ua/3225731801_w640_h320_povodok-ruletka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1447189889-povodok-ruletka-dlya.html"
     },
     {
       "subtype": "Повідець-рулетка",
@@ -193,7 +241,9 @@
         "dog",
         "cat"
       ],
-      "count": 4
+      "count": 4,
+      "image_main": "https://images.prom.ua/5359189329_w640_h320_povodok-ruletka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p2087725130-povodok-ruletka-dlya.html"
     },
     {
       "subtype": "Толстовка",
@@ -201,21 +251,27 @@
         "dog",
         "cat"
       ],
-      "count": 14
+      "count": 14,
+      "image_main": "https://images.prom.ua/4164481344_w640_h640_tolstovka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1736319521-tolstovka-dlya-sobak.html"
     },
     {
       "subtype": "Кофта",
       "animal": [
         "dog"
       ],
-      "count": 2
+      "count": 2,
+      "image_main": "https://images.prom.ua/3445975959_w640_h320_kofta-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1513567889-kofta-dlya-sobak.html"
     },
     {
       "subtype": "Костюм",
       "animal": [
         "dog"
       ],
-      "count": 4
+      "count": 4,
+      "image_main": "https://images.prom.ua/2970772651_w640_h640_novogodnyaya-odezhda-dlya.jpg",
+      "url": "https://prom.ua/ua/p1503790038-novogodnyaya-odezhda-dlya.html"
     }
   ],
   "Hygiene": [
@@ -224,7 +280,9 @@
       "animal": [
         "dog"
       ],
-      "count": 4
+      "count": 4,
+      "image_main": "https://images.prom.ua/4604717642_w640_h320_trusy-gigienicheskie-dlya.jpg",
+      "url": "https://prom.ua/ua/p1870789295-trusy-gigienicheskie-dlya.html"
     }
   ],
   "Walking": [
@@ -234,7 +292,9 @@
         "dog",
         "cat"
       ],
-      "count": 39
+      "count": 39,
+      "image_main": "https://images.prom.ua/4439033107_w640_h320_shlejka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1820824817-shlejka-dlya-sobak.html"
     },
     {
       "subtype": "Повідець",
@@ -242,7 +302,9 @@
         "dog",
         "cat"
       ],
-      "count": 6
+      "count": 6,
+      "image_main": "https://images.prom.ua/3234273603_w640_h320_povodok-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1449583354-povodok-dlya-sobak.html"
     },
     {
       "subtype": "Нашийник",
@@ -250,7 +312,9 @@
         "dog",
         "cat"
       ],
-      "count": 17
+      "count": 17,
+      "image_main": "https://images.prom.ua/3242618690_w640_h320_oshejnik-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1452010987-oshejnik-dlya-sobak.html"
     },
     {
       "subtype": "Ремінь безпеки",
@@ -258,7 +322,9 @@
         "dog",
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/5314484303_w640_h640_avtomobilnyj-remen-bezopasnosti.jpg",
+      "url": "https://prom.ua/ua/p2076266939-avtomobilnyj-remen-bezopasnosti.html"
     },
     {
       "subtype": "Сворка",
@@ -266,14 +332,18 @@
         "dog",
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/6223435953_w640_h640_povodok-sparka-dlya-dvuh.jpg",
+      "url": "https://prom.ua/ua/p2313713607-povodok-sparka-dlya.html"
     },
     {
       "subtype": "Намордник",
       "animal": [
         "dog"
       ],
-      "count": 4
+      "count": 4,
+      "image_main": "https://images.prom.ua/3127078191_w640_h320_namordnik-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p2230553541-namordnik-dlya-sobak.html"
     },
     {
       "subtype": "Повідець-рулетка",
@@ -281,7 +351,9 @@
         "dog",
         "cat"
       ],
-      "count": 5
+      "count": 5,
+      "image_main": "https://images.prom.ua/3225731801_w640_h320_povodok-ruletka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1447185917-povodok-ruletka-dlya.html"
     }
   ],
   "Toys": [
@@ -291,7 +363,9 @@
         "dog",
         "cat"
       ],
-      "count": 3
+      "count": 3,
+      "image_main": "https://images.prom.ua/3822401836_w640_h320_igrushka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1629189149-igrushka-dlya-sobak.html"
     },
     {
       "subtype": "М'яч",
@@ -299,7 +373,9 @@
         "dog",
         "cat"
       ],
-      "count": 4
+      "count": 4,
+      "image_main": "https://images.prom.ua/3822592299_w640_h320_myachik-lajker-5.jpg",
+      "url": "https://prom.ua/ua/p1629266021-myachik-lajker.html"
     },
     {
       "subtype": "Гантель",
@@ -307,7 +383,9 @@
         "dog",
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/3822651491_w640_h320_igrovaya-gantel-dlya.jpg",
+      "url": "https://prom.ua/ua/p1629287272-igrovaya-gantel-dlya.html"
     },
     {
       "subtype": "Охолоджувальна іграшка",
@@ -315,35 +393,45 @@
         "dog",
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/4199078761_w640_h640_ohlazhdayuschaya-igrushka-dlya.jpg",
+      "url": "https://prom.ua/ua/p1747731881-ohlazhdayuschaya-igrushka-dlya.html"
     },
     {
       "subtype": "Котяча м'ята",
       "animal": [
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/4849878295_w640_h320_kotyacha-myata-igrushka.jpg",
+      "url": "https://prom.ua/ua/p1942466655-kotyacha-myata-igrushka.html"
     },
     {
       "subtype": "Літаюча тарілка",
       "animal": [
         "dog"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/4449237887_w640_h320_igrushka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1823645266-igrushka-dlya-sobak.html"
     },
     {
       "subtype": "Палиця",
       "animal": [
         "dog"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/5919727073_w640_h320_igrushka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p2238545476-igrushka-dlya-sobak.html"
     },
     {
       "subtype": "Тренувальне кільце",
       "animal": [
         "dog"
       ],
-      "count": 4
+      "count": 4,
+      "image_main": "https://images.prom.ua/3330525554_w640_h320_trenerovochnyj-snaryad-dlya.jpg",
+      "url": "https://prom.ua/ua/p1478339527-trenerovochnyj-snaryad-dlya.html"
     },
     {
       "subtype": "Іграшка",
@@ -351,21 +439,27 @@
         "dog",
         "cat"
       ],
-      "count": 3
+      "count": 3,
+      "image_main": "https://images.prom.ua/5927900789_w640_h640_igrushka-animall-fun.jpg",
+      "url": "https://prom.ua/ua/p2240649542-igrushka-animall-fun.html"
     },
     {
       "subtype": "Кістка",
       "animal": [
         "dog"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/4199683590_w640_h640_igrushka-animall-fun.jpg",
+      "url": "https://prom.ua/ua/p1747902527-igrushka-animall-fun.html"
     },
     {
       "subtype": "М'ята",
       "animal": [
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/4848593421_w640_h320_kotyacha-myata-igrushka.jpg",
+      "url": "https://prom.ua/ua/p1942421205-kotyacha-myata-igrushka.html"
     }
   ],
   "Food": [
@@ -374,7 +468,9 @@
       "animal": [
         "dog"
       ],
-      "count": 3
+      "count": 3,
+      "image_main": "https://images.prom.ua/5927487163_w640_h320_lakomstva-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p2240529101-lakomstva-dlya-sobak.html"
     }
   ],
   "Travel": [
@@ -384,14 +480,18 @@
         "dog",
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/3165025761_w640_h320_avtokreslo-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1411128019-avtokreslo-dlya-sobak.html"
     },
     {
       "subtype": "Автогамак",
       "animal": [
         "dog"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/6574300040_w640_h320_avtogamak-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p2555973674-avtogamak-dlya-sobak.html"
     }
   ],
   "Accessories": [
@@ -401,7 +501,9 @@
         "dog",
         "cat"
       ],
-      "count": 5
+      "count": 5,
+      "image_main": "https://images.prom.ua/4427614610_w640_h320_miska-labirint-dlya-medlennogo.jpg",
+      "url": "https://prom.ua/ua/p1817723101-miska-labirint-dlya.html"
     },
     {
       "subtype": "Переноска",
@@ -409,7 +511,9 @@
         "dog",
         "cat"
       ],
-      "count": 2
+      "count": 2,
+      "image_main": "https://images.prom.ua/5901852762_w640_h640_sumka-perenoska-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p2231574696-sumka-perenoska-dlya.html"
     },
     {
       "subtype": "Лежак",
@@ -417,7 +521,9 @@
         "dog",
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/6663425184_w640_h320_lezhanka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p2620160143-lezhanka-dlya-sobak.html"
     },
     {
       "subtype": "Шлея",
@@ -425,7 +531,9 @@
         "dog",
         "cat"
       ],
-      "count": 11
+      "count": 11,
+      "image_main": "https://images.prom.ua/4333414676_w640_h640_shleya-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1789818392-shleya-dlya-sobak.html"
     },
     {
       "subtype": "Нашийник",
@@ -433,7 +541,9 @@
         "dog",
         "cat"
       ],
-      "count": 2
+      "count": 2,
+      "image_main": "https://images.prom.ua/4227292266_w640_h320_svetyaschijsya-led-oshejnik.jpg",
+      "url": "https://prom.ua/ua/p1983518210-svetyaschijsya-led-oshejnik.html"
     },
     {
       "subtype": "Поводок-рулетка",
@@ -441,14 +551,18 @@
         "dog",
         "cat"
       ],
-      "count": 3
+      "count": 3,
+      "image_main": "https://images.prom.ua/3227552333_w640_h640_povodok-ruletka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1447736314-povodok-ruletka-dlya.html"
     },
     {
       "subtype": "Намордник",
       "animal": [
         "dog"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/3205073151_w640_h640_namordnik-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1440831384-namordnik-dlya-sobak.html"
     }
   ],
   "Care": [
@@ -458,7 +572,9 @@
         "dog",
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/6574478130_w640_h640_mylo-penka-dlya-mytya.jpg",
+      "url": "https://prom.ua/ua/p2556133374-mylo-penka-dlya.html"
     }
   ],
   "Meds": [
@@ -467,7 +583,9 @@
       "animal": [
         "dog"
       ],
-      "count": 2
+      "count": 2,
+      "image_main": "https://images.prom.ua/5927623605_w640_h640_bayer-advantix-advantiks.jpg",
+      "url": "https://prom.ua/ua/p2240555073-bayer-advantix-advantiks.html"
     }
   ],
   "Beds & Furniture": [
@@ -477,7 +595,9 @@
         "dog",
         "cat"
       ],
-      "count": 3
+      "count": 3,
+      "image_main": "https://images.prom.ua/4185304570_w640_h640_lezhanka-dlya-sobak.jpg",
+      "url": "https://prom.ua/ua/p1742980086-lezhanka-dlya-sobak.html"
     }
   ],
   "Carriers & Travel": [
@@ -487,7 +607,9 @@
         "dog",
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/4201935099_w640_h640_perenoska-dlya-koshek.jpg",
+      "url": "https://prom.ua/ua/p1748548878-perenoska-dlya-koshek.html"
     }
   ],
   "Carriers": [
@@ -497,7 +619,9 @@
         "dog",
         "cat"
       ],
-      "count": 1
+      "count": 1,
+      "image_main": "https://images.prom.ua/4201935099_w640_h640_perenoska-dlya-koshek.jpg",
+      "url": "https://prom.ua/ua/p1748562677-perenoska-dlya-koshek.html"
     }
   ]
 }

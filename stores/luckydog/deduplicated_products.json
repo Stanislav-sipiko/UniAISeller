@@ -1,7 +1,12 @@
 [
   {
+<<<<<<< HEAD
     "product_id": "grp_e6b31e6206c6",
     "title": "Когтеріз поперечний для кішок і собак dog salon для догляду за кігтями",
+=======
+    "product_id": "grp_f9b5eb6a3396",
+    "title": "Кігтеріз поперечний для кішок і собак dog salon для догляду за кігтями",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "category": "Grooming",
     "subtype": "Кігтеріз",
     "brand": "Tatra",
@@ -9,7 +14,11 @@
     "price_min": 175.0,
     "price_max": 175.0,
     "image_url": "https://images.prom.ua/2984809484_w640_h640_kogterez-poperechnyj-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog grooming salon tatra груминг догляд догляду за когтеріз кігтеріз кігтями кішок поперечний собак",
+=======
+    "search_blob": "salon tatra догляд догляду кігтеріз кігтями поперечний",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Кігтеріз",
       "purpose": "Догляд за кігтями"
@@ -25,8 +34,13 @@
     ]
   },
   {
+<<<<<<< HEAD
     "product_id": "grp_2a0b5b51ace6",
     "title": "Портативна поїлка-бутилка для собак та кішок",
+=======
+    "product_id": "grp_b832d8ea6866",
+    "title": "Портативна поїлка-пляшка для собак та кішок",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "category": "Feeding",
     "subtype": "Поїлка",
     "brand": "",
@@ -34,7 +48,11 @@
     "price_min": 329.0,
     "price_max": 329.0,
     "image_url": "https://images.prom.ua/4592604947_w640_h320_poilka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog feeding бутилка годування кішок миска портативна поїлка собак",
+=======
+    "search_blob": "води пляшка портативна поїлка поїлка-пляшка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Поїлка",
       "purpose": "Для води"
@@ -59,7 +77,11 @@
     "price_min": 415.0,
     "price_max": 415.0,
     "image_url": "https://images.prom.ua/6286422029_w640_h320_sviter-dlya-koshek.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba cat dogs knit sweater котiв одяг светер светр язаний",
+=======
+    "search_blob": "bomba в'язаний котів светр",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Светр",
       "purpose": "Для котів"
@@ -84,7 +106,11 @@
     "price_min": 580.0,
     "price_max": 875.0,
     "image_url": "https://images.prom.ua/4102002395_w640_h640_zimnij-kombinezon-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "3xl 4xl 5xl apparel dog kombinezon suit winter xl xxl бульдогів зимовий комбінезон одяг принтом собак тепло",
+=======
+    "search_blob": "бульдогів зимовий комбінезон принтом",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Для собак"
@@ -217,18 +243,31 @@
     ]
   },
   {
+<<<<<<< HEAD
     "product_id": "grp_9d7eabc54461",
     "title": "Щітка пуходерка для собак і кішок, з кнопкою самоочищення",
     "category": "Grooming",
     "subtype": "Пуходерка",
+=======
+    "product_id": "grp_58dc1da4b168",
+    "title": "Щітка пуходірка для собак і кішок, з кнопкою самоочищення",
+    "category": "Grooming",
+    "subtype": "пуходірка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "brand": "",
     "animal": "cat, dog",
     "price_min": 187.0,
     "price_max": 199.0,
     "image_url": "https://images.prom.ua/4320622513_w640_h320_schetka-puhoderka-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog grooming груминг догляд кнопкою кішок пуходерка самоочищення собак щітка",
     "attributes": {
       "subtype": "Пуходерка",
+=======
+    "search_blob": "догляд кнопкою пуходірка самоочищення шерстю щітка",
+    "attributes": {
+      "subtype": "пуходірка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
       "purpose": "Догляд за шерстю"
     },
     "variants": [
@@ -258,7 +297,11 @@
     "price_min": 146.0,
     "price_max": 146.0,
     "image_url": "https://images.prom.ua/5366104372_w640_h320_nozhnitsy-kogterez.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog grooming груминг догляд кігтеріз кішок ножиці собак",
+=======
+    "search_blob": "догляд кігтеріз кігтями ножиці",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Кігтеріз",
       "purpose": "Догляд за кігтями"
@@ -274,18 +317,31 @@
     ]
   },
   {
+<<<<<<< HEAD
     "product_id": "grp_4b744354196c",
     "title": "Когтеріз-сікатор для кішок і собак dog salon для догляду за кігтями",
     "category": "Grooming",
     "subtype": "Кігтеріз-сікатор",
+=======
+    "product_id": "grp_91923f55b279",
+    "title": "Кігтеріз-секатор для кішок і собак dog salon для догляду за кігтями",
+    "category": "Grooming",
+    "subtype": "Кігтеріз-секатор",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "brand": "Tatra",
     "animal": "cat, dog",
     "price_min": 162.0,
     "price_max": 162.0,
     "image_url": "https://images.prom.ua/4237748015_w640_h320_kogterez-sekator-dlya-koshek.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog grooming salon tatra груминг догляд догляду за когтеріз кігтеріз кігтями кішок собак сікатор",
     "attributes": {
       "subtype": "Кігтеріз-сікатор",
+=======
+    "search_blob": "salon tatra догляд догляду кігтеріз кігтеріз-секатор кігтями секатор",
+    "attributes": {
+      "subtype": "Кігтеріз-секатор",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
       "purpose": "Догляд за кігтями"
     },
     "variants": [
@@ -308,7 +364,11 @@
     "price_min": 269.0,
     "price_max": 536.25,
     "image_url": "https://images.prom.ua/5364001393_w640_h320_schetka-dlya-gruminga.jpg",
+<<<<<<< HEAD
     "search_blob": "72 75 care cat dog груминг грумінгу догляд кішок собак фурмінатор щітка",
+=======
+    "search_blob": "грумінгу догляд фурмінатор шерстю щітка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Фурмінатор",
       "purpose": "Догляд за шерстю"
@@ -342,7 +402,11 @@
     "price_min": 600.0,
     "price_max": 900.0,
     "image_url": "https://images.prom.ua/3347535455_w640_h640_zimnij-kombinezon-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog kombinezon suit winter зимовий зручний комбінезон одяг собак стильний теплий тепло",
+=======
+    "search_blob": "зимовий зручний комбінезон одяг стильний теплий",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Зимовий одяг"
@@ -409,7 +473,11 @@
     "price_min": 189.0,
     "price_max": 244.0,
     "image_url": "https://images.prom.ua/4604717642_w640_h320_trusy-gigienicheskie-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog гігієна гігієнічні регульовані собак труси",
+=======
+    "search_blob": "гігієна гігієнічні регульовані труси тічки",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Гігієнічні труси",
       "purpose": "Гігієна під час тічки"
@@ -455,7 +523,11 @@
     "price_min": 249.0,
     "price_max": 250.0,
     "image_url": "https://images.prom.ua/4438986844_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "21 cat dog harness nasa nylon qr walking waudog амуніція малюнок нагрудник нейлонова паспортом прогулянка собак шлейка шлея",
+=======
+    "search_blob": "nasa nylon qr-паспортом waudog малюнок нейлонова паспортом прогулянок шлейка шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -487,7 +559,11 @@
     "price_min": 195.0,
     "price_max": 358.33,
     "image_url": "https://images.prom.ua/4253406538_w640_h320_setchataya-shlejka-s.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog harness walking амуніція дихаюча легка нагрудник одяг повідком прогулянка регульована розмір синій собак сітчаста чорний шлейка шлея яка",
+=======
+    "search_blob": "дихаюча легка м'яка повідком прогулянок регульована сітчаста шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -570,7 +646,11 @@
     "price_min": 380.0,
     "price_max": 380.0,
     "image_url": "https://images.prom.ua/4794514270_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "bororo cat dog harness walking амуніція кожної комфорт контроль нагрудник прогулянка прогулянки під собак час шлейка шлея",
+=======
+    "search_blob": "bororo кожної комфорт контроль прогулянки прогулянок шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -609,7 +689,11 @@
     "price_min": 250.0,
     "price_max": 260.0,
     "image_url": "https://images.prom.ua/4388185157_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel cat dog hoodie капюшоном кофта кішок одяг собак толстовка худі",
+=======
+    "search_blob": "капюшоном одяг повсякденний худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Повсякденний одяг"
@@ -642,7 +726,11 @@
     "price_min": 549.0,
     "price_max": 900.0,
     "image_url": "https://images.prom.ua/2970773310_w640_h320_zimnyaya-odezhda-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "14 16 20 22 apparel dog kombinezon suit winter xl xxl xxxl зимовий кобеля комбінезон одяг собак тепло",
+=======
+    "search_blob": "зимовий кобеля комбінезон одяг період прогулянок",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Для прогулянок у зимовий період"
@@ -779,7 +867,11 @@
     "price_min": 466.66,
     "price_max": 466.66,
     "image_url": "https://images.prom.ua/3462578667_w640_h320_tyoplaya-zhiletka-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog vest безрукавка жилет жилетка захист комфорт одяг пору року собак тепла холодну",
+=======
+    "search_blob": "жилет жилетка захист зимовий комфорт одяг осінньо осінньо-зимовий пору року тепла холодну",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Осінньо-зимовий одяг"
@@ -804,7 +896,11 @@
     "price_min": 334.0,
     "price_max": 334.0,
     "image_url": "https://images.prom.ua/3971179246_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs knit sweater кофта одяг понад светер светр собак україна усе язаний",
+=======
+    "search_blob": "bomba кофта одяг повсякденний понад светр україна усе",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Светр",
       "purpose": "Повсякденний одяг"
@@ -829,7 +925,11 @@
     "price_min": 450.0,
     "price_max": 793.75,
     "image_url": "https://images.prom.ua/3937588859_w640_h320_zimnyaya-zhiletka-universalnaya.jpg",
+<<<<<<< HEAD
     "search_blob": "3xl apparel dog vest xl xxl безрукавка жилет жилетка зимова одяг собак тепла універсальна",
+=======
+    "search_blob": "жилет жилетка зимова зимовий одяг тепла універсальна",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Зимовий одяг"
@@ -950,7 +1050,11 @@
     "price_min": 554.0,
     "price_max": 554.0,
     "image_url": "https://images.prom.ua/6156756030_w640_h320_dozhdevik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs rain raincoat від дощовик дощу захист непромокальний одяг парасольки собак",
+=======
+    "search_blob": "bomba дощовик дощу захист парасольки",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Захист від дощу"
@@ -1010,7 +1114,11 @@
     "price_min": 450.0,
     "price_max": 450.0,
     "image_url": "https://images.prom.ua/6537117336_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "dog harness walking амуніція нагрудник прогулянка собак шлейка шлея",
+=======
+    "search_blob": "прогулянок шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -1042,7 +1150,11 @@
     "price_min": 340.0,
     "price_max": 566.67,
     "image_url": "https://images.prom.ua/2970772709_w640_h320_kurtka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog fashion jacket верхній кожній куртка одяг пальто прогулянці собак стиль тепла тепло",
+=======
+    "search_blob": "fashion демісезонний кожній куртка одяг прогулянці стиль тепло",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Демісезонний одяг"
@@ -1116,7 +1228,11 @@
     "price_min": 190.0,
     "price_max": 300.0,
     "image_url": "https://images.prom.ua/4393266542_w640_h320_vodonepronitsaemye-rezinovye-sapogi.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel boots dog shoes взуття водонепроникні гумові захист лап лапи одяг собак черевики чоботи",
+=======
+    "search_blob": "взуття водонепроникні гумові захист лап чоботи",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Взуття",
       "purpose": "Захист лап"
@@ -1181,7 +1297,11 @@
     "price_min": 369.0,
     "price_max": 545.0,
     "image_url": "https://images.prom.ua/3234281692_w640_h640_povodok-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "183 20 20мм 305 cat dog walking waterproof waudog амуніція водостійкий довжина поводок повідець прогулянка собак ширина",
+=======
+    "search_blob": "waterproof waudog водостійкий довжина поводок повідець прогулянок ширина",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для прогулянок"
@@ -1230,7 +1350,11 @@
     "price_min": 179.0,
     "price_max": 259.0,
     "image_url": "https://images.prom.ua/3242618690_w640_h320_oshejnik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "20 25 28 34 35 38 40 49 58 cat collar dog qr walking waterproof waudog амуніція блакитний водостійкий довжина нашийник обшийник одяг ошийник паспортом пластикова прогулянка пряжка собак фастекс червоний ширина",
+=======
+    "search_blob": "qr-паспортом waterproof waudog блакитний водостійкий довжина нашийник паспортом ширина",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і кішок"
@@ -1302,7 +1426,11 @@
     "price_min": 114.0,
     "price_max": 375.0,
     "image_url": "https://images.prom.ua/3250360507_w640_h320_oshejnik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "15 20 25 28 31 35 37 40 49 58 cat collar dog nasa nylon qr recycled walking waudog авокадо амуніція градієнт довжина малюнок нашийник нейлоновий обшийник одяг ошийник паспортом пластиковий прогулянка собак фастекс ширина",
+=======
+    "search_blob": "nylon waudog авокадо довжина котів малюнок нашийник нейлоновий паспортом пластиковий фастекс ширина",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і котів"
@@ -1398,7 +1526,11 @@
     "price_min": 259.0,
     "price_max": 399.0,
     "image_url": "https://images.prom.ua/3796821670_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog harness nasa nylon qr walking waudog амуніція анатомічна малюнок нагрудник одяг паспортом подібна прогулянка собак шлейка шлея",
+=======
+    "search_blob": "h-подібна nasa nylon qr-паспортом waudog анатомічна котів малюнок паспортом подібна шлейка шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак і котів"
@@ -1454,7 +1586,11 @@
     "price_min": 440.0,
     "price_max": 440.0,
     "image_url": "https://images.prom.ua/4573800244_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "dog harness k10 walking амуніція кожної комфорт контроль нагрудник прогулянка прогулянки під регульована собак час шлейка шлея",
+=======
+    "search_blob": "кожної комфорт контроль прогулянки прогулянок регульована шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -1479,7 +1615,11 @@
     "price_min": 232.0,
     "price_max": 232.0,
     "image_url": "https://images.prom.ua/4160986351_w640_h320_shleya-s-povodkom.jpg",
+<<<<<<< HEAD
     "search_blob": "cat cotton dog harness qr re walking waudog xs амуніція дрібних котів нагрудник одяг паспортом повідцем порід прогулянка собак шлейка шлея",
+=======
+    "search_blob": "cotton re-cotton waudog дрібних котів паспортом повідцем порід шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак і котів"
@@ -1512,7 +1652,11 @@
     "price_min": 499.0,
     "price_max": 499.0,
     "image_url": "https://images.prom.ua/3796797820_w640_h320_shleya-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog harness qr walking waterproof waudog амуніція нагрудник паспортом прогулянка собак шлейка шлея",
+=======
+    "search_blob": "qr-паспортом waterproof waudog паспортом прогулянок шлейка шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -1537,7 +1681,11 @@
     "price_min": 67.0,
     "price_max": 200.0,
     "image_url": "https://images.prom.ua/4287485546_w640_h320_oshejnik-dog-extreme.jpg",
+<<<<<<< HEAD
     "search_blob": "20 24 25 30 31 35 40 43 49 58 70 cat collar dog extreme walking амуніція довжина нашийник нейлону обшийник одяг ошийник прогулянка регульований різнокольоровий чорний ширина",
+=======
+    "search_blob": "collar extreme довжина котів нашийник нейлону регульований різнокольоровий ширина",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і котів"
@@ -1633,7 +1781,11 @@
     "price_min": 107.0,
     "price_max": 175.0,
     "image_url": "https://images.prom.ua/4235519527_w640_h320_oshejnik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "20 24 25 28 33 35 37 40 49 58 cat collar dog nylon qr walking waudog амуніція довжина малюнок мілітарі нашийник обшийник одяг ошийник паспортом патрон прапор прогулянка собак ширина",
+=======
+    "search_blob": "nylon waudog довжина котів малюнок мілітарі нашийник паспортом ширина",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і котів"
@@ -1721,7 +1873,11 @@
     "price_min": 149.0,
     "price_max": 149.0,
     "image_url": "https://images.prom.ua/5314484303_w640_h640_avtomobilnyj-remen-bezopasnosti.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog walking автомобільний амуніція безпеки прогулянка ремінь собаки",
+=======
+    "search_blob": "автомобільний автомобілі безпека безпеки ремінь",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Ремінь безпеки",
       "purpose": "Безпека в автомобілі"
@@ -1746,7 +1902,11 @@
     "price_min": 420.0,
     "price_max": 420.0,
     "image_url": "https://images.prom.ua/6223435953_w640_h640_povodok-sparka-dlya-dvuh.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog walking амуніція двох нейлонові повідець повідці подвійні прогулянка сворка собак спарка тварин",
+=======
+    "search_blob": "двома двох нейлонові повідець повідець-спарка повідці подвійні прогулянок сворка спарка тварин тваринами",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Сворка",
       "purpose": "Для прогулянок з двома тваринами"
@@ -1771,7 +1931,11 @@
     "price_min": 119.0,
     "price_max": 199.0,
     "image_url": "https://images.prom.ua/5892982322_w640_h320_namordnik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "dog museum muzzle walking амуніція намордник одяг пластиковий прогулянка собак",
+=======
+    "search_blob": "намордник пластиковий",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Для собак"
@@ -1838,7 +2002,11 @@
     "price_min": 219.0,
     "price_max": 389.0,
     "image_url": "https://images.prom.ua/5907504099_w640_h320_nashijnik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "45 60 cat collar dog led walking waudog амуніція застібка магнітна нашийник обшийник одяг ошийник прогулянка підсвічуванням собак",
+=======
+    "search_blob": "led waudog застібка котів магнітна нашийник підсвічуванням",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і котів"
@@ -1886,7 +2054,11 @@
     "price_min": 315.0,
     "price_max": 315.0,
     "image_url": "https://images.prom.ua/6664986301_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "cat clothes dog harness nasa qr walking waudog амуніція малюнок нагрудник паспортом прогулянка собак шлейка шлея яка",
+=======
+    "search_blob": "clothes nasa waudog м'яка малюнок паспортом прогулянок шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -1911,7 +2083,11 @@
     "price_min": 399.0,
     "price_max": 419.0,
     "image_url": "https://images.prom.ua/6750558224_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "dog harness walking амуніція нагрудник прогулянка собак шлейка шлея",
+=======
+    "search_blob": "прогулянок шлейка шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -1943,7 +2119,11 @@
     "price_min": 525.0,
     "price_max": 861.25,
     "image_url": "https://images.prom.ua/4253686504_w640_h320_dozhdevik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog fashion pet rain raincoat xl від дощовик дощу захист непромокальний одяг собак",
+=======
+    "search_blob": "fashion pet rain дощовик",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Для собак"
@@ -1992,7 +2172,11 @@
     "price_min": 589.0,
     "price_max": 589.0,
     "image_url": "https://images.prom.ua/3445612624_w640_h320_kombinezon-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog dogbaby kombinezon suit winter xl xxl зимовий комбінезон одяг собак тепло",
+=======
+    "search_blob": "dogbaby зимовий комбінезон одяг",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Зимовий одяг"
@@ -2033,7 +2217,11 @@
     "price_min": 156.0,
     "price_max": 284.0,
     "image_url": "https://images.prom.ua/3822401836_w640_h320_igrushka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog fun toys waudog малюнок пищалкою собак яка яєчня іграшка іграшки",
+=======
+    "search_blob": "fun waudog активна гра м'яка малюнок пищалкою яєчня іграшка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "М'яка іграшка",
       "purpose": "Активна гра"
@@ -2072,7 +2260,11 @@
     "price_min": 319.0,
     "price_max": 319.0,
     "image_url": "https://images.prom.ua/6792485016_w640_h320_takticheskij-oshejnik-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "collar dog walking амуніція металевою нашийник обшийник одяг ошийник прогулянка пряжкою підкладкою собак тактичний хакі чорний якою",
+=======
+    "search_blob": "м'якою металевою нашийник пряжкою підкладкою тактичний чорний",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак"
@@ -2120,7 +2312,11 @@
     "price_min": 95.0,
     "price_max": 95.0,
     "image_url": "https://images.prom.ua/3822592299_w640_h320_myachik-lajker-5.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog liker toys лайкер яч ячик іграшки",
+=======
+    "search_blob": "liker активна гра лайкер м'яч м'ячик",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "М'яч",
       "purpose": "Активна гра"
@@ -2146,7 +2342,11 @@
     "price_min": 245.0,
     "price_max": 245.0,
     "image_url": "https://images.prom.ua/3822651491_w640_h320_igrovaya-gantel-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog pitchdog toys апортировки гантель іграшки ігрова",
+=======
+    "search_blob": "pitchdog апортировки гантель гра тренування ігрова",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Гантель",
       "purpose": "Тренування та гра"
@@ -2171,7 +2371,11 @@
     "price_min": 160.0,
     "price_max": 160.0,
     "image_url": "https://images.prom.ua/4199078761_w640_h640_ohlazhdayuschaya-igrushka-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "13 4х3 5х7 animall cat dog grizzzly toys зелена зубів охолоджувальна синьо іграшка іграшки",
+=======
+    "search_blob": "animall grizzzly гра догляд зелена зубами зубів охолоджувальна синьо синьо-зелена іграшка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Охолоджувальна іграшка",
       "purpose": "Догляд за зубами та гра"
@@ -2197,7 +2401,11 @@
     "price_min": 89.0,
     "price_max": 111.25,
     "image_url": "https://images.prom.ua/4849878295_w640_h320_kotyacha-myata-igrushka.jpg",
+<<<<<<< HEAD
     "search_blob": "cat meds котяча котячої котів кулька спресована ята яти іграшка іграшки",
+=======
+    "search_blob": "гри котяча котячої котів кулька м'ята м'яти спресована стимуляція іграшка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Котяча м'ята",
       "purpose": "Стимуляція до гри"
@@ -2229,7 +2437,11 @@
     "price_min": 279.0,
     "price_max": 279.0,
     "image_url": "https://images.prom.ua/4449237887_w640_h320_igrushka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "dog flyber toys літаюча собак тарілка флайбер іграшка іграшки",
+=======
+    "search_blob": "flyber активна гра літаюча тарілка флайбер іграшка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Літаюча тарілка",
       "purpose": "Активна гра"
@@ -2254,7 +2466,11 @@
     "price_min": 245.0,
     "price_max": 275.0,
     "image_url": "https://images.prom.ua/5919727073_w640_h320_igrushka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "18 dog fun natural toys waudog біорозкладна гума палиця собак яч іграшка іграшки",
+=======
+    "search_blob": "fun natural waudog активна біорозкладна гра гума м'яч палиця іграшка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Палиця",
       "purpose": "Активна гра"
@@ -2288,7 +2504,11 @@
     "price_min": 350.0,
     "price_max": 350.0,
     "image_url": "https://images.prom.ua/6700137684_w640_h640_lapomojka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "care carno dog груминг догляд лапомийка собак",
+=======
+    "search_blob": "carno лап лапомийка очищення",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Лапомийка",
       "purpose": "Очищення лап"
@@ -2313,7 +2533,11 @@
     "price_min": 356.0,
     "price_max": 512.5,
     "image_url": "https://images.prom.ua/4573065675_w640_h320_nabor-shlejka-i.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog harness walking xs аксесуари амуніція блакитний комплект нагрудник одяг повідок прогулянка собак червоний шлейка шлея",
+=======
+    "search_blob": "блакитний комплект котів повідок шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак і котів"
@@ -2392,7 +2616,11 @@
     "price_min": 300.0,
     "price_max": 360.0,
     "image_url": "https://images.prom.ua/2972729268_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "dog harness walking амуніція безпека комфорт нагрудник прогулянка прогулянці ручкою собак шлейка шлея",
+=======
+    "search_blob": "безпека комфорт прогулянок прогулянці ручкою шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -2438,7 +2666,11 @@
     "price_min": 419.0,
     "price_max": 623.75,
     "image_url": "https://images.prom.ua/3009806309_w640_h320_shleya-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog harness idog walking амуніція кожної комфорт контроль нагрудник одяг прогулянка прогулянки під регулюється собак час шлейка шлея",
+=======
+    "search_blob": "idog кожної комфорт контроль прогулянки прогулянок регулюється шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -2484,7 +2716,11 @@
     "price_min": 290.0,
     "price_max": 290.0,
     "image_url": "https://images.prom.ua/4481071910_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "bororo cat dog harness walking амуніція нагрудник прогулянка собак шлейка шлея",
+=======
+    "search_blob": "bororo прогулянок шлейка шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -2509,7 +2745,11 @@
     "price_min": 291.0,
     "price_max": 399.0,
     "image_url": "https://images.prom.ua/3811454254_w640_h640_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog harness nasa nylon qr walking waudog амуніція анатомічна малюнок нагрудник паспортом прогулянка собак шлейка шлея",
+=======
+    "search_blob": "naa nylon waudog анатомічна малюнок паспортом прогулянок шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -2550,7 +2790,11 @@
     "price_min": 349.0,
     "price_max": 349.0,
     "image_url": "https://images.prom.ua/3201201431_w640_h320_namordnik-myagkij-collar.jpg",
+<<<<<<< HEAD
     "search_blob": "collar dog museum muzzle no0 walking амуніція намордник прогулянка спаніель який",
+=======
+    "search_blob": "collar безпека м'який намордник прогулянок спаніель",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Безпека під час прогулянок"
@@ -2575,7 +2819,11 @@
     "price_min": 126.0,
     "price_max": 139.0,
     "image_url": "https://images.prom.ua/3203851806_w640_h320_namordnik-nejlonovyj-dog.jpg",
+<<<<<<< HEAD
     "search_blob": "14 19 20см 25 26см 33 34см 43см collar dog extrem museum muzzle walking амуніція намордник нейлоновий одяг прогулянка регульований сіткою чорний",
+=======
+    "search_blob": "collar extrem безпека намордник нейлоновий прогулянок регульований сіткою",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Безпека під час прогулянок"
@@ -2641,7 +2889,11 @@
     "price_min": 189.0,
     "price_max": 264.0,
     "image_url": "https://images.prom.ua/3824338672_w640_h320_namordnik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "14 19 20см 25 26см 34см 35 43см dog museum muzzle nasa nylon walking waudog амуніція малюнок намордник одяг прогулянка собак червона шотландка",
+=======
+    "search_blob": "nylon waudog безпека малюнок намордник прогулянок червона шотландка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Безпека під час прогулянок"
@@ -2707,7 +2959,11 @@
     "price_min": 172.0,
     "price_max": 242.0,
     "image_url": "https://images.prom.ua/3207121900_w640_h320_oshejnik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "20 25мм 50 60см cat collar dog walking амуніція безрозмірний довжина нашийник обшийник одяг ошийник прогулянка собак ширина",
+=======
+    "search_blob": "collar безрозмірний довжина нашийник прогулянок ширина",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для прогулянок"
@@ -2741,7 +2997,11 @@
     "price_min": 102.0,
     "price_max": 135.0,
     "image_url": "https://images.prom.ua/3207151884_w640_h640_oshejnik-hb-tesma.jpg",
+<<<<<<< HEAD
     "search_blob": "20 25мм 31 41 53см cat collar dog walking амуніція довжина зелений нашийник обшийник одяг ошийник прогулянка тасьма ширина",
+=======
+    "search_blob": "collar довжина зелений нашийник прогулянок тасьма ширина",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для прогулянок"
@@ -2775,7 +3035,11 @@
     "price_min": 479.0,
     "price_max": 679.0,
     "image_url": "https://images.prom.ua/3225731801_w640_h320_povodok-ruletka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "12 15 cat dog leash nasa walking waudog xs амуніція до кг малюнок метри метрів одяг поводок повідець прогулянка рулетка собак",
+=======
+    "search_blob": "leah naa r-leah waudog малюнок метрів поводок поводок-рулетка повідець рулетка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для собак і кішок"
@@ -2816,7 +3080,11 @@
     "price_min": 419.0,
     "price_max": 723.75,
     "image_url": "https://images.prom.ua/3227580540_w640_h320_povodok-ruletka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "15 25 cat collar dog leash retractable walking xs аксесуари амуніція до кг метра метрів одяг поводок повідець прогулянка рулетка собак",
+=======
+    "search_blob": "collar метрів поводок поводок-рулетка повідець повідець-рулетка рулетка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для собак і кішок"
@@ -2888,7 +3156,11 @@
     "price_min": 726.0,
     "price_max": 726.0,
     "image_url": "https://images.prom.ua/3227463421_w640_h320_povodok-ruletka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "50 cat collar dog walking амуніція голубий до кг метрів повідець повідок прогулянка рулетка собак",
+=======
+    "search_blob": "coar collar голубий метрів повідець повідець-рулетка повідок повідок-рулетка прогулянок рулетка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Повідець-рулетка",
       "purpose": "Для прогулянок"
@@ -2914,7 +3186,11 @@
     "price_min": 139.0,
     "price_max": 489.0,
     "image_url": "https://images.prom.ua/3209347058_w640_h320_oshejnik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "12 15 20 21 25 27 29 30 35 36 38 39 46 49 60 cat classic collar dog walking waudog амуніція довжина нашийник обшийник одяг ошийник прогулянка рожевий собак сірий ширина шкіряний",
+=======
+    "search_blob": "classic waudog довжина нашийник рожевий ширина шкіряний",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і кішок"
@@ -3004,7 +3280,11 @@
     "price_min": 432.0,
     "price_max": 432.0,
     "image_url": "https://images.prom.ua/3227552333_w640_h640_povodok-ruletka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "cat collar dog walking амуніція поводок повідець прогулянка рулетка собак",
+=======
+    "search_blob": "collar поводок поводок-рулетка повідець повідець-рулетка прогулянок рулетка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Повідець-рулетка",
       "purpose": "Для прогулянок"
@@ -3029,7 +3309,11 @@
     "price_min": 299.0,
     "price_max": 299.0,
     "image_url": "https://images.prom.ua/3229692721_w640_h320_povodok-hb-tesma.jpg",
+<<<<<<< HEAD
     "search_blob": "20 300см cat collar dog walking амуніція довжина поводок повідець прогулянка тесьма ширина",
+=======
+    "search_blob": "collar довжина поводок повідець прогулянок тесьма ширина",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для прогулянок"
@@ -3055,7 +3339,11 @@
     "price_min": 539.0,
     "price_max": 539.0,
     "image_url": "https://images.prom.ua/3234233942_w640_h320_povodok-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "183см 25мм cat collar dog walking waterproof waudog амуніція водостійкий довжина повідець прогулянка собак червоний ширина",
+=======
+    "search_blob": "collar waterproof waudog водостійкий довжина повідець прогулянок червоний ширина",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для прогулянок"
@@ -3081,7 +3369,11 @@
     "price_min": 449.0,
     "price_max": 449.0,
     "image_url": "https://images.prom.ua/6792597331_w640_h320_takticheskij-oshejnik-s.jpg",
+<<<<<<< HEAD
     "search_blob": "collar dog walking амуніція металевою нашийник обшийник одяг ошийник повідком прогулянка пряжкою собак тактичний",
+=======
+    "search_blob": "металевою нашийник повідком пряжкою тактичний",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак"
@@ -3114,7 +3406,11 @@
     "price_min": 440.0,
     "price_max": 440.0,
     "image_url": "https://images.prom.ua/3554459389_w640_h320_zimnyaya-teplaya-kurtka.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog jacket верхній зимова куртка одяг пальто собак тепла універсальна",
+=======
+    "search_blob": "зимова зимовий куртка одяг тепла універсальна",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Зимовий одяг"
@@ -3139,7 +3435,11 @@
     "price_min": 209.0,
     "price_max": 261.25,
     "image_url": "https://images.prom.ua/4182184207_w640_h640_miska-labirint-wahopet-slow.jpg",
+<<<<<<< HEAD
     "search_blob": "bowl cat dog feeder feeding slow wahopet годування годівниця коричнева лабіринт миска пластикова поїлка",
+=======
+    "search_blob": "feeder slow wahopet коричнева лабіринт миска миска-лабіринт пластикова",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Миска",
       "purpose": "Для собак і кішок"
@@ -3171,7 +3471,11 @@
     "price_min": 269.0,
     "price_max": 269.0,
     "image_url": "https://images.prom.ua/4693160721_w640_h320_portativnaya-poilka-i.jpg",
+<<<<<<< HEAD
     "search_blob": "35 cat dog feeding годування годівничка миска портативна поїлка тварин",
+=======
+    "search_blob": "води годівничка дорозі корму портативна поїлка тварин",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Поїлка",
       "purpose": "Для води та корму в дорозі"
@@ -3197,7 +3501,11 @@
     "price_min": 115.0,
     "price_max": 115.0,
     "image_url": "https://images.prom.ua/4306751939_w640_h320_poilka-nasadka-na-butylku.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog feeding silicone waudog годування миска насадка пляшку поїлка",
+=======
+    "search_blob": "silicone waudog води дорозі насадка пляшку поїлка поїлка-насадка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Поїлка",
       "purpose": "Для води в дорозі"
@@ -3222,7 +3530,11 @@
     "price_min": 538.0,
     "price_max": 672.5,
     "image_url": "https://images.prom.ua/4306787750_w640_h320_miska-skladnaya-waudog.jpg",
+<<<<<<< HEAD
     "search_blob": "bowl cat dog feeder feeding silicone slow waudog годування годівниця лабіринт миска поїлка складається що",
+=======
+    "search_blob": "silicone waudog годування дорозі миска складається",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Миска",
       "purpose": "Для годування в дорозі"
@@ -3261,7 +3573,11 @@
     "price_min": 224.0,
     "price_max": 261.25,
     "image_url": "https://images.prom.ua/4427614610_w640_h320_miska-labirint-dlya-medlennogo.jpg",
+<<<<<<< HEAD
     "search_blob": "bowl cat dog feeder feeding slow аксесуари годування годівниця голуба зелена лабіринт миска пластикова повільного поїлка",
+=======
+    "search_blob": "годування зелена котів лабіринт миска миска-лабіринт пластикова повільного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Миска",
       "purpose": "Для собак і котів"
@@ -3300,7 +3616,11 @@
     "price_min": 199.0,
     "price_max": 199.0,
     "image_url": "https://images.prom.ua/5919795210_w640_h320_kovrik-dlya-slizyvaniya.jpg",
+<<<<<<< HEAD
     "search_blob": "190х190х10 cat dog feeding silicone waudog годування злизування килимок миска",
+=======
+    "search_blob": "silicone waudog годування злизування килимок повільне",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Килимок для злизування",
       "purpose": "Повільне годування"
@@ -3326,7 +3646,11 @@
     "price_min": 230.0,
     "price_max": 230.0,
     "image_url": "https://images.prom.ua/6409873654_w640_h320_miska-neprolivajka-waudog-silicone.jpg",
+<<<<<<< HEAD
     "search_blob": "750 bowl cat dog feeder feeding silicone slow waudog годування годівниця лабіринт миска мл непроливайка поїлка",
+=======
+    "search_blob": "silicone waudog годування миска непроливайка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Миска",
       "purpose": "Для годування"
@@ -3351,7 +3675,11 @@
     "price_min": 135.0,
     "price_max": 135.0,
     "image_url": "https://images.prom.ua/6574562349_w640_h320_miska-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "animall bowl cat dog feeder feeding slow годування годівниця діамант лабіринт миска поїлка собак",
+=======
+    "search_blob": "animall годування діамант миска",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Миска",
       "purpose": "Для годування"
@@ -3376,7 +3704,11 @@
     "price_min": 350.0,
     "price_max": 583.33,
     "image_url": "https://images.prom.ua/2970772893_w640_h320_zhiletka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog vest безрукавка блискавкою дощ жилет жилетка захист комфорт одяг собак спині",
+=======
+    "search_blob": "блискавкою вітру дощ дощу жилет жилетка захист комфорт спині",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Захист від дощу та вітру"
@@ -3457,7 +3789,11 @@
     "price_min": 399.0,
     "price_max": 399.0,
     "image_url": "https://images.prom.ua/4128536693_w640_h320_hudi-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog jacket teddy верхній куртка одяг пальто собак тепла",
+=======
+    "search_blob": "teddy куртка одяг повсякденний",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Повсякденний одяг"
@@ -3482,7 +3818,11 @@
     "price_min": 399.0,
     "price_max": 459.0,
     "image_url": "https://images.prom.ua/3061558111_w640_h640_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "2xl apparel dog heaven hoodie seven xl вашого затишок капюшоном кофта одяг собак стиль толстовка улюбленця худі",
+=======
+    "search_blob": "heaven seven вашого затишок одяг повсякденний стиль толстовка улюбленця худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Повсякденний одяг"
@@ -3544,7 +3884,11 @@
     "price_min": 295.0,
     "price_max": 443.75,
     "image_url": "https://images.prom.ua/3908734340_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "3xl 4xl apparel dog hoodie sweatshirt xl капюшоном капішоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "весняно весняно-осінній капішоном кофта носіння осінній період худі щоденного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння у весняно-осінній період"
@@ -3633,7 +3977,11 @@
     "price_min": 340.0,
     "price_max": 425.0,
     "image_url": "https://images.prom.ua/3083800385_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "aapa apparel dog hoodie xl xs xxl капюшоном кофта одяг рожевий синій собак толстовка худі",
+=======
+    "search_blob": "aapa капюшоном рожевий толстовка худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для собак"
@@ -3746,7 +4094,11 @@
     "price_min": 230.0,
     "price_max": 230.0,
     "image_url": "https://images.prom.ua/3445975959_w640_h640_kofta-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog knit sweater бавовни кофта одяг светер светр собак язаний",
+=======
+    "search_blob": "бавовни кофта одяг повсякденний светр",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Светр",
       "purpose": "Повсякденний одяг"
@@ -3771,7 +4123,11 @@
     "price_min": 334.0,
     "price_max": 334.0,
     "image_url": "https://images.prom.ua/3410269351_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog hoodie капюшоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "капюшоном одяг повсякденний худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Повсякденний одяг"
@@ -3796,7 +4152,11 @@
     "price_min": 467.0,
     "price_max": 537.0,
     "image_url": "https://images.prom.ua/4134799720_w640_h320_sviter-vyazanyj-kosichka.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs knit sweater косичка одяг светер светр синій язаний",
+=======
+    "search_blob": "bomba в'язаний зимовий косичка одяг светр синій",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Светр",
       "purpose": "Зимовий одяг"
@@ -3856,7 +4216,11 @@
     "price_min": 349.0,
     "price_max": 436.25,
     "image_url": "https://images.prom.ua/4119143127_w640_h320_sviter-angora-zmejka.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs knit sweater ангора змійка малина одяг розмір светер светр хакі язаний",
+=======
+    "search_blob": "bomba ангора змійка малина носіння розмір светр щоденного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Светр",
       "purpose": "Для щоденного носіння"
@@ -3951,7 +4315,11 @@
     "price_min": 260.0,
     "price_max": 498.75,
     "image_url": "https://images.prom.ua/4388185157_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog hoodie sweatshirt xl xxl капюшоном кофта одяг синій собак толстовка худі",
+=======
+    "search_blob": "капюшоном синій толстовка худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для собак"
@@ -4072,7 +4440,11 @@
     "price_min": 375.0,
     "price_max": 375.0,
     "image_url": "https://images.prom.ua/4389027808_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel cat dog essentials hoodie капюшоном кофта кішок одяг собак толстовка худі",
+=======
+    "search_blob": "essentials капюшоном одяг повсякденний худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Повсякденний одяг"
@@ -4097,7 +4469,11 @@
     "price_min": 380.0,
     "price_max": 445.0,
     "image_url": "https://images.prom.ua/4422309257_w640_h320_kofta-kardigan-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog knit sweater xl кардиган кофта одяг светер светр собак язаний",
+=======
+    "search_blob": "кардиган кофта носіння светр щоденного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Светр",
       "purpose": "Для щоденного носіння"
@@ -4138,7 +4514,11 @@
     "price_min": 399.0,
     "price_max": 399.0,
     "image_url": "https://images.prom.ua/4656997722_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog grandy hoodie капюшоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "grandy одяг повсякденний худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Повсякденний одяг"
@@ -4163,7 +4543,11 @@
     "price_min": 299.0,
     "price_max": 299.0,
     "image_url": "https://images.prom.ua/4915322736_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog hoodie капюшоном капішоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "капішоном кофта одяг повсякденний худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Повсякденний одяг"
@@ -4188,7 +4572,11 @@
     "price_min": 399.0,
     "price_max": 498.75,
     "image_url": "https://images.prom.ua/6156989884_w640_h640_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba cat dog dogs hoodie зайчик капюшоном кофта кішок одяг собак толстовка худі ята",
+=======
+    "search_blob": "bomba зайчик капюшоном м'ята носіння худі щоденного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння"
@@ -4283,7 +4671,11 @@
     "price_min": 259.0,
     "price_max": 259.0,
     "image_url": "https://images.prom.ua/5372260131_w640_h320_futbolka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs лапки одяг собак україна футболка чорна",
+=======
+    "search_blob": "bomba лапки літній період прогулянок україна футболка чорна",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Футболка",
       "purpose": "Для прогулянок у літній період"
@@ -4322,7 +4714,11 @@
     "price_min": 270.0,
     "price_max": 270.0,
     "image_url": "https://images.prom.ua/6286391982_w640_h320_sviter-dlya-koshek.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba cat dogs knit sweater велюр котів одяг светер светр язаний",
+=======
+    "search_blob": "bomba велюр котів одяг повсякденний светр",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Светр",
       "purpose": "Повсякденний одяг"
@@ -4368,7 +4764,11 @@
     "price_min": 400.0,
     "price_max": 500.0,
     "image_url": "https://images.prom.ua/6228889145_w640_h320_vyazanyj-sviter-polosatyj.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs knit sweater одяг светер светр серцем смугастий язаний",
+=======
+    "search_blob": "bomba в'язаний носіння светр серцем смугастий щоденного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Светр",
       "purpose": "Для щоденного носіння"
@@ -4414,7 +4814,11 @@
     "price_min": 645.0,
     "price_max": 912.5,
     "image_url": "https://images.prom.ua/6454956470_w640_h640_zhiletka-popona-dlya-bolshih.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel blanket coat dog vest безрукавка великих жилет жилетка захисний одяг попона порід собак",
+=======
+    "search_blob": "великих жилетка жилетка-попона зимовий одяг осінньо осінньо-зимовий попона порід",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Осінньо-зимовий одяг"
@@ -4467,7 +4871,11 @@
     "price_min": 450.0,
     "price_max": 450.0,
     "image_url": "https://images.prom.ua/6455750131_w640_h320_dvustoronnyaya-zhiletka-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog jacket верхній двостороння жилетка куртка одяг пальто собак тепла",
+=======
+    "search_blob": "двостороння жилетка зимовий куртка одяг осінньо осінньо-зимовий",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Осінньо-зимовий одяг"
@@ -4492,7 +4900,11 @@
     "price_min": 479.0,
     "price_max": 595.0,
     "image_url": "https://images.prom.ua/5889074248_w640_h320_dozhdevik-dlya-bolshih.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog rain raincoat великих від дощовик дощу захист непромокальний одяг середніх собак",
+=======
+    "search_blob": "великих дощовик дощу захист середніх",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Захист від дощу"
@@ -4545,7 +4957,11 @@
     "price_min": 695.0,
     "price_max": 1363.0,
     "image_url": "https://images.prom.ua/4101745635_w640_h320_kurtka-dvustoronnyaya-airyvest.jpg",
+<<<<<<< HEAD
     "search_blob": "airyvest apparel collar dog jacket uni верхній двостороння куртка одяг пальто тепла червоно чорна",
+=======
+    "search_blob": "airyvest collar uni двостороння демісезонний куртка одяг червоно червоно-чорна чорна",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Демісезонний одяг"
@@ -4577,7 +4993,11 @@
     "price_min": 569.0,
     "price_max": 569.0,
     "image_url": "https://images.prom.ua/3917439709_w640_h320_dozhdevik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs rain raincoat від дощовик дощу захист непромокальний одяг собак",
+=======
+    "search_blob": "bomba дощовик дощу захист",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Захист від дощу"
@@ -4630,7 +5050,11 @@
     "price_min": 470.0,
     "price_max": 470.0,
     "image_url": "https://images.prom.ua/3917400244_w640_h320_dozhdevik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "63 apparel bomba db dog dogs rain raincoat від дощовик дощу захист камуфляж непромокальний одяг синій собак",
+=======
+    "search_blob": "bomba дощовик дощу захист камуфляж синій",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Захист від дощу"
@@ -4656,7 +5080,11 @@
     "price_min": 420.0,
     "price_max": 420.0,
     "image_url": "https://images.prom.ua/4856165734_w640_h320_teplaya-kurtka-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog jacket верхній куртка одяг пальто собак тепла",
+=======
+    "search_blob": "зимовий куртка одяг осінньо осінньо-зимовий",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Осінньо-зимовий одяг"
@@ -4681,7 +5109,11 @@
     "price_min": 399.0,
     "price_max": 498.75,
     "image_url": "https://images.prom.ua/4153544775_w640_h640_kostyum-tekst-malina.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs kombinezon suit winter зимовий комбінезон костюм малина одяг текст тепло",
+=======
+    "search_blob": "bomba комбінезон костюм малина текст",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Для собак"
@@ -4734,7 +5166,11 @@
     "price_min": 390.0,
     "price_max": 575.0,
     "image_url": "https://images.prom.ua/6787427035_w640_h320_zhiletka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog vest безрукавка жилет жилетка зручний наповнювачем одяг синтепон собак фасон",
+=======
+    "search_blob": "демісезонний жилет жилетка зручний наповнювачем одяг синтепон фасон",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Демісезонний одяг"
@@ -4787,7 +5223,11 @@
     "price_min": 131.0,
     "price_max": 163.75,
     "image_url": "https://images.prom.ua/5927287408_w640_h640_lakomstva-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "100 100г dog feeding treats waudog качині куряче курячі кільця ласощі маленькі собак суші філе їжа",
+=======
+    "search_blob": "treats waudog курячі ласощі маленькі суші",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Ласощі",
       "purpose": "Для собак"
@@ -4826,7 +5266,11 @@
     "price_min": 659.0,
     "price_max": 659.0,
     "image_url": "https://images.prom.ua/3165025761_w640_h320_avtokreslo-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog walking автокрісло захист комфорт котів подорож поїздках собак",
+=======
+    "search_blob": "автокрісло автомобілі захист комфорт котів перевезення поїздках",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Автокрісло",
       "purpose": "Перевезення в автомобілі"
@@ -4851,7 +5295,11 @@
     "price_min": 1025.0,
     "price_max": 1025.0,
     "image_url": "https://images.prom.ua/6574300040_w640_h320_avtogamak-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "dog walking автогамак автомобільний гамак подорож собак",
+=======
+    "search_blob": "автогамак автомобільний автомобілі гамак перевезення",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Автогамак",
       "purpose": "Перевезення в автомобілі"
@@ -4876,7 +5324,11 @@
     "price_min": 169.0,
     "price_max": 599.0,
     "image_url": "https://images.prom.ua/3330522908_w640_h320_trenerovochnyj-snaryad-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "12 19 28 30 dog puller toys кільце снаряд собак тренувальне тренувальний іграшки",
+=======
+    "search_blob": "puller гра кільце снаряд тренувальне тренувальний тренування",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Тренувальне кільце",
       "purpose": "Тренування та гра"
@@ -4925,7 +5377,11 @@
     "price_min": 320.0,
     "price_max": 320.0,
     "image_url": "https://images.prom.ua/3126990409_w640_h320_reguliruemaya-shlejka-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "bororo cat dog harness walking амуніція без нагрудник прогулянка регульована собак тиску шию шлейка шлея яка",
+=======
+    "search_blob": "bororo м'яка прогулянок регульована тиску шию шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -4957,7 +5413,11 @@
     "price_min": 290.0,
     "price_max": 290.0,
     "image_url": "https://images.prom.ua/3110914084_w640_h320_shleya-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "bororo cat dog harness walking амуніція дихаючий легкий матеріал нагрудник прогулянка собак шлейка шлея",
+=======
+    "search_blob": "bororo дихаючий легкий матеріал прогулянок шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -4982,7 +5442,11 @@
     "price_min": 291.0,
     "price_max": 399.0,
     "image_url": "https://images.prom.ua/3196545292_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog harness nylon qr walking waudog авокадо амуніція анатомічна малюнок нагрудник паспортом прогулянка собак шлейка шлея",
+=======
+    "search_blob": "nylon qr-паспортом waudog авокадо анатомічна малюнок паспортом прогулянок шлейка шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -5021,7 +5485,11 @@
     "price_min": 470.0,
     "price_max": 550.0,
     "image_url": "https://images.prom.ua/2970774798_w640_h320_dozhdevik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "3xl apparel dog rain raincoat xl xxl від дощовик дощу жовтий захист капюшоном непромокальний одяг собак",
+=======
+    "search_blob": "дощовик дощу жовтий захист капюшоном",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Захист від дощу"
@@ -5079,7 +5547,11 @@
     "price_min": 540.0,
     "price_max": 600.0,
     "image_url": "https://images.prom.ua/2970772936_w640_h320_zimnyaya-kurtka-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog jacket верхній зимова зручна капюшоном куртка кільцем одяг пальто повідка собак тепла",
+=======
+    "search_blob": "зимова зимовий зручна капюшоном куртка кільцем одяг повідка тепла",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Зимовий одяг"
@@ -5125,7 +5597,11 @@
     "price_min": 460.0,
     "price_max": 510.0,
     "image_url": "https://images.prom.ua/3653298614_w640_h320_dozhdevik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog rain raincoat безпека від дощовик дощу захист комфорт непромокальний одяг прогулянок під собак час",
+=======
+    "search_blob": "безпека дощовик дощу захист комфорт прогулянок",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Захист від дощу"
@@ -5164,7 +5640,11 @@
     "price_min": 480.0,
     "price_max": 750.0,
     "image_url": "https://images.prom.ua/3554459389_w640_h320_zimnyaya-teplaya-kurtka.jpg",
+<<<<<<< HEAD
     "search_blob": "14 16 18 20 22 24 26 apparel dog jacket верхній зимова куртка одяг пальто собак тепла",
+=======
+    "search_blob": "зимова зимовий куртка одяг тепла",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Зимовий одяг"
@@ -5231,7 +5711,11 @@
     "price_min": 400.0,
     "price_max": 550.0,
     "image_url": "https://images.prom.ua/3932957212_w640_h320_zhiletka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "3xl 4xl 5xl apparel dog vest xl xxl безрукавка великих жилет жилетка малих одяг порід середніх собак",
+=======
+    "search_blob": "великих демісезонний жилет жилетка малих одяг порід середніх",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Демісезонний одяг"
@@ -5296,7 +5780,11 @@
     "price_min": 540.0,
     "price_max": 775.0,
     "image_url": "https://images.prom.ua/3987366441_w640_h640_kurtka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog jacket xl xxl верхній куртка одяг пальто розмір собак тепла",
+=======
+    "search_blob": "весняно весняно-осінній куртка осінній період прогулянок розмір",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для прогулянок у весняно-осінній період"
@@ -5353,7 +5841,11 @@
     "price_min": 799.0,
     "price_max": 998.75,
     "image_url": "https://images.prom.ua/3988625444_w640_h640_zimnyaya-zhiletka-popona-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel blanket bomba coat dog dogs vest безрукавка жилет жилетка захисний зимова мехом одяг плюшевим попона розмір собак",
+=======
+    "search_blob": "bomba жилетка жилетка-попона зимова зимовий мехом одяг плюшевим попона розмір",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Зимовий одяг"
@@ -5413,7 +5905,11 @@
     "price_min": 599.0,
     "price_max": 1249.0,
     "image_url": "https://images.prom.ua/4101039337_w640_h640_kurtochka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel clothes dog jacket l65 m40 m45 m47 m50 s30 s35 s40 vest waudog xs25 xs30 безрукавка верхній жилет жилетка куртка курточка одяг пальто світловідбивна собак тепла",
+=======
+    "search_blob": "clothes waudog демісезонний жилет курточка одяг світловідбивна",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Демісезонний одяг"
@@ -5508,7 +6004,11 @@
     "price_min": 870.0,
     "price_max": 1190.0,
     "image_url": "https://images.prom.ua/4101745635_w640_h320_kurtka-dvustoronnyaya-airyvest.jpg",
+<<<<<<< HEAD
     "search_blob": "airyvest apparel dog jacket uni верхній двостороння куртка одяг пальто тепла червоно чорна",
+=======
+    "search_blob": "airyvest uni двостороння куртка червоно червоно-чорна чорна",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для собак"
@@ -5554,7 +6054,11 @@
     "price_min": 399.0,
     "price_max": 399.0,
     "image_url": "https://images.prom.ua/4128536693_w640_h640_hudi-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog hoodie teddy капюшоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "teddy худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для собак"
@@ -5600,7 +6104,11 @@
     "price_min": 885.0,
     "price_max": 1106.25,
     "image_url": "https://images.prom.ua/4151239069_w640_h320_zimnij-kombinezon-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs kombinezon suit winter зимовий знімними зі комбінезон одяг розмір собак тепло штанами",
+=======
+    "search_blob": "bomba зимовий знімними комбінезон розмір штанами",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Для собак"
@@ -5653,7 +6161,11 @@
     "price_min": 420.0,
     "price_max": 525.0,
     "image_url": "https://images.prom.ua/4856165734_w640_h320_teplaya-kurtka-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "10 12 14 16 18 apparel dog jacket верхній куртка одяг пальто собак тепла",
+=======
+    "search_blob": "куртка тепла",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для собак"
@@ -5706,7 +6218,11 @@
     "price_min": 440.0,
     "price_max": 666.25,
     "image_url": "https://images.prom.ua/3653298614_w640_h320_dozhdevik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog rain raincoat від дощовик дощу захист непромокальний одяг собак",
+=======
+    "search_blob": "дощовик",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Для собак"
@@ -5760,7 +6276,11 @@
     "price_min": 500.0,
     "price_max": 575.0,
     "image_url": "https://images.prom.ua/2972415424_w640_h320_zhiletka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog vest xl xxl безрукавка жилет жилетка одяг собак",
+=======
+    "search_blob": "жилет жилетка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Для собак"
@@ -5809,7 +6329,11 @@
     "price_min": 470.0,
     "price_max": 490.0,
     "image_url": "https://images.prom.ua/6455750131_w640_h320_dvustoronnyaya-kurtka-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "3xl 4xl apparel dog jacket верхній двостороння куртка одяг пальто собак тепла",
+=======
+    "search_blob": "двостороння куртка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для собак"
@@ -5843,7 +6367,11 @@
     "price_min": 520.0,
     "price_max": 520.0,
     "image_url": "https://images.prom.ua/6455750131_w640_h320_dvustoronnyaya-kurtka-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "5xl apparel dog jacket верхній двостороння куртка одяг пальто собак тепла",
+=======
+    "search_blob": "двостороння куртка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для собак"
@@ -5868,7 +6396,11 @@
     "price_min": 520.0,
     "price_max": 650.0,
     "image_url": "https://images.prom.ua/6883929136_w640_h320_kurtka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "2xl 3xl apparel dog fashion jacket xl верхній куртка кільцем одяг пальто повідця собак тепла",
+=======
+    "search_blob": "fashion куртка кільцем повідця",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для собак"
@@ -5925,7 +6457,11 @@
     "price_min": 320.0,
     "price_max": 345.0,
     "image_url": "https://images.prom.ua/6923072695_w640_h320_novogodnij-vyazanyj-sviter.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel cat dog knit sweater xl xxl котів кішок новорічний одяг светер светр собак язаний",
+=======
+    "search_blob": "в'язаний зимових новорічний прогулянок светр свят",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Светр",
       "purpose": "Для зимових прогулянок та свят"
@@ -5997,7 +6533,11 @@
     "price_min": 490.0,
     "price_max": 490.0,
     "image_url": "https://images.prom.ua/4564723968_w640_h640_dozhdevik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog rain raincoat thedogface від дощовик дощу захист непромокальний одяг собак",
+=======
+    "search_blob": "thedogface дощовик",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Для собак"
@@ -6022,7 +6562,11 @@
     "price_min": 269.0,
     "price_max": 269.0,
     "image_url": "https://images.prom.ua/4594203356_w640_h320_shlejka-z-povodkom.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog harness walking кішок нагрудник одяг повідець собак шлейка шлея",
+=======
+    "search_blob": "повідець шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак і кішок"
@@ -6047,7 +6591,11 @@
     "price_min": 475.0,
     "price_max": 475.0,
     "image_url": "https://images.prom.ua/3987366441_w640_h640_kurtka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog face jacket xs верхній куртка одяг пальто собак тепла",
+=======
+    "search_blob": "face the куртка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для собак"
@@ -6073,7 +6621,11 @@
     "price_min": 522.0,
     "price_max": 522.0,
     "image_url": "https://images.prom.ua/3201251690_w640_h640_namordnik-myagkij-collar.jpg",
+<<<<<<< HEAD
     "search_blob": "collar dog museum muzzle walking вівчарка далматин доберман намордник одяг чорний який",
+=======
+    "search_blob": "collar вівчарка далматин доберман м'який намордник чорний",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Для собак"
@@ -6098,7 +6650,11 @@
     "price_min": 187.5,
     "price_max": 187.5,
     "image_url": "https://images.prom.ua/2970775409_w640_h320_trixie-mintfresh-bejsbolnyj.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog mintfresh toys trixie бейсбольний одяг ятою яч іграшка",
+=======
+    "search_blob": "mintfresh trixie бейсбольний м'ятою м'яч іграшка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Іграшка",
       "purpose": "Для собак і кішок"
@@ -6124,7 +6680,11 @@
     "price_min": 564.0,
     "price_max": 599.0,
     "image_url": "https://images.prom.ua/3201254281_w640_h320_namordnik-myagkij-collar.jpg",
+<<<<<<< HEAD
     "search_blob": "collar dog museum muzzle walking великий лабрадор малий намордник одяг ротвейлер чорний який",
+=======
+    "search_blob": "collar лабрадор м'який малий намордник ротвейлер чорний",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Для собак"
@@ -6156,7 +6716,11 @@
     "price_min": 749.0,
     "price_max": 749.0,
     "image_url": "https://images.prom.ua/3227580540_w640_h320_povodok-ruletka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "50 cat collar dog walking до кг метрів одяг поводок повідець рулетка собак",
+=======
+    "search_blob": "coar collar метрів поводок поводок-рулетка повідець рулетка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для собак і кішок"
@@ -6182,7 +6746,11 @@
     "price_min": 369.0,
     "price_max": 545.0,
     "image_url": "https://images.prom.ua/4575924138_w640_h320_povodok-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "15мм 183см 20 20мм 305 305см cat dog walking waterproof waudog водостійкий довжина одяг повідець собак ширина",
+=======
+    "search_blob": "waterproof waudog водостійкий довжина котів повідець ширина",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для собак і котів"
@@ -6232,7 +6800,11 @@
     "price_min": 375.0,
     "price_max": 495.0,
     "image_url": "https://images.prom.ua/3229692721_w640_h320_povodok-hb-tesma.jpg",
+<<<<<<< HEAD
     "search_blob": "25 25мм 300см 500см cat collar dog walking довжина одяг повідець тасьма ширина",
+=======
+    "search_blob": "collar довжина повідець тасьма ширина",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для собак і кішок"
@@ -6266,7 +6838,11 @@
     "price_min": 270.0,
     "price_max": 300.0,
     "image_url": "https://images.prom.ua/4388222158_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog hoodie xl xxl капюшоном капішоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "капішоном толстовка худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для собак"
@@ -6316,7 +6892,11 @@
     "price_min": 344.0,
     "price_max": 374.0,
     "image_url": "https://images.prom.ua/4531743544_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "3xl apparel dog hoodie xl капюшоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "весняно весняно-осінній кофта осінній період прогулянок худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для прогулянок у весняно-осінній період"
@@ -6374,7 +6954,11 @@
     "price_min": 320.0,
     "price_max": 350.0,
     "image_url": "https://images.prom.ua/5039934062_w640_h320_novogodnij-vyazanyj-sviter.jpg",
+<<<<<<< HEAD
     "search_blob": "10 14 16 20 24 apparel cat dog knit sweater новорічний одяг светер светр тварин язаний",
+=======
+    "search_blob": "в'язаний котів новорічний светр тварин",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Светр",
       "purpose": "Для собак і котів"
@@ -6441,7 +7025,11 @@
     "price_min": 440.0,
     "price_max": 440.0,
     "image_url": "https://images.prom.ua/4573800244_w640_h320_shleya-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "dog harness k10 walking xl нагрудник одяг собак шлейка шлея",
+=======
+    "search_blob": "шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак"
@@ -6467,7 +7055,11 @@
     "price_min": 695.0,
     "price_max": 695.0,
     "image_url": "https://images.prom.ua/3796797820_w640_h320_shleya-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog harness qr walking waterproof waudog нагрудник одяг паспортом собак шлейка шлея",
+=======
+    "search_blob": "qr-паспортом waterproof waudog котів паспортом шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак і котів"
@@ -6492,7 +7084,11 @@
     "price_min": 573.75,
     "price_max": 573.75,
     "image_url": "https://images.prom.ua/4333414676_w640_h320_shleya-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "dog harness masbrill walking нагрудник одяг регульована собак шлейка шлея",
+=======
+    "search_blob": "asbrill регульована шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак"
@@ -6518,7 +7114,11 @@
     "price_min": 290.0,
     "price_max": 290.0,
     "image_url": "https://images.prom.ua/3811478676_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "dog harness nasa21 nylon qr walking waudog малюнок нагрудник нейлонова одяг паспортом собак шлейка шлея",
+=======
+    "search_blob": "nasa nylon qr-паспортом waudog малюнок нейлонова паспортом шлейка шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак"
@@ -6544,7 +7144,11 @@
     "price_min": 399.0,
     "price_max": 419.0,
     "image_url": "https://images.prom.ua/6750558224_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "dog harness walking xl нагрудник одяг регульована синій собак шлейка шлея",
+=======
+    "search_blob": "регульована синій шлейка шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак"
@@ -6610,7 +7214,11 @@
     "price_min": 269.0,
     "price_max": 336.25,
     "image_url": "https://images.prom.ua/4594203356_w640_h320_shlejka-z-povodkom.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog harness walking xl аксесуари коричневий кішок нагрудник одяг повідець собак червоний шлейка шлея",
+=======
+    "search_blob": "коричневий котів повідець шлейка шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак і котів"
@@ -6682,7 +7290,11 @@
     "price_min": 649.0,
     "price_max": 759.0,
     "image_url": "https://images.prom.ua/5359189329_w640_h320_povodok-ruletka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "20 40 cat collar dog walking waudog до кг контейнером одяг пакетів повідець рулетка світловідбивна собак стрічка",
+=======
+    "search_blob": "collar waudog контейнером котів пакетів повідець повідець-рулетка рулетка світловідбивна стрічка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Повідець-рулетка",
       "purpose": "Для собак і котів"
@@ -6716,7 +7328,11 @@
     "price_min": 450.0,
     "price_max": 450.0,
     "image_url": "https://images.prom.ua/6537167835_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "dog harness walking xl нагрудник одяг регульована собак чорний шлейка шлея",
+=======
+    "search_blob": "регульована чорний шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак"
@@ -6782,7 +7398,11 @@
     "price_min": 520.0,
     "price_max": 520.0,
     "image_url": "https://images.prom.ua/6883929136_w640_h320_kurtka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog fashion jacket верхній куртка кільцем одяг пальто повідка собак тепла",
+=======
+    "search_blob": "fahion fashion куртка кільцем повідка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для собак"
@@ -6808,7 +7428,11 @@
     "price_min": 325.0,
     "price_max": 325.0,
     "image_url": "https://images.prom.ua/4312324127_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog face hoodie xl капюшоном капішоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "face the капішоном кофта худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для собак"
@@ -6834,7 +7458,11 @@
     "price_min": 498.75,
     "price_max": 498.75,
     "image_url": "https://images.prom.ua/6156971960_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs hoodie зайчик капюшоном кофта кішок одяг розмір собак толстовка худі ята",
+=======
+    "search_blob": "bomba зайчик капюшоном м'ята розмір худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для собак"
@@ -6859,7 +7487,11 @@
     "price_min": 500.0,
     "price_max": 500.0,
     "image_url": "https://images.prom.ua/6924109109_w640_h320_obuv-dlya-zhivotnyh.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel boots dog shoes взуття еко захист лап лапи одяг розмір тварин червоні черевики чоботи шкіра",
+=======
+    "search_blob": "взуття еко розмір тварин червоні шкіра",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Взуття",
       "purpose": "Для собак"
@@ -6884,7 +7516,11 @@
     "price_min": 500.0,
     "price_max": 500.0,
     "image_url": "https://images.prom.ua/6855765339_w640_h640_obuv-dlya-zhivotnyh.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel boots dog holapet shoes взуття захист лакові лап лапи одяг розмір тварин черевики чоботи чорні",
+=======
+    "search_blob": "holapet взуття лакові розмір тварин чорні",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Взуття",
       "purpose": "Для собак"
@@ -6909,7 +7545,11 @@
     "price_min": 437.5,
     "price_max": 437.5,
     "image_url": "https://images.prom.ua/6574396766_w640_h320_povodok-ruletka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "animall cat dog walking метри одяг повідець рулетка собак",
+=======
+    "search_blob": "animall котів метри повідець повідець-рулетка рулетка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Повідець-рулетка",
       "purpose": "Для собак і котів"
@@ -6935,7 +7575,11 @@
     "price_min": 498.75,
     "price_max": 498.75,
     "image_url": "https://images.prom.ua/6574396766_w640_h640_povodok-ruletka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "animall cat dog walking метрів одяг повідець рулетка собак",
+=======
+    "search_blob": "aniall animall котів метрів повідець повідець-рулетка рулетка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Повідець-рулетка",
       "purpose": "Для собак і котів"
@@ -6961,7 +7605,11 @@
     "price_min": 93.75,
     "price_max": 215.0,
     "image_url": "https://images.prom.ua/6228086748_w640_h640_miska-metallicheskaya-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "bowl cat dog feeder feeding slow аксесуари годівниця гумі лабіринт металева миска поїлка собак",
+=======
+    "search_blob": "гумі котів металева миска",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Миска",
       "purpose": "Для собак і котів"
@@ -7007,7 +7655,11 @@
     "price_min": 1073.75,
     "price_max": 1073.75,
     "image_url": "https://images.prom.ua/5901852762_w640_h640_sumka-perenoska-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "44х28х25 cat dog walking аксесуари кішок переноска собак сумка",
+=======
+    "search_blob": "котів переноска сумка сумка-переноска",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Переноска",
       "purpose": "Для собак і котів"
@@ -7033,7 +7685,11 @@
     "price_min": 1123.75,
     "price_max": 1123.75,
     "image_url": "https://images.prom.ua/6224102108_w640_h640_sumka-perenoska-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "37х23х30 bomba cat dog dogs walking аксесуари кішок переноска собак сумка чорна",
+=======
+    "search_blob": "bomba котів переноска сумка сумка-переноска чорна",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Переноска",
       "purpose": "Для собак і котів"
@@ -7059,7 +7715,11 @@
     "price_min": 481.25,
     "price_max": 821.25,
     "image_url": "https://images.prom.ua/4185304570_w640_h640_lezhanka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "20 40 50 54х40х13 65х45х20 beds cat dog furniture аксесуари лежак лежанка собак",
+=======
+    "search_blob": "відпочинку лежак лежанка сну",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Лежак",
       "purpose": "Для відпочинку та сну"
@@ -7101,7 +7761,11 @@
     "price_min": 93.75,
     "price_max": 93.75,
     "image_url": "https://images.prom.ua/6574478130_w640_h640_mylo-penka-dlya-mytya.jpg",
+<<<<<<< HEAD
     "search_blob": "150 animall care cat dog догляд за лап лапами мило миття мл пінка",
+=======
+    "search_blob": "animall догляд котів лап лапами мило мило-пінка миття пінка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Догляд за лапами",
       "purpose": "Для собак і котів"
@@ -7126,7 +7790,11 @@
     "price_min": 273.75,
     "price_max": 298.75,
     "image_url": "https://images.prom.ua/5927663333_w640_h640_bayer-advantix-advantiks.jpg",
+<<<<<<< HEAD
     "search_blob": "10 25 advantix bayer dog meds бліх від здоров кг кліщів краплі ліки паразитів піпетка собак",
+=======
+    "search_blob": "advantix bayer бліх кліщів краплі паразитів піпетка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Краплі від паразитів",
       "purpose": "Для собак"
@@ -7160,7 +7828,11 @@
     "price_min": 43.75,
     "price_max": 245.85,
     "image_url": "https://images.prom.ua/5927890186_w640_h320_igrushka-animall-fun.jpg",
+<<<<<<< HEAD
     "search_blob": "25 animall cat dog fun toys зелена кістка іграшка іграшки",
+=======
+    "search_blob": "animall fun зелена котів кістка іграшка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Іграшка",
       "purpose": "Для собак і котів"
@@ -7194,7 +7866,11 @@
     "price_min": 123.75,
     "price_max": 123.75,
     "image_url": "https://images.prom.ua/6574578533_w640_h320_igrushka-animall-fun.jpg",
+<<<<<<< HEAD
     "search_blob": "12 animall cat dog fun toys кільце сторін іграшка іграшки",
+=======
+    "search_blob": "animall fun котів кільце сторін іграшка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Іграшка",
       "purpose": "Для собак і котів"
@@ -7220,7 +7896,11 @@
     "price_min": 633.33,
     "price_max": 633.33,
     "image_url": "https://images.prom.ua/3627158075_w640_h320_zhiletka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog vest xl xxl безрукавка жилет жилетка одяг планети собак",
+=======
+    "search_blob": "жилет жилетка планети пору прогулянок року холодну",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Для прогулянок у холодну пору року"
@@ -7262,7 +7942,11 @@
     "price_min": 633.33,
     "price_max": 633.33,
     "image_url": "https://images.prom.ua/3311401830_w640_h640_zhiletka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog vest xxl безрукавка жилет жилетка одяг собак такси",
+=======
+    "search_blob": "жилет жилетка пору прогулянок року такси холодну",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Для прогулянок у холодну пору року"
@@ -7288,7 +7972,11 @@
     "price_min": 365.0,
     "price_max": 365.0,
     "image_url": "https://images.prom.ua/3908734231_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "2xl apparel dog hoodie капюшоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "весняно весняно-осінній капюшоном носіння осінній період толстовка худі щоденного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння у весняно-осінній період"
@@ -7313,7 +8001,11 @@
     "price_min": 400.0,
     "price_max": 400.0,
     "image_url": "https://images.prom.ua/3908734340_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "5xl apparel dog hoodie капюшоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "весняно весняно-осінній капюшоном носіння осінній період толстовка худі щоденного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння у весняно-осінній період"
@@ -7338,7 +8030,11 @@
     "price_min": 399.0,
     "price_max": 498.75,
     "image_url": "https://images.prom.ua/4656997754_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog fb hoodie sweatshirt капюшоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Толстовка",
       "purpose": "Для собак"
@@ -7398,7 +8094,11 @@
     "price_min": 375.0,
     "price_max": 468.75,
     "image_url": "https://images.prom.ua/4389007389_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel cat dog essentials hoodie sweatshirt капюшоном кофта кішок одяг собак толстовка худі",
+=======
+    "search_blob": "essentials капюшоном носіння толстовка щоденного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння"
@@ -7437,7 +8137,11 @@
     "price_min": 299.0,
     "price_max": 299.0,
     "image_url": "https://images.prom.ua/4915322736_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog hoodie xl капюшоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "носіння толстовка худі щоденного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння"
@@ -7487,7 +8191,11 @@
     "price_min": 430.0,
     "price_max": 430.0,
     "image_url": "https://images.prom.ua/3908734340_w640_h640_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "7xl apparel dog hoodie капюшоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "весняно весняно-осінній капюшоном носіння осінній період толстовка худі щоденного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння у весняно-осінній період"
@@ -7512,7 +8220,11 @@
     "price_min": 415.0,
     "price_max": 415.0,
     "image_url": "https://images.prom.ua/3908734340_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "6xl apparel dog hoodie капюшоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "весняно весняно-осінній капюшоном носіння осінній період толстовка худі щоденного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння у весняно-осінній період"
@@ -7537,7 +8249,11 @@
     "price_min": 290.0,
     "price_max": 483.33,
     "image_url": "https://images.prom.ua/4481071910_w640_h320_shleya-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "bororo cat dog harness walking аксесуари дихаючий легкий матеріал нагрудник одяг собак шлейка шлея",
+=======
+    "search_blob": "bororo дихаючий легкий матеріал прогулянок шлея щоденних",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для щоденних прогулянок"
@@ -7597,7 +8313,11 @@
     "price_min": 415.0,
     "price_max": 415.0,
     "image_url": "https://images.prom.ua/6286422029_w640_h320_sviter-dlya-koshek.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba cat dogs knit sweater котів одяг светер светр язаний",
+=======
+    "search_blob": "bomba в'язаний котів носіння светр щоденного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Светр",
       "purpose": "Для щоденного носіння"
@@ -7622,7 +8342,11 @@
     "price_min": 739.0,
     "price_max": 739.0,
     "image_url": "https://images.prom.ua/3201260835_w640_h320_namordnik-myagkij-collar.jpg",
+<<<<<<< HEAD
     "search_blob": "collar dog museum muzzle walking вівчарка кавказька московська намордник ньюфаундленд одяг сторожова чорний який",
+=======
+    "search_blob": "collar ветеринара вівчарка відвідування кавказька людних м'який московська місцях намордник ньюфаундленд прогулянок сторожова чорний",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Для відвідування ветеринара та прогулянок у людних місцях"
@@ -7647,7 +8371,11 @@
     "price_min": 124.0,
     "price_max": 192.5,
     "image_url": "https://images.prom.ua/3250360507_w640_h640_oshejnik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "20 24 25 35 40 58 cat collar dog nylon qr walking waudog авокадо аксесуари довжина малюнок нашийник нейлоновий обшийник одяг ошийник паспортом пластиковий собак фастекс ширина",
+=======
+    "search_blob": "collar nylon waudog авокадо довжина малюнок нашийник нейлоновий паспортом пластиковий фастекс ширина",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і кішок"
@@ -7681,7 +8409,11 @@
     "price_min": 290.0,
     "price_max": 340.0,
     "image_url": "https://images.prom.ua/3811478676_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "collar dog harness nasa21 nylon qr walking waudog малюнок нагрудник нейлонова одяг паспортом собак шлейка шлея",
+=======
+    "search_blob": "collar nasa nylon qr-паспортом qr-ідентифікацією waudog малюнок нейлонова паспортом прогулянок шлейка шлея щоденних ідентифікацією",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для щоденних прогулянок з QR-ідентифікацією"
@@ -7713,7 +8445,11 @@
     "price_min": 562.5,
     "price_max": 562.5,
     "image_url": "https://images.prom.ua/5000985128_w640_h640_zimnyaya-zhiletka-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog vest безрукавка жилет жилетка зимова одяг собак універсальна",
+=======
+    "search_blob": "жилет жилетка зимова пору прогулянок року універсальна холодну",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Для прогулянок у холодну пору року"
@@ -7738,7 +8474,11 @@
     "price_min": 489.0,
     "price_max": 489.0,
     "image_url": "https://images.prom.ua/3209347058_w640_h320_oshejnik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "35 46 60 cat classic collar dog walking waudog довжина нашийник обшийник одяг ошийник рожевий собак ширина шкіряний",
+=======
+    "search_blob": "classic collar waudog довжина нашийник прогулянок рожевий ширина шкіряний щоденних",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для щоденних прогулянок"
@@ -7764,7 +8504,11 @@
     "price_min": 248.75,
     "price_max": 248.75,
     "image_url": "https://images.prom.ua/3865076489_w640_h640_oshejnik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "cat collar dog nylon qr walking waudog малюнок нашийник обшийник одяг ошийник паспортом прапор собак",
+=======
+    "search_blob": "collar nylon qr-паспортом qr-ідентифікацією waudog малюнок нашийник паспортом прапор прогулянок щоденних ідентифікацією",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для щоденних прогулянок з QR-ідентифікацією"
@@ -7789,7 +8533,11 @@
     "price_min": 462.5,
     "price_max": 462.5,
     "image_url": "https://images.prom.ua/4074828370_w640_h320_novogodnyaya-tolstovka-snegoviki.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs hoodie капюшоном кофта новорічна одяг синій сніговики темно толстовка худі",
+=======
+    "search_blob": "bomba зимових новорічна прогулянок свят синій сніговики темно толстовка худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для зимових свят та прогулянок"
@@ -7821,7 +8569,11 @@
     "price_min": 533.33,
     "price_max": 533.33,
     "image_url": "https://images.prom.ua/4087859370_w640_h320_kostyum-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs kombinezon suit winter зайчик зимовий комбінезон костюм одяг собак тепло",
+=======
+    "search_blob": "bomba весняно весняно-осінній зайчик комбінезон костюм носіння осінній період щоденного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Для щоденного носіння у весняно-осінній період"
@@ -7846,7 +8598,11 @@
     "price_min": 475.0,
     "price_max": 575.0,
     "image_url": "https://images.prom.ua/4159579036_w640_h320_obuv-dlya-zhivotnyh.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel boots dog shoes взуття захист лап лапи одяг тварин черевики чоботи",
+=======
+    "search_blob": "взуття тварин",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Взуття",
       "purpose": "Для собак"
@@ -7927,7 +8683,11 @@
     "price_min": 55.0,
     "price_max": 55.0,
     "image_url": "https://images.prom.ua/4199184550_w640_h640_igrushka-animall-fun.jpg",
+<<<<<<< HEAD
     "search_blob": "animall dog fun toys зелена каштан собак яч іграшка іграшки",
+=======
+    "search_blob": "animall fun зелена зубів каштан м'яч рухливих чищення ігор іграшка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "М'яч",
       "purpose": "Для рухливих ігор та чищення зубів"
@@ -7953,7 +8713,11 @@
     "price_min": 71.25,
     "price_max": 71.25,
     "image_url": "https://images.prom.ua/4199683590_w640_h640_igrushka-animall-fun.jpg",
+<<<<<<< HEAD
     "search_blob": "12 animall dog fun toys коралова кістка іграшка іграшки",
+=======
+    "search_blob": "animall fun жування коралова кістка навчання іграшка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Кістка",
       "purpose": "Для жування та навчання"
@@ -7979,7 +8743,11 @@
     "price_min": 106.25,
     "price_max": 106.25,
     "image_url": "https://images.prom.ua/4200192903_w640_h640_shampun-animall-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "250 animall care dog груминг довгою догляд мл собак шампунь шерстю",
+=======
+    "search_blob": "animall довгою догляд шампунь шерстю",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шампунь",
       "purpose": "Догляд за довгою шерстю"
@@ -8004,7 +8772,11 @@
     "price_min": 106.25,
     "price_max": 106.25,
     "image_url": "https://images.prom.ua/4200209455_w640_h640_shampun-animall-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "250 animall care dog груминг догляд короткою мл собак шампунь шерстю",
+=======
+    "search_blob": "animall догляд короткою шампунь шерстю",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шампунь",
       "purpose": "Догляд за короткою шерстю"
@@ -8029,7 +8801,11 @@
     "price_min": 93.75,
     "price_max": 93.75,
     "image_url": "https://images.prom.ua/4200342494_w640_h640_shampun-animall-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "250 animall care dog алоевера груминг догляд мл собак шампунь",
+=======
+    "search_blob": "animall алоевера всіх догляд типів шампунь шерстю",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шампунь",
       "purpose": "Догляд за шерстю всіх типів"
@@ -8054,7 +8830,11 @@
     "price_min": 75.0,
     "price_max": 75.0,
     "image_url": "https://images.prom.ua/4200346455_w640_h640_shampun-animall-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "250 animall care dog всіх груминг догляд мл порід цуценят шампунь",
+=======
+    "search_blob": "animall всіх догляд порід цуценят шампунь шерстю",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шампунь",
       "purpose": "Догляд за шерстю цуценят"
@@ -8079,7 +8859,11 @@
     "price_min": 936.25,
     "price_max": 1022.5,
     "image_url": "https://images.prom.ua/4201935099_w640_h640_perenoska-dlya-koshek.jpg",
+<<<<<<< HEAD
     "search_blob": "58х42х42 animall carrier cat crate dog walking клітка контейнер кішок переноска подорож собак сіро ятна",
+=======
+    "search_blob": "animall м'ятна переноска сіро сіро-м'ятна тварин транспортування",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Переноска",
       "purpose": "Для транспортування тварин"
@@ -8113,7 +8897,11 @@
     "price_min": 236.25,
     "price_max": 248.75,
     "image_url": "https://images.prom.ua/4227292266_w640_h320_svetyaschijsya-led-oshejnik.jpg",
+<<<<<<< HEAD
     "search_blob": "64 cat collar dog led usb walking аксесуари зарядкою нашийник обшийник одяг ошийник світиться собак що",
+=======
+    "search_blob": "led usb зарядкою нашийник світиться",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і кішок"
@@ -8146,7 +8934,11 @@
     "price_min": 125.0,
     "price_max": 125.0,
     "image_url": "https://images.prom.ua/4277693669_w640_h640_shampun-gills-bejbi.jpg",
+<<<<<<< HEAD
     "search_blob": "200 care cat dog gill бейбі груминг догляд захист зір кошенят мл не псує уф цуценят шампунь",
+=======
+    "search_blob": "gill' gill's бейбі догляд захист зір кошенят псує цуценят шампунь шерстю",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шампунь",
       "purpose": "Догляд за шерстю кошенят та цуценят"
@@ -8172,7 +8964,11 @@
     "price_min": 105.0,
     "price_max": 105.0,
     "image_url": "https://images.prom.ua/4277750615_w640_h640_shampun-gills-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "200 care cat dog gill груминг догляд короткошерстних мл собак шампунь",
+=======
+    "search_blob": "gill' gill's догляд короткошерстних короткою шампунь шерстю",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шампунь",
       "purpose": "Догляд за короткою шерстю"
@@ -8198,7 +8994,11 @@
     "price_min": 125.0,
     "price_max": 125.0,
     "image_url": "https://images.prom.ua/4277753426_w640_h640_shampun-gills-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "200 care cat dog gill груминг догляд кучерявої мл об шампунь шерсті якість єм",
+=======
+    "search_blob": "gill' gill's догляд кучерявою кучерявої м'якість об'єм шампунь шерстю шерсті",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шампунь",
       "purpose": "Догляд за кучерявою шерстю"
@@ -8224,7 +9024,11 @@
     "price_min": 561.25,
     "price_max": 600.0,
     "image_url": "https://images.prom.ua/4333414676_w640_h640_shleya-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "dog harness masbrill walking аксесуари нагрудник одяг регулюється собак шлейка шлея",
+=======
+    "search_blob": "masbrill прогулянок регулюється шлея щоденних",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для щоденних прогулянок"
@@ -8263,7 +9067,11 @@
     "price_min": 286.25,
     "price_max": 286.25,
     "image_url": "https://images.prom.ua/4338541290_w640_h320_schetka-dlya-mytya.jpg",
+<<<<<<< HEAD
     "search_blob": "cat dog grooming груминг догляд миття тварин щітка",
+=======
+    "search_blob": "догляд купання миття тварин шерстю щітка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Щітка",
       "purpose": "Догляд за шерстю під час купання"
@@ -8288,7 +9096,11 @@
     "price_min": 364.0,
     "price_max": 500.0,
     "image_url": "https://images.prom.ua/6664986301_w640_h320_shlejka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "cat clothes collar dog harness nasa qr walking waudog малюнок нагрудник одяг паспортом собак шлейка шлея яка",
+=======
+    "search_blob": "clothes collar nasa qr-ідентифікацією waudog м'яка малюнок паспортом прогулянок шлея щоденних ідентифікацією",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для щоденних прогулянок з QR-ідентифікацією"
@@ -8341,7 +9153,11 @@
     "price_min": 739.0,
     "price_max": 739.0,
     "image_url": "https://images.prom.ua/5374231107_w640_h320_lezhanka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "beds bomba cat d62 dog dogs furniture лежак лежанка махра собак",
+=======
+    "search_blob": "bomba відпочинку лежак лежанка махра сну",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Лежак",
       "purpose": "Для відпочинку та сну"
@@ -8367,7 +9183,11 @@
     "price_min": 80.0,
     "price_max": 80.0,
     "image_url": "https://images.prom.ua/6574508794_w640_h640_igrushka-animall-fun.jpg",
+<<<<<<< HEAD
     "search_blob": "animall dog fun toys пищалкою собак хвиля яч іграшка іграшки",
+=======
+    "search_blob": "animall fun дресирування м'яч пищалкою рухливих хвиля ігор іграшка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "М'яч",
       "purpose": "Для рухливих ігор та дресирування"
@@ -8393,7 +9213,11 @@
     "price_min": 700.0,
     "price_max": 700.0,
     "image_url": "https://images.prom.ua/4489913862_w640_h640_kurtka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog jacket верхній двостороння куртка одяг пальто собак тепла",
+=======
+    "search_blob": "двостороння зимовий куртка одяг осінньо осінньо-зимовий період прогулянок",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для прогулянок у осінньо-зимовий період"
@@ -8432,7 +9256,11 @@
     "price_min": 700.0,
     "price_max": 700.0,
     "image_url": "https://images.prom.ua/4489913862_w640_h320_tyoplaya-dvustoronnyaya-vodonepronitsaemaya.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog jacket верхній водонепроникна двостороння куртка одяг пальто собак тепла",
+=======
+    "search_blob": "водонепроникна двостороння зимовий куртка осінньо осінньо-зимовий період прогулянок тепла",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для прогулянок у осінньо-зимовий період"
@@ -8457,7 +9285,11 @@
     "price_min": 575.0,
     "price_max": 750.0,
     "image_url": "https://images.prom.ua/2970772893_w640_h640_odezhda-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog vest безрукавка жилет жилетка одяг собак тварин",
+=======
+    "search_blob": "дощову жилет жилетка одяг погоду прогулянок тварин холодну",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Для прогулянок у холодну та дощову погоду"
@@ -8517,7 +9349,11 @@
     "price_min": 500.0,
     "price_max": 500.0,
     "image_url": "https://images.prom.ua/4412829599_w640_h640_reguliruemaya-shlejka-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "bororo cat dog harness walking без нагрудник одяг регульована собак тиску шию шлейка шлея яка",
+=======
+    "search_blob": "bororo м'яка прогулянок регульована тиску шию шлея щоденних",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для щоденних прогулянок"
@@ -8542,7 +9378,11 @@
     "price_min": 633.33,
     "price_max": 633.33,
     "image_url": "https://images.prom.ua/3092846475_w640_h320_shleya-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "bororo cat dog harness new walking нагрудник одяг регульована собак шлейка шлея",
+=======
+    "search_blob": "bororo new прогулянок регульована шлея щоденних",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для щоденних прогулянок"
@@ -8574,7 +9414,11 @@
     "price_min": 533.33,
     "price_max": 533.33,
     "image_url": "https://images.prom.ua/4087859370_w640_h320_kostyum-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs kombinezon suit winter зимовий комбінезон костюм одяг собак тепло",
+=======
+    "search_blob": "bomba весняно весняно-осінній комбінезон костюм носіння осінній період щоденного",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Для щоденного носіння у весняно-осінній період"
@@ -8599,7 +9443,11 @@
     "price_min": 1461.25,
     "price_max": 1461.25,
     "image_url": "https://images.prom.ua/4101039337_w640_h640_kurtochka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel clothes collar dog jacket l55 waudog верхній куртка курточка одяг пальто світловідбивна собак тепла",
+=======
+    "search_blob": "clothes collar waudog весняно весняно-осінній видимістю куртка курточка осінній період прогулянок підвищеною світловідбивна",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для прогулянок у весняно-осінній період з підвищеною видимістю"
@@ -8624,7 +9472,11 @@
     "price_min": 106.25,
     "price_max": 106.25,
     "image_url": "https://images.prom.ua/4199184853_w640_h640_igrushka-animall-fun.jpg",
+<<<<<<< HEAD
     "search_blob": "animall cat dog fun зелена каштан собак яч іграшка іграшки",
+=======
+    "search_blob": "animall fun зелена каштан м'яч іграшка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": null,
       "purpose": "Для собак і кішок"
@@ -8650,7 +9502,11 @@
     "price_min": 781.25,
     "price_max": 781.25,
     "image_url": "https://images.prom.ua/4253686504_w640_h320_dozhdevik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog fashion pet rain raincoat від дощовик дощу захист непромокальний одяг собак такса",
+=======
+    "search_blob": "fashion pet rain дощовик такса",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Для собак"
@@ -8676,7 +9532,11 @@
     "price_min": 498.75,
     "price_max": 498.75,
     "image_url": "https://images.prom.ua/6156989884_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs hoodie sweatshirt зайчик капюшоном кофта кішок одяг собак толстовка худі ята",
+=======
+    "search_blob": "bomba зайчик капюшоном м'ята толстовка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Толстовка",
       "purpose": "Для собак"
@@ -8701,7 +9561,11 @@
     "price_min": 300.0,
     "price_max": 312.5,
     "image_url": "https://images.prom.ua/3445975959_w640_h320_kofta-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog jumper xl кофта одяг светр собак толстовка",
+=======
+    "search_blob": "кофта",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Кофта",
       "purpose": "Для собак"
@@ -8735,7 +9599,11 @@
     "price_min": 636.25,
     "price_max": 806.25,
     "image_url": "https://images.prom.ua/3796797820_w640_h640_shleya-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "cat collar dog harness qr walking waterproof waudog аксесуари нагрудник паспортом собак шлейка шлея",
+=======
+    "search_blob": "collar qr-паспортом waterproof waudog паспортом шлея",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак і кішок"
@@ -8767,7 +9635,11 @@
     "price_min": 306.25,
     "price_max": 306.25,
     "image_url": "https://images.prom.ua/3822630349_w640_h640_igrovaya-gantel-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "cat collar dog pitchdog апортировки гантель іграшки ігрова",
+=======
+    "search_blob": "collar pitchdog апортировки гантель ігрова",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": null,
       "purpose": "Для собак і кішок"
@@ -8792,7 +9664,11 @@
     "price_min": 587.5,
     "price_max": 587.5,
     "image_url": "https://images.prom.ua/3917400244_w640_h640_dozhdevik-db-kamuflyazh.jpg",
+<<<<<<< HEAD
     "search_blob": "63 apparel bomba db dog dogs rain raincoat від дощовик дощу захист камуфляж непромокальний одяг синій",
+=======
+    "search_blob": "bomba дощовик камуфляж синій",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Для собак"
@@ -8826,7 +9702,11 @@
     "price_min": 417.5,
     "price_max": 418.75,
     "image_url": "https://images.prom.ua/3971179246_w640_h320_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel bomba dog dogs hoodie sweatshirt кофта одяг собак толстовка україна худі",
+=======
+    "search_blob": "bomba толстовка україна",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Толстовка",
       "purpose": "Для собак"
@@ -8872,7 +9752,11 @@
     "price_min": 475.0,
     "price_max": 475.0,
     "image_url": "https://images.prom.ua/4312324127_w640_h640_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "5xl apparel dog hoodie sweatshirt капішоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "капішоном кофта толстовка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Толстовка",
       "purpose": "Для собак"
@@ -8897,7 +9781,11 @@
     "price_min": 387.5,
     "price_max": 387.5,
     "image_url": "https://images.prom.ua/2970772651_w640_h320_novogodnyaya-odezhda-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog suit xl xxl комплект костюм новорічний одяг святковий тварин",
+=======
+    "search_blob": "костюм новорічний одяг тварин",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Костюм",
       "purpose": "Для собак"
@@ -8947,7 +9835,11 @@
     "price_min": 736.25,
     "price_max": 736.25,
     "image_url": "https://images.prom.ua/3445612624_w640_h320_kombinezon-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel dog dogbaby kombinezon suit winter зимовий комбинезон комбінезон одяг собак тепло",
+=======
+    "search_blob": "dogbaby комбинезон комбінезон",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Для собак"
@@ -8981,7 +9873,11 @@
     "price_min": 145.0,
     "price_max": 145.0,
     "image_url": "https://images.prom.ua/6228093423_w640_h320_miska-metallicheskaya-dlya.jpg",
+<<<<<<< HEAD
     "search_blob": "bowl cat dog feeder feeding slow алегро годування годівниця гумі лабіринт металева миска поїлка собак",
+=======
+    "search_blob": "алегро гумі металева миска",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Миска",
       "purpose": "Для собак і кішок"
@@ -9006,7 +9902,11 @@
     "price_min": 562.5,
     "price_max": 562.5,
     "image_url": "https://images.prom.ua/6666922338_w640_h640_tolstovka-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "8xl apparel dog hoodie капюшоном кофта одяг собак толстовка худі",
+=======
+    "search_blob": "худі",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для собак"
@@ -9031,7 +9931,11 @@
     "price_min": 437.5,
     "price_max": 500.0,
     "image_url": "https://images.prom.ua/6855765339_w640_h640_obuv-dlya-zhivotnyh.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel boots dog holapet shoes взуття захист лаковане лап лапи одяг тварин черевики чоботи чорне",
+=======
+    "search_blob": "holapet взуття лаковане тварин чорне",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Взуття",
       "purpose": "Для собак"
@@ -9077,7 +9981,11 @@
     "price_min": 500.0,
     "price_max": 500.0,
     "image_url": "https://images.prom.ua/6924109109_w640_h640_obuv-dlya-zhivotnyh.jpg",
+<<<<<<< HEAD
     "search_blob": "apparel boots dog shoes взуття екошкіра захист лап лапи одяг тварин червоні черевики чоботи",
+=======
+    "search_blob": "взуття екошкіра тварин червоні",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Взуття",
       "purpose": "Для собак"
@@ -9123,7 +10031,11 @@
     "price_min": 273.75,
     "price_max": 273.75,
     "image_url": "https://images.prom.ua/3205073151_w640_h640_namordnik-dlya-sobak.jpg",
+<<<<<<< HEAD
     "search_blob": "19 26см collar dog museum muzzle nylon walking waudog аксесуари малюнок намордник собак червона шотландка",
+=======
+    "search_blob": "collar nylon waudog малюнок намордник червона шотландка",
+>>>>>>> 93f1e64 (Update core logic and luckydog store configurations)
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Для собак"

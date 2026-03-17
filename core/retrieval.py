@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-# /root/ukrsell_v4/core/retrieval.py v9.3.0
+# /root/ukrsell_v4/core/retrieval.py v9.4.0
+
 from typing import List, Dict, Optional, Any, Union
 import os
 import json
@@ -14,10 +15,11 @@ from core.intelligence import entity_filter, get_stem
 
 class RetrievalEngine:
     """
-    Universal SaaS Retrieval Engine v9.3.0 [ASYNC OPTIMIZED].
-    - Исправлена блокировка Event Loop при загрузке и поиске.
+    Universal SaaS Retrieval Engine v9.4.0 [ASYNC OPTIMIZED].
     - Hybrid Search: Vector (FAISS) + Keyword (Local).
     - RRF Rank Fusion для объединения результатов.
+    - Sanity-Aware: Интеграция с action=TROLL для предотвращения холостых запросов.
+    - Soft Fallback: Если фильтры по сущностям дают 0, возвращает семантическую близость.
     """
 
     def __init__(self, ctx: Any, shared_model: Any, shared_translator: Any = None):
@@ -27,6 +29,7 @@ class RetrievalEngine:
         self.translator = shared_translator
         self.executor = ThreadPoolExecutor(max_workers=4)
 
+        # Конфигурация порогов релевантности
         self.threshold = getattr(ctx, "threshold_main", 0.35)
         self.semantic_filter_threshold = 0.55
         self.troll_threshold_strict = 0.95
@@ -34,6 +37,7 @@ class RetrievalEngine:
 
         self.language = getattr(ctx, "language", "Ukrainian")
 
+        # Инициализация структур данных
         self.id_list: List[str] = []
         self.metadata: Dict[str, Any] = {}
         self.index: Optional[faiss.IndexFlatIP] = None
@@ -44,7 +48,7 @@ class RetrievalEngine:
         self.intent_mapping: Dict[str, Any] = {}
         self.enrichment_map: Dict[str, List[str]] = {}
 
-        # Запуск асинхронной инициализации
+        # Запуск асинхронной загрузки ассетов
         asyncio.create_task(self._initialize_assets_async())
 
     async def _initialize_assets_async(self):
@@ -58,7 +62,7 @@ class RetrievalEngine:
 
             if hasattr(self.ctx, 'data_ready') and isinstance(self.ctx.data_ready, asyncio.Event):
                 self.ctx.data_ready.set()
-                logger.info(f"🚀 [{self.slug}] Retrieval Engine v9.3.0 is READY (Async Init).")
+                logger.info(f"🚀 [{self.slug}] Retrieval Engine v9.4.0 is READY (Async Init).")
         except Exception as e:
             logger.error(f"[{self.slug}] Async Init Failed: {e}", exc_info=True)
 
@@ -179,9 +183,13 @@ class RetrievalEngine:
 
         for p in products:
             prod = p["product"]
-            title, brand, p_cat = str(prod.get("title") or prod.get("name", "")).lower(), str(prod.get("brand", "")).lower(), str(prod.get("category", "")).lower()
+            title = str(prod.get("title") or prod.get("name", "")).lower()
+            brand = str(prod.get("brand", "")).lower()
+            p_cat = str(prod.get("category", "")).lower()
+            
             vec_sim = float(p.get("score", 0))
-            if target_vec is not None and t_lower and t_lower not in str(prod.get("search_blob") or title).lower(): vec_sim *= 0.7
+            if target_vec is not None and t_lower and t_lower not in str(prod.get("search_blob") or title).lower(): 
+                vec_sim *= 0.7
             
             t_bonus = 0.4 if t_lower and (t_lower in title or t_lower in brand) else 0.0
             c_bonus = 0.3 if any(vc == p_cat or vc in p_cat for vc in valid_cats) else 0.0
@@ -193,7 +201,7 @@ class RetrievalEngine:
         return sorted(reranked, key=lambda x: x["final_score"], reverse=True)
 
     async def search(self, query: str, entities: Dict[str, Any] = None, top_k: int = 5) -> Dict:
-        """Production Hybrid Search Pipeline v9.3.0 (Non-blocking)."""
+        """Production Hybrid Search Pipeline v9.4.0 (Non-blocking)."""
         if not self.index or not self.id_list:
             return {"status": "NO_ASSETS", "products": [], "all_products": []}
 
@@ -202,11 +210,16 @@ class RetrievalEngine:
             ent = entities or {}
             target = str(ent.get("resolved_product") or ent.get("target") or "").lower()
             props = ent.get("properties", {})
+            if not isinstance(props, dict): props = {}
+            
+            # GUARD: Если Analyzer определил троллинг, поиск не выполняется
+            if ent.get("action") == "TROLL": 
+                logger.info(f"[{self.slug}] Search blocked by TROLL action.")
+                return {"status": "SEMANTIC_REJECT", "products": [], "all_products": [], "is_troll": True}
+
             enriched_q = self._enrich_query(query)
             det_cat = props.get("category") or ent.get("category") or self._detect_category(query)
             
-            if ent.get("action") == "TROLL": return {"status": "SEMANTIC_REJECT", "products": [], "all_products": []}
-
             # Non-blocking encoding
             search_text = target if len(target) > 2 else enriched_q
             q_emb = await loop.run_in_executor(self.executor, lambda: self.model.encode(f"query: {search_text}", normalize_embeddings=True).astype('float32'))
@@ -237,35 +250,63 @@ class RetrievalEngine:
             for pid in merged_ids:
                 p = self.metadata.get(pid)
                 if not p: continue
-                if cat_stem and cat_stem not in str(p.get("title","")).lower() and cat_stem not in str(p.get("category","")).lower(): continue
-                if str(p.get("availability", "instock")).lower() in ["outofstock", "немає в наявності", "нет в наличии"]: continue
-                if price_limit and float(p.get("price", 0)) > float(price_limit): continue
+                
+                # Фильтр наличия
+                if str(p.get("availability", "instock")).lower() in ["outofstock", "немає в наявності", "нет в наличии"]: 
+                    continue
+                # Фильтр цены
+                if price_limit:
+                    try:
+                        if float(p.get("price", 0)) > float(price_limit): continue
+                    except: pass
                 
                 after_price += 1
                 if self._apply_invisible_filters(p, props):
                     raw_hits.append({"product": p, "score": v_map.get(pid, 0.1), "final_score": 0.0, "id": pid})
 
+            # Ранжирование семантики
             reranked = self._semantic_rerank(raw_hits, target, det_cat or "", t_vec, q_words)
             
-            # Интеграция с intel_filter для глубокой фильтрации
-            intel_filtered = entity_filter([r["product"] for r in reranked], ent, intent_mapping=self.intent_mapping, category_map=getattr(self.ctx, "category_map", {}))
+            # Интеграция с intel_filter для глубокой фильтрации по сущностям
+            intel_filtered = entity_filter(
+                [r["product"] for r in reranked], 
+                ent, 
+                intent_mapping=self.intent_mapping, 
+                category_map=getattr(self.ctx, "category_map", {})
+            )
 
             intel_filtered_ids = {str(p.get("product_id") or p.get("id")) for p in intel_filtered}
             final_products = [r for r in reranked if str(r["product"].get("product_id") or r["product"].get("id")) in intel_filtered_ids]
 
+            # SOFT FALLBACK LOGIC
+            # Если фильтры сущностей (цвет, размер, порода) убили всё, но FAISS нашел релевантное по смыслу
+            if not final_products and reranked:
+                top_reranked_score = reranked[0].get("final_score", 0)
+                if top_reranked_score > self.semantic_filter_threshold:
+                    # Разрешаем частичное совпадение, если семантика сильная
+                    final_products = reranked[:top_k]
+                    logger.info(f"[{self.slug}] Soft Fallback activated. Filtered=0, SemanticTop={top_reranked_score}")
+
             top_results = final_products[:top_k]
            
+            # Логирование процесса
             log_retrieval(
                 slug=self.slug, 
                 query_preview=query[:50], 
                 faiss_candidates=len(vector_hits), 
-                after_entity_filter=len(intel_filtered),  # Добавлен этот обязательный аргумент
+                after_entity_filter=len(intel_filtered), 
                 after_price_filter=after_price, 
                 final_count=len(top_results), 
                 detected_category=det_cat or "none"
             )
 
-            return {"status": "SUCCESS" if top_results else "NOT_FOUND", "products": top_results, "all_products": reranked[:20], "detected_category": det_cat, "is_empty": not top_results}
+            return {
+                "status": "SUCCESS" if top_results else "NOT_FOUND", 
+                "products": top_results, 
+                "all_products": reranked[:20], 
+                "detected_category": det_cat, 
+                "is_empty": not top_results
+            }
         except Exception as e:
             logger.error(f"[{self.slug}] Search Pipeline Crash: {e}", exc_info=True)
             return {"status": "ERROR", "products": [], "all_products": [], "is_empty": True}
@@ -295,4 +336,4 @@ class RetrievalEngine:
         self.index = None
         self.id_list.clear()
         self.metadata.clear()
-        logger.info(f"🛑 [{self.slug}] Retrieval Engine v9.3.0 closed.")
+        logger.info(f"🛑 [{self.slug}] Retrieval Engine v9.4.0 closed.")

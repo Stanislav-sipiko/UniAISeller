@@ -1,4 +1,3 @@
-# /root/ukrsell_v4/kernel.py v8.3.4
 import os
 import json
 import asyncio
@@ -9,7 +8,6 @@ from typing import List, Dict, Any, Optional
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
 
-# Project structure imports
 from core.logger import logger, log_event, log_pipeline_step
 from core.config import HF_TOKEN
 from core.llm_selector import LLMSelector
@@ -20,11 +18,12 @@ from core.store_context import StoreContext
 from core.translator import TextTranslator
 from core.confidence import evaluate as confidence_evaluate
 from core.cache_manager import SemanticCache
+from core.dialog_manager import DialogManager
 from engine.base import StoreEngine
 
 class UkrSellKernel:
     """
-    AI Kernel v8.3.4 Industrial Hybrid.
+    AI Kernel v8.4.1 Industrial Hybrid.
 
     Архитектурный принцип:
         Ядро универсально — не содержит логики конкретного магазина.
@@ -32,10 +31,9 @@ class UkrSellKernel:
         бертся исключительно из StoreContext.
 
     Changelog:
-        v8.3.4: HYBRID: Merged v7.8.7 registry logic with v8.3.4 Industrial pipeline.
-                SYNC: Full compatibility with StoreRegistry v8.3.4.
-                INTEL: Direct intent extraction integrated into handle_message.
-                SAFETY: Enhanced fallback to template rendering on LLM failure.
+        v8.4.1: CRITICAL FIX: Added missing llm_selector to DialogManager init.
+        v8.4.0: FIX: Explicit DialogManager initialization in factory.
+                FIX: Corrected intent/entities passing to RetrievalEngine v9.3.0.
     """
 
     def __init__(self, model_name: str = 'intfloat/multilingual-e5-small'):
@@ -56,7 +54,7 @@ class UkrSellKernel:
     async def initialize(self):
         """Full async initialization of the kernel."""
         start_time = time.time()
-        logger.info(f"🚀 Initializing UkrSell Kernel v8.3.4. Model: {self.model_name}")
+        logger.info(f"🚀 Initializing UkrSell Kernel v8.4.1. Model: {self.model_name}")
 
         try:
             self.model = SentenceTransformer(self.model_name)
@@ -67,32 +65,29 @@ class UkrSellKernel:
 
         await self._init_llm_selector()
 
-        # Initialize Registry pointing to the stores directory
         self.registry = StoreRegistry(stores_root="/root/ukrsell_v4/stores", kernel=self)
 
         def engine_factory(ctx: StoreContext):
             """
             Dependency Injection Factory. 
-            Called by StoreRegistry for each discovered store.
+            Fixed: Added self.selector as second argument for DialogManager.
             """
             ctx.selector = self.selector
             ctx.kernel = self
             ctx.negative_examples = self._load_store_negative_examples(ctx.base_path)
             
-            # Initialize core components within context
             ctx.analyzer = Analyzer(ctx)
             ctx.retrieval = RetrievalEngine(ctx, self.model)
             ctx.semantic_cache = SemanticCache(ctx, self.model)
+            # FIX: Передаем селектор моделей
+            ctx.dialog_manager = DialogManager(ctx, self.selector)
             
-            # Ensure data_ready event exists for lifecycle management
             if not hasattr(ctx, 'data_ready'):
                 ctx.data_ready = asyncio.Event()
             
-            # Create and return the store engine
             return StoreEngine(ctx)
 
         try:
-            # Trigger parallel loading of all stores
             await self.registry.load_all(engine_factory, self.selector)
         except Exception as e:
             logger.error(f"❌ Error during registry.load_all: {e}")
@@ -129,10 +124,7 @@ class UkrSellKernel:
         logger.critical("🚨 KERNEL STARTUP CRITICAL: All LLM stacks remain OFFLINE.")
 
     async def handle_message(self, text: str, chat_id: str, slug: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Industrial Entry Point for test_chat.py and CLI.
-        Provides detailed trace and intent mapping.
-        """
+        """Industrial Entry Point for test_chat.py and CLI."""
         if not self.llm_ready.is_set():
             await asyncio.wait_for(self.llm_ready.wait(), timeout=10.0)
 
@@ -146,20 +138,16 @@ class UkrSellKernel:
         if not ctx:
             return {"text": f"Ошибка: Магазин {target_slug} не найден", "status": "ERROR"}
 
-        # Wait for store data (vectors, catalogs) to be fully loaded
         await self.wait_for_store(target_slug)
         start_time_perf = time.perf_counter()
 
         try:
-            # 1. Get Dialogue Context
             history_context = ""
             if hasattr(ctx, "dialog_manager"):
                 history_context = ctx.dialog_manager.get_chat_context(chat_id, minutes=10)
 
-            # 2. Direct Intent Extraction
             intent = await ctx.analyzer.extract_intent(text, chat_context=history_context)
             
-            # 3. Retrieval Process
             search_results = {"products": [], "status": "EMPTY"}
             if intent.get("action") not in ("OFF_TOPIC", "TROLL"):
                 search_results = await ctx.retrieval.search(
@@ -168,7 +156,6 @@ class UkrSellKernel:
                     top_k=5
                 )
 
-            # 4. Response Synthesis
             response = await ctx.analyzer.synthesize_response(
                 search_results=search_results,
                 intent=intent,
@@ -176,7 +163,6 @@ class UkrSellKernel:
                 chat_context=history_context
             )
 
-            # 5. Metadata Enrichment for Trace/CLI
             llm_status = self.selector.get_status()
             active_model = "N/A"
             for k, v in llm_status.items():
@@ -249,15 +235,17 @@ class UkrSellKernel:
         """Core recommendation pipeline with semantic caching."""
         start_time = time.time()
 
-        # Semantic Cache check
         if hasattr(ctx, 'semantic_cache'):
             cached_answer = ctx.semantic_cache.get_answer(query)
             if cached_answer and not isinstance(cached_answer, (dict, list)):
                 log_pipeline_step("SEMANTIC_CACHE_HIT", time.time() - start_time)
                 return str(cached_answer)
 
-        # Intent analysis
-        intent = await ctx.dialog_manager.analyze_intent(query, user_id)
+        intent = await ctx.analyzer.extract_intent(
+            query, 
+            chat_context=ctx.dialog_manager.get_chat_context(user_id, minutes=5)
+        )
+        
         if filters:
             if not intent.get("entities"): intent["entities"] = {}
             intent["entities"].update(filters)
@@ -268,19 +256,19 @@ class UkrSellKernel:
         if action in ("CHAT", "OFF_TOPIC", "TROLL"):
             return str(intent.get("response_text") or "Я тут, щоб допомогти!")
 
-        # Retrieval
-        search_results = await ctx.retrieval.search(query=query, entities=intent, top_k=top_k * 3)
-        raw_hits = search_results.get("products", [])
-
-        # Process through Dialog Manager pipeline (Filtering/Reranking)
+        search_results = await ctx.retrieval.search(
+            query=query, 
+            entities=intent.get("entities", {}), 
+            top_k=top_k * 3
+        )
+        
         final_products = await ctx.dialog_manager.process_search_pipeline(
             chat_id=str(user_id),
-            raw_products=raw_hits,
+            search_response=search_results,
             intent=intent,
             top_k=top_k,
         )
 
-        # Confidence Evaluation
         confidence_result = confidence_evaluate(
             search_result={**search_results, "products": final_products},
             intent=intent,
@@ -305,11 +293,9 @@ class UkrSellKernel:
             logger.error(f"Synthesis error in recommendations: {e}")
             response_text = ""
 
-        # Fallback to templates if LLM synthesis fails
         if not response_text:
             response_text = await self._build_template_response(ctx, final_products, query)
 
-        # Update Cache
         if hasattr(ctx, 'semantic_cache') and len(final_products) > 0 and len(response_text) > 20:
             ctx.semantic_cache.add(query, response_text)
 
@@ -329,7 +315,7 @@ class UkrSellKernel:
             url = p.get("product_url") or p.get("url") or "#"
             parts.append(f"{i}. 🛍 **{name}**\n   {price_label}: {price} {ctx.currency}\n   [{view_label}]({url})")
         
-        footer = "Підсказати щось конкретне щодо цих моделей?" if ctx.language == "Ukrainian" else "Подсказать детали по этим моделям?"
+        footer = "Підсказати щось конкретне щодо этих моделей?" if ctx.language == "Ukrainian" else "Подсказать детали по этим моделям?"
         parts.append(f"\n{footer}")
         return "\n".join(parts)
 
@@ -398,4 +384,4 @@ class UkrSellKernel:
         return self.registry.get_all_slugs() if self.registry else []
 
     def __repr__(self):
-        return f"<UkrSellKernel v8.3.4 stores={len(self.get_all_active_slugs())}>"
+        return f"<UkrSellKernel v8.4.1 stores={len(self.get_all_active_slugs())}>"

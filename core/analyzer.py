@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/core/analyzer.py v8.3.4
+# /root/ukrsell_v4/core/analyzer.py v8.4.2
 import logging
 import json
 import asyncio
@@ -14,18 +14,14 @@ from core.intelligence import safe_extract_json, deduplicate_products, entity_fi
 from core.smart_ranking import SmartRanking
 from core.recommendation_brain import RecommendationBrain
 
-# ВНИМАНИЕ: ConversationRepair временно отключен из-за отсутствия модуля на диске
-# from core.conversation_repair import ConversationRepair
-
 class Analyzer:
     """
-    Analyzer v8.3.4 — Industrial AI-Seller Core (Final Hybrid).
+    Analyzer v8.4.2 — Industrial AI-Seller Core.
     
-    Особенности:
-    - Контроль контекста (Drift Guard).
-    - Маппинг сущностей (Схема <-> JSON).
-    - Ранжирование Sales Score (Популярность, Рейтинг, Маржа).
-    - Агностические фильтры (Нишевые ограничения).
+    Changelog:
+    - v8.4.2: FIXED logic for TROLL/ABSURD detection. Added Sanity Check to prevent 
+             pointless retrieval for impossible requests (e.g., 50kg cats, alcoholic dogs).
+    - v8.3.4: Added reasoning clean-up and niche validation fixes.
     """
 
     def __init__(self, ctx):
@@ -57,11 +53,11 @@ class Analyzer:
         self.store_filters = self._load_local_json("store_filters.json")
         
         # Инициализация подсистем
-        self.repair = None # ConversationRepair() отключен
+        self.repair = None 
         self.ranking = SmartRanking()
         self.recommendation = RecommendationBrain()
 
-        logger.info(f"🚀 [{self.slug}] Analyzer v8.3.4 (Hybrid Core) Active.")
+        logger.info(f"🚀 [{self.slug}] Analyzer v8.4.2 (Sanity Core) Active.")
 
     def _load_local_json(self, filename: str) -> Dict[str, Any]:
         path = os.path.join(self.base_path, filename)
@@ -80,13 +76,16 @@ class Analyzer:
             except asyncio.TimeoutError:
                 logger.error(f"[{self.slug}] Assets load timeout.")
 
-    # --- СЕКЦИЯ КОНТЕКСТА И ПАМЯТИ ---
+    def _clean_reasoning(self, text: str) -> str:
+        """Удаляет блоки <think>...</think> из ответа модели."""
+        if not text:
+            return ""
+        return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
 
     def _resolve_context(self, current_entities: Dict[str, Any], user_query: str) -> Dict[str, Any]:
         memory = getattr(self.ctx, "memory", {})
         current_entities.setdefault("properties", {})
         
-        # 1. Conversation Repair (Безопасный вызов)
         if self.repair:
             current_entities = self.repair.repair(user_query, current_entities, memory)
 
@@ -94,19 +93,16 @@ class Analyzer:
         if not last_entities or len(user_query) > 45:
             return current_entities
 
-        # 2. Наследование при коротких уточняющих запросах (Drift Guard)
         last_props = last_entities.get("properties", {})
         curr_props = current_entities.get("properties", {})
         
         if not current_entities.get("category") and last_entities.get("category"):
             current_entities["category"] = last_entities["category"]
 
-        # Наследование кастомных свойств
         for k, v in last_props.items():
             if k not in curr_props and v:
                 curr_props[k] = v
         
-        # Наследование базовых сущностей из динамической схемы маппинга
         for schema_key in self.entity_map.keys():
             if not current_entities.get(schema_key) and last_entities.get(schema_key):
                 current_entities[schema_key] = last_entities[schema_key]
@@ -123,6 +119,10 @@ class Analyzer:
     def _is_out_of_niche(self, entities: Dict[str, Any]) -> bool:
         if not self.store_filters: return False
         
+        category = entities.get("category")
+        if category and str(category).lower() in ["одяг", "комбінезон", "куртка", "жилет"]:
+            return False
+
         for k, allowed in self.store_filters.items():
             if k in ["business_niche", "mode"]: continue
             
@@ -135,6 +135,9 @@ class Analyzer:
             
             if val and allowed:
                 allowed_list = [str(a).lower() for a in allowed]
+                if k in ["animal", "Тварина"] and category:
+                    continue
+                    
                 if str(val).lower() not in allowed_list:
                     logger.warning(f"[{self.slug}] Out of niche triggered: {k}={val}")
                     return True
@@ -155,28 +158,42 @@ class Analyzer:
             
         return intent
 
-    # --- СЕКЦИЯ INTENT (Извлечение намерений) ---
-
     async def extract_intent(self, user_query: str, chat_context: str = "") -> Dict:
+        """
+        STAGE 1: Intent Extraction with Sanity Check.
+        Determines if the request is logical before enabling search.
+        """
         await self._wait_for_ready()
         client, model = await self.llm_selector.get_fast()
         
         memory = getattr(self.ctx, "memory", {})
         schema_keys = list(self.entity_map.keys()) 
         
-        system_instr = "You are a precise JSON intent parser for e-commerce. Return ONLY JSON."
+        system_instr = (
+            "You are a precise JSON intent parser for e-commerce. "
+            "Your main task is to distinguish between a real buyer and a prankster/troll. "
+            "Return ONLY JSON. Do not include reasoning tags."
+        )
+        
         prompt = (
-            f"PREVIOUS USER QUERY: {memory.get('last_query', 'None')}\n"
+            f"STRICT RULES:\n"
+            f"1. If the query is physically impossible (e.g., a 50kg cat, a dog drinking alcohol, a golden phone for 1 dollar), "
+            f"set action to 'TROLL'.\n"
+            f"2. If the query is a joke, provocation, or absolute nonsense, set action to 'TROLL'.\n"
+            f"3. If the user is asking about things not related to our store niche, set action to 'OFF_TOPIC'.\n"
+            f"4. Otherwise, set action to 'SEARCH' and extract entities.\n\n"
+            f"STORE DESCRIPTION: {self.store_bio}\n"
             f"ALLOWED ENTITIES: {', '.join(schema_keys)}\n"
             f"CONTEXT:\n{chat_context}\n"
             f"USER QUERY: {user_query}\n\n"
             "STRICT JSON FORMAT:\n"
             "{\n"
-            "  \"action\": \"SEARCH\" или \"OFF_TOPIC\" или \"INFO\",\n"
+            "  \"action\": \"SEARCH\" | \"OFF_TOPIC\" | \"TROLL\" | \"INFO\",\n"
+            "  \"reason\": \"short explanation of why this is a troll or search\",\n"
             "  \"entities\": {\n"
-            "    \"category\": \"назва категорії\",\n"
-            "    \"properties\": { \"додатковий_ключ\": \"значення\" },\n"
-            "    \"...люба сутність з ALLOWED ENTITIES...\": \"значення\"\n"
+            "    \"category\": \"category name\",\n"
+            "    \"properties\": { \"weight\": \"50kg\", \"material\": \"silk\" },\n"
+            "    \"Тварина\": \"animal type\"\n"
             "  }\n"
             "}"
         )
@@ -187,7 +204,9 @@ class Analyzer:
                 model=model, messages=[{"role": "system", "content": system_instr}, {"role": "user", "content": prompt}],
                 temperature=0.0
             )
-            intent = safe_extract_json(response.choices[0].message.content)
+            
+            raw_content = self._clean_reasoning(response.choices[0].message.content)
+            intent = safe_extract_json(raw_content)
             
             # Применяем локальные правила и наследование
             intent = self._apply_fast_hints(user_query, intent)
@@ -203,10 +222,7 @@ class Analyzer:
             log_llm_error(self.slug, model, "intent_parser", type(e).__name__, str(e))
             return {"action": "SEARCH", "entities": {}}
 
-    # --- СЕКЦИЯ СИНТЕЗА (Генерация ответа) ---
-
     def _calculate_sales_score(self, product: Dict) -> float:
-        """Ранжирование товара: Популярность 40%, Рейтинг 30%, Маржа 30%."""
         d = product.get("product") or product.get("data") or product
         try:
             score = (float(d.get("popularity", 0)) * 0.4) + \
@@ -217,7 +233,6 @@ class Analyzer:
             return 0.0
 
     def _prepare_summary(self, products: List[Dict]) -> str:
-        """Сборка контекста товаров для LLM с использованием маппинга."""
         if not products: return "Товари не знайдені."
         items = []
         for p in products:
@@ -244,12 +259,23 @@ class Analyzer:
             f"Ти — привітний експерт-консультант магазину '{self.store_bio}'.\n"
             f"Твоя мова: {lang}. {self.store_context_prompt}\n"
             "- Пиши живо, коротко, без канцелярщини.\n"
-            "- Використовуй емодзі для дружньої атмосфери.\n"
+            "- Використовуй емодії для дружньої атмосфери.\n"
             "- ПРАВИЛО: Завжди закінчуй відповідь коротким питанням, щоб продовжити діалог.\n"
+            "- СУВОРА ЗАБОРОНА: Ніколи не вигадуй назви товарів, брендів або цін, якщо їх немає в наданому списку.\n"
         )
+
+        if mode == "TROLL":
+            return (
+                f"{base_style}\nСИТУАЦІЯ: Користувач жартує, тролить або ставить абсурдне запитання (наприклад, про котів вагою 50кг).\n"
+                f"ЗАВДАННЯ: Дай дотепну, іронічну, але ввічливу відповідь. "
+                f"Покажи, що ти розумієш жарт, але м'яко поверни розмову до реальних товарів нашого магазину."
+            )
 
         if mode == "OFF_TOPIC":
             return f"{base_style}\nСИТУАЦІЯ: Користувач запитав про щось поза нашою нішею. Ввічливо відмов та запропонуй допомогу з товарами нашого профілю."
+
+        if mode == "NO_RESULTS" or "Товари не знайдені" in catalog_context:
+            return f"{base_style}\nСИТУАЦІЯ: За запитом клієнта нічого не знайдено.\nЗАВДАННЯ: Чесно скажи, що таких товарів зараз немає, та запропонуй змінити параметри пошуку."
 
         if is_advice:
             return (
@@ -281,7 +307,13 @@ class Analyzer:
         # 2. Определение режима работы
         is_advice = self.recommendation.detect_advice(user_query)
         
-        if is_advice and products:
+        if intent.get("action") == "TROLL":
+            mode = "TROLL"
+            final_selection = []
+        elif intent.get("action") == "OFF_TOPIC":
+            mode = "OFF_TOPIC"
+            final_selection = []
+        elif is_advice and products:
             final_selection = self.recommendation.pick_best(products)
             mode = "SHOW_PRODUCTS"
         elif products:
@@ -290,8 +322,6 @@ class Analyzer:
         else:
             final_selection = []
             mode = "NO_RESULTS"
-
-        if intent.get("action") == "OFF_TOPIC": mode = "OFF_TOPIC"
 
         # 3. Обновление памяти
         if mode == "SHOW_PRODUCTS":
@@ -310,8 +340,10 @@ class Analyzer:
                 max_tokens=800
             )
             
+            clean_text = self._clean_reasoning(response.choices[0].message.content)
+            
             return {
-                "text": response.choices[0].message.content.strip(),
+                "text": clean_text,
                 "status": "SUCCESS",
                 "model": model,
                 "ms": round((_time.perf_counter() - t_start) * 1000, 1),
@@ -322,4 +354,4 @@ class Analyzer:
             return {"text": "Вибачте, виникла технічна заминка. Будь ласка, спробуйте ще раз.", "status": "ERROR"}
 
     def __repr__(self):
-        return f"<Analyzer v8.3.4 slug={self.slug} mode=Hybrid_Industrial_Final>"
+        return f"<Analyzer v8.4.2 slug={self.slug} mode=Sanity_Guard_Industrial>"

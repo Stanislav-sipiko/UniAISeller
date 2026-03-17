@@ -1,8 +1,11 @@
-# /root/ukrsell_v4/core/intelligence.py v7.6.5
+# -*- coding: utf-8 -*-
+# /root/ukrsell_v4/core/intelligence.py v7.6.7
+
 import numpy as np
 import re
 import json
 import os
+import time
 from typing import List, Dict, Any, Optional, Union
 from core.logger import logger, log_event
 
@@ -10,11 +13,13 @@ def get_stem(text: str) -> str:
     """
     Выполняет нормализацию текста и стемминг (удаление окончаний) 
     для улучшения качества сопоставления сущностей.
+    Поддерживает украинский, русский и английский языки.
     """
     if not text: 
         return ""
     
     word = str(text).lower().strip()
+    # Удаление пунктуации
     word = re.sub(r'[^\w\s]', '', word)
     
     # Регулярное выражение для типичных окончаний (UA/RU/EN)
@@ -25,18 +30,26 @@ def get_stem(text: str) -> str:
 
 def safe_extract_json(text: str) -> dict:
     """
-    Безопасно извлекает JSON из строки, обрабатывая артефакты генерации LLM
-    и незакрытые скобки.
+    Безопасно извлекает JSON из строки, обрабатывая артефакты генерации LLM,
+    Markdown-теги и незакрытые скобки.
     """
-    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
     if not text:
         return {"action": "SEARCH", "entities": {}}
-        
-    text = text.strip()
+
+    # [ZERO OMISSION LOG] Трассировка входящего текста для парсинга
+    logger.debug(f"[INTEL_TRACE] safe_extract_json input: {text[:250]}...")
+
+    # 1. Очистка от служебных тегов размышлений (CoT)
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+    
+    # 2. Очистка от Markdown-оберток кода
+    text = re.sub(r"```json\s*", "", text)
+    text = text.replace("```", "").strip()
+
     result = {"action": "SEARCH", "entities": {}}
     
     try:
-        # Поиск JSON-структуры внутри текста
+        # Поиск JSON-структуры внутри текста (первое вхождение { и последнее })
         match = re.search(r"(\{.*\})", text, re.DOTALL)
         if match:
             json_str = match.group(1).replace('\t', ' ')
@@ -44,20 +57,23 @@ def safe_extract_json(text: str) -> dict:
         else:
             result = json.loads(text)
     except Exception as e:
-        # Попытка исправить незакрытый JSON (частая ошибка при обрыве генерации)
+        # 3. Попытка исправить незакрытый JSON (обрыв генерации)
         if text.startswith("{") and not text.endswith("}"):
             try:
                 fixed_text = text
-                if fixed_text.count('{') > fixed_text.count('}'):
-                    fixed_text += '}' * (fixed_text.count('{') - fixed_text.count('}'))
+                open_braces = fixed_text.count('{')
+                close_braces = fixed_text.count('}')
+                if open_braces > close_braces:
+                    fixed_text += '}' * (open_braces - close_braces)
                 result = json.loads(fixed_text)
+                logger.info("[INTEL] JSON structure auto-repaired.")
             except:
-                pass
+                logger.error(f"[INTEL] JSON Repair failed: {text[:100]}")
         else:
             logger.warning(f"[INTEL] JSON Extraction failed: {e}")
             log_event("JSON_PARSE_ERROR", {"error": str(e), "text": text[:200]}, level="warning")
 
-    # Нормализация ключей в секции entities
+    # 4. Нормализация ключей в секции entities
     if isinstance(result, dict) and "entities" in result:
         ents = result["entities"]
         if isinstance(ents, dict):
@@ -75,7 +91,7 @@ def safe_extract_json(text: str) -> dict:
 
 def semantic_guard(products: list, threshold: float = 0.30) -> list:
     """
-    Отсеивает товары с низким показателем релевантности (score).
+    Отсеивает товары с низким показателем семантической релевантности (score).
     """
     if not products:
         return []
@@ -88,6 +104,7 @@ def semantic_guard(products: list, threshold: float = 0.30) -> list:
         if score >= threshold:
             filtered.append(res)
             
+    logger.info(f"🛡️ [SEMANTIC_GUARD] In: {len(products)} | Out: {len(filtered)} | Threshold: {threshold}")
     return filtered
 
 def entity_filter(
@@ -108,24 +125,27 @@ def entity_filter(
     if not isinstance(entities, dict):
         entities = {}
     
-    SERVICE_KEYS = {"price_limit", "action", "target", "properties", "excluded_ids", "taxonomy_hint", "category", "temperature", "language"}
+    SERVICE_KEYS = {
+        "price_limit", "action", "target", "properties", 
+        "excluded_ids", "taxonomy_hint", "category", 
+        "temperature", "language"
+    }
     GARBAGE_VALUES = {"none", "null", "any", "unknown", "", "все", "любой", "товари"}
 
     active_filters = {}
     brand_ignore_list = []
     
-    # Загрузка игнор-листа для брендов из настроек магазина
     if store_hints and "brand_ignore" in store_hints:
         brand_ignore_list = [str(b).lower() for b in store_hints["brand_ignore"]]
 
-    # Формирование списка активных фильтров (исключая служебные ключи и пустые значения)
     for k, v in entities.items():
         if k in SERVICE_KEYS or v is None:
             continue
+        
         val_str = str(v).lower().strip()
         
         if k == "brand" and any(b_ign in val_str for b_ign in brand_ignore_list):
-            logger.debug(f"[INTEL] Brand Ignore trigger: {val_str}, skipping brand filter.")
+            logger.debug(f"[INTEL] Brand Filter suppressed for: {val_str}")
             continue
 
         if val_str and val_str not in GARBAGE_VALUES:
@@ -134,46 +154,33 @@ def entity_filter(
     if not products:
         return []
 
-    # Маппинг полей для поиска в атрибутах товара
+    logger.info(f"⚙️ [ENTITY_FILTER] Active filters applied: {active_filters}")
+
     mapping = intent_mapping or {
-        "brand": ["brand", "manufacturer", "vendor"],
-        "color": ["color", "colour", "color_ref"],
-        "subtype": ["subtype", "product_type"]
+        "brand": ["brand", "manufacturer", "vendor", "бренд"],
+        "color": ["color", "colour", "color_ref", "колір"],
+        "subtype": ["subtype", "product_type", "підтип"]
     }
 
     filtered = []
-    
-    # БЕЗОПАСНОЕ ПОЛУЧЕНИЕ EXCLUDED_IDS (Fix для NoneType error)
     raw_excluded = intent.get("excluded_ids")
-    if isinstance(raw_excluded, list):
-        excluded_ids = set(str(i) for i in raw_excluded)
-    else:
-        excluded_ids = set()
-
+    excluded_ids = set(str(i) for i in raw_excluded) if isinstance(raw_excluded, list) else set()
     price_limit = entities.get("price_limit")
 
     for hit in products:
-        if not isinstance(hit, dict):
-            continue
+        if not isinstance(hit, dict): continue
             
         p = hit.get("product") or hit.get("data") or hit
-        if not isinstance(p, dict):
-            continue
+        if not isinstance(p, dict): continue
             
         p_id = str(p.get("product_id") or p.get("id", ""))
-        
-        # 1. Проверка на исключенные ID (уже просмотренные товары)
-        if p_id in excluded_ids:
-            continue
+        if p_id in excluded_ids: continue
 
-        # 2. Проверка ценового лимита
         if price_limit:
             try:
                 p_price = float(p.get("price", 0))
-                if p_price > float(price_limit):
-                    continue
-            except:
-                pass
+                if p_price > float(price_limit): continue
+            except: pass
 
         p_attrs = p.get("attributes") or {}
         p_title = str(p.get("name") or p.get("title", "")).lower()
@@ -185,45 +192,40 @@ def entity_filter(
             filtered.append(hit)
             continue
 
-        # 3. Сопоставление по каждому активному фильтру
         for ent_key, ent_val in active_filters.items():
             ent_stem = get_stem(ent_val)
             target_fields = mapping.get(ent_key, [ent_key])
-            if isinstance(target_fields, str): 
-                target_fields = [target_fields]
+            if isinstance(target_fields, str): target_fields = [target_fields]
             
             field_match = False
             for field in target_fields:
                 val_in_prod = p.get(field) or p_attrs.get(field)
                 if val_in_prod:
-                    # Поддержка списка значений в атрибуте (например, цвета)
                     vals = [str(x).lower() for x in (val_in_prod if isinstance(val_in_prod, list) else [val_in_prod])]
                     if any(ent_val in v or ent_stem in get_stem(v) for v in vals):
                         field_match = True
                         break
             
-            # Если в атрибутах не нашли, ищем прямо в названии товара
-            if not field_match:
-                if ent_val in p_title or ent_stem in get_stem(p_title):
-                    field_match = True
+            if not field_match and (ent_val in p_title or ent_stem in get_stem(p_title)):
+                field_match = True
             
             if field_match:
                 match_count += 1
 
-        # Логика пропуска: полное совпадение или -1 для сложных запросов (>=3 фильтра)
         if match_count == total_filters:
             filtered.append(hit)
         elif total_filters >= 3 and match_count >= (total_filters - 1):
             filtered.append(hit)
 
-    # Защитный механизм: если фильтры убили всё, но есть супер-релевантный топ, возвращаем его
     if not filtered and products:
         first_hit = products[0]
         if isinstance(first_hit, dict):
             top_hit_score = first_hit.get("final_score") or first_hit.get("score", 0)
             if top_hit_score > 0.85:
+                logger.info("🆘 [ENTITY_FILTER] Emergency fallback: preserving high-score results despite filters.")
                 return products[:2]
 
+    logger.info(f"📊 [ENTITY_FILTER] Final count: {len(filtered)}")
     return filtered
 
 def merge_followup(prev_intent: dict, new_intent: dict, category_map: dict = None) -> dict:
@@ -254,16 +256,15 @@ def merge_followup(prev_intent: dict, new_intent: dict, category_map: dict = Non
     new_cat_norm = norm_cat(new_ents.get("category"))
     prev_cat_norm = norm_cat(prev_ents.get("category"))
 
-    # Если категория сменилась — начинаем с чистого листа, но переносим общие фильтры
     if new_cat_norm and prev_cat_norm and new_cat_norm != prev_cat_norm:
+        logger.info(f"🔄 [MERGE] Resetting filters: {prev_cat_norm} -> {new_cat_norm}")
         merged_ents = {"category": new_ents["category"]}
         for k, v in prev_ents.items():
-            if k not in new_ents and k != "category":
+            if k == "brand" and k not in new_ents:
                 merged_ents[k] = v
     else:
         merged_ents = prev_ents.copy()
         
-    # Наложение новых сущностей на старые
     for k, v in new_ents.items():
         if v is not None and str(v).lower() not in {"none", "null", "any", ""}:
             merged_ents[k] = v
@@ -271,14 +272,9 @@ def merge_followup(prev_intent: dict, new_intent: dict, category_map: dict = Non
     merged["entities"] = merged_ents
     merged["action"] = new_intent.get("action", prev_intent.get("action", "SEARCH"))
     
-    # Объединение исключенных ID для предотвращения повторов
     new_excl = new_intent.get("excluded_ids", [])
-    if not isinstance(new_excl, list): new_excl = []
-    
     prev_excl = prev_intent.get("excluded_ids", [])
-    if not isinstance(prev_excl, list): prev_excl = []
-    
-    merged["excluded_ids"] = list(set(str(i) for i in (new_excl + prev_excl)))
+    merged["excluded_ids"] = list(set(str(i) for i in ( (new_excl if isinstance(new_excl, list) else []) + (prev_excl if isinstance(prev_excl, list) else []) )))
 
     return merged
 
@@ -286,25 +282,25 @@ def deduplicate_products(products: list, top_k: int = 5) -> list:
     """
     Удаляет дубликаты товаров на основе нормализованного названия.
     """
-    if not products:
-        return []
+    if not products: return []
     seen = set()
     result = []
     for hit in products:
-        if not isinstance(hit, dict):
-            continue
+        if not isinstance(hit, dict): continue
         p = hit.get("product") or hit.get("data") or hit
-        if not isinstance(p, dict):
-            continue
+        if not isinstance(p, dict): continue
             
         p_title = str(p.get("name") or p.get("title", ""))
-        # Создаем ключ из букв и цифр для игнорирования спецсимволов и пробелов
         name_key = re.sub(r'[^\w]', '', p_title.lower())
         
         if name_key not in seen:
             seen.add(name_key)
             result.append(hit)
         
-        if len(result) >= top_k:
-            break
+        if len(result) >= top_k: break
+            
+    logger.debug(f"♻️ [DEDUPLICATION] Reduced from {len(products)} to {len(result)}")
     return result
+
+def get_version():
+    return "7.6.7-ZERO-OMISSION"

@@ -1,0 +1,8 @@
+{
+  "buttons": [
+    {"text": "👕 Одяг", "cat": "Одяг"},
+    {"text": "🥣 Годування", "cat": "Feeding"},
+    {"text": "🦮 Прогулянка", "cat": "Walking"},
+    {"text": "🧼 Гігієна", "cat": "Grooming"}
+  ]
+}
