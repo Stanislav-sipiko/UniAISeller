@@ -697,7 +697,7 @@ class DialogManager:
             retrieval = getattr(self.ctx, 'retrieval', None)
             if retrieval:
                 logger.info(f"🔍 [RETRIEVAL_STEP] Triggering search with entities: {intent.get('entities')}")
-                search_results = await retrieval.search(user_query, entities=intent)
+                search_results = await retrieval.search(user_query, entities=intent.get("entities", {}))
             else:
                 logger.error(f"[{self.slug}] Retrieval index missing.")
 
