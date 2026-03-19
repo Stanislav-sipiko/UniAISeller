@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# /root/ukrsell_v4/core/dialog_manager.py v7.7.5
+# /root/ukrsell_v4/core/dialog_manager.py v7.8.3
 
 import json
 import os
@@ -23,55 +23,26 @@ from core.intelligence import (
 
 _ALLOWED_ENTITY_KEYS = frozenset({"category", "brand", "price_limit", "properties"})
 
-# Дефолтный маппинг категорий — используется если нет intent_hints.json
-_DEFAULT_CATEGORY_MAP = {
-    "шлея": "walking",
-    "нашийник": "walking",
-    "повідець": "walking",
-    "рулетка": "walking",
-    "светр": "apparel",
-    "куртка": "apparel",
-    "комбінезон": "apparel",
-    "одяг": "apparel",
-    "іграшка": "toys",
-    "м'яч": "toys",
-    "корм": "feeding",
-    "миска": "feeding",
-    "поїлка": "feeding",
-    "лежанка": "beds & furniture",
-    "лежак": "beds & furniture",
-    "будиночок": "beds & furniture",
-    "кігтеріз": "grooming",
-    "щітка": "grooming",
-    "шампунь": "grooming",
-    "ліки": "meds",
-    "вітаміни": "meds",
-    "таблетки": "meds",
-    "краплі": "meds",
-    "антипаразитарний": "meds",
-    "противоблошиний": "meds",
-    "глисти": "meds",
-    "антигельмінтний": "meds",
-}
-
 
 class DialogManager:
-    r"""Intelligent Sales & Consultation Manager v7.7.4."""
+    """Intelligent Dialog & Intent Manager v7.8.3. Store-agnostic."""
 
     def __init__(self, ctx, llm_selector):
-        self.ctx         = ctx
-        self.selector    = llm_selector
-        self.language    = getattr(ctx, 'language', 'Ukrainian')
-        self.slug        = getattr(ctx, 'slug', 'Store')
-        self.base_path   = getattr(ctx, 'base_path', '/root/ukrsell_v4')
-        self.patch_path  = os.path.join(self.base_path, "fsm_soft_patch.json")
+        self.ctx             = ctx
+        self.selector        = llm_selector
+        self.language        = getattr(ctx, 'language', 'Ukrainian')
+        self.slug            = getattr(ctx, 'slug', 'Store')
+        self.base_path       = getattr(ctx, 'base_path', '/root/ukrsell_v4')
+        self.patch_path      = os.path.join(self.base_path, "fsm_soft_patch.json")
         self.session_db_path = os.path.join(self.base_path, "sessions.db")
 
         self._intent_cache: Dict[str, Dict] = {}
-        self._intent_hints = self._load_intent_hints()
+        self._intent_hints  = self._load_intent_hints()
+        self._search_config = self._load_search_config()
+        self._negative_examples_cache: Optional[List] = None
 
         self._init_db()
-        logger.info(f"✅ [DM_INIT] DialogManager v7.7.5 Active. System: {self.slug}")
+        logger.info(f"✅ [DM_INIT] DialogManager v7.8.3 Active. Store: {self.slug}")
 
     # ── DB Init ───────────────────────────────────────────────────────────────
 
@@ -89,11 +60,6 @@ class DialogManager:
                     timestamp  DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
-            try:
-                cursor.execute("ALTER TABLE chat_history ADD COLUMN session_id TEXT")
-            except sqlite3.OperationalError as e:
-                if "duplicate column name" not in str(e).lower():
-                    raise
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS intent_cache (
                     chat_id     TEXT    PRIMARY KEY,
@@ -110,24 +76,38 @@ class DialogManager:
     # ── Config ────────────────────────────────────────────────────────────────
 
     def _load_intent_hints(self) -> dict:
-        hints_path = os.path.join(self.base_path, "intent_hints.json")
+        path = os.path.join(self.base_path, "intent_hints.json")
         try:
-            if os.path.exists(hints_path):
-                with open(hints_path, 'r', encoding='utf-8') as f:
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf-8') as f:
                     return json.load(f)
         except Exception as e:
-            logger.warning(f"⚠️ [DM_INIT] intent_hints.json not found or invalid: {e}")
+            logger.warning(f"⚠️ [DM_INIT] intent_hints.json load error: {e}")
+        return {}
+
+    def _load_search_config(self) -> dict:
+        path = os.path.join(self.base_path, "search_config.json")
+        try:
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+        except Exception as e:
+            logger.warning(f"⚠️ [DM_INIT] search_config.json load error: {e}")
         return {}
 
     def get_negative_examples(self) -> list:
+        if self._negative_examples_cache is not None:
+            return self._negative_examples_cache
         try:
             if os.path.exists(self.patch_path):
                 with open(self.patch_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                    return data.get("troll_patterns", [])
+                    self._negative_examples_cache = data.get("troll_patterns", [])
+                    return self._negative_examples_cache
         except Exception as e:
             logger.error(f"❌ [DM_ERROR] Failed to load negative patterns: {e}")
-        return []
+        self._negative_examples_cache = []
+        return self._negative_examples_cache
 
     # ── Intent Cache ──────────────────────────────────────────────────────────
 
@@ -204,7 +184,9 @@ class DialogManager:
 
     # ── Chat history ──────────────────────────────────────────────────────────
 
-    async def get_chat_context(self, chat_id: str, minutes: int = 45) -> str:
+    async def get_chat_context(self, chat_id: str, minutes: int = None) -> str:
+        if minutes is None:
+            minutes = self._search_config.get("context_ttl_min", 15)
         try:
             if not os.path.exists(self.session_db_path):
                 logger.warning(f"⚠️ [DB_TRACE] Session DB missing at {self.session_db_path}")
@@ -220,7 +202,7 @@ class DialogManager:
                     """
                     SELECT role, content FROM chat_history
                     WHERE chat_id = ? AND timestamp > ?
-                    ORDER BY timestamp DESC LIMIT 7
+                    ORDER BY timestamp DESC LIMIT 10
                     """,
                     (str(chat_id), time_threshold),
                 ) as cursor:
@@ -230,11 +212,13 @@ class DialogManager:
                 logger.debug(f"ℹ️ [DB_TRACE] No history found for chat_id: {chat_id}")
                 return ""
 
+            # Метки ролей берутся из search_config магазина
+            buyer_label     = self._search_config.get("label_buyer", "Buyer")
+            consultant_label = self._search_config.get("label_consultant", "Consultant")
+
             history = []
             for row in reversed(rows):
-                label = "Покупець" if row[0] == "user" else "Консультант"
-                if self.language != "Ukrainian":
-                    label = "Buyer" if row[0] == "user" else "Consultant"
+                label = buyer_label if row[0] == "user" else consultant_label
                 history.append(f"{label}: {row[1]}")
 
             full_context = "\n".join(history)
@@ -291,6 +275,7 @@ class DialogManager:
                 })
                 with open(self.patch_path, 'w', encoding='utf-8') as f:
                     json.dump(data, f, ensure_ascii=False, indent=2)
+                self._negative_examples_cache = None
                 logger.warning(f"⚠️ [TROLL_DETECTED] Pattern saved: {clean_text}")
         except Exception as e:
             logger.error(f"❌ [DM_ERROR] Failed to record troll pattern: {e}")
@@ -301,172 +286,181 @@ class DialogManager:
         examples = self._intent_hints.get("troll_examples", [])
         if examples:
             joined = '", "'.join(examples[:4])
-            return 'Приклади: "' + joined + '". Якщо є агресія або негатив — TROLL, навіть без матів.'
-        return "Якщо є агресія або негатив — TROLL, даже без матів."
+            return 'Examples: "' + joined + '". Aggression or negativity → TROLL, even without profanity.'
+        return "Aggression or negativity → TROLL, even without profanity."
 
     def _build_brand_ignore_hint(self) -> str:
         ignore = self._intent_hints.get("brand_ignore", [])
         if ignore:
             examples = ", ".join(ignore[:5])
-            return "Уточнення (" + examples + " тощо) — НЕ бренд, brand=null."
-        return "Уточнення типу \"великий\", \"дитячий\" — НЕ бренд, brand=null."
+            return "Qualifiers (" + examples + " etc.) — NOT a brand, brand=null."
+        return 'Qualifiers like "big", "small", "cheap" — NOT a brand, brand=null.'
 
     def _build_category_hint(self) -> str:
-        SEP   = "\n"
         parts = [
-            "- \"category\": тип товару. Правила:",
-            "  1. Явна назва товару — використовуй дослівно як category, навіть якщо є уточнення.\n"
-            "      \"X для Y\" -> category=\"X\". Наприклад: \"нашийник для лабрадора\" -> category=\"нашийник\".\n",
+            '- "category": product type. Rules:',
+            '  1. Explicit product name → use verbatim as category, even with qualifiers.\n'
+            '     "X for Y" → category="X".\n',
         ]
         fuzzy = self._intent_hints.get("fuzzy_mappings", [])
         if fuzzy:
-            parts.append("  2. Нечіткий образ — визнач з контексту:")
+            parts.append("  2. Fuzzy intent — resolve from context:")
             for m in fuzzy:
-                parts.append("      \"" + m["pattern"] + "\" -> " + m["category"])
+                parts.append('     "' + m["pattern"] + '" → ' + m["category"])
         else:
-            parts.append("  2. Нечіткий образ — виведи категорію з контексту.")
-        parts.append("  3. Неможливо визначити -> category=null.")
-        return SEP.join(parts) + SEP
+            parts.append("  2. Fuzzy intent — infer category from context.")
+        parts.append("  3. Cannot determine → category=null.")
+        return "\n".join(parts) + "\n"
 
     def _build_category_mapping_hint(self) -> str:
-        # Читаем маппинг из intent_hints.json, fallback на дефолтный
-        mapping = self._intent_hints.get("category_mapping", _DEFAULT_CATEGORY_MAP)
+        mapping = self._intent_hints.get("category_mapping", {})
         if not mapping:
             return ""
-        lines = ["СТРОГИЙ СЛОВНИК КАТЕГОРІЙ (використовуй ТІЛЬКИ ці значення для category):"]
-        for keyword, category in list(mapping.items())[:20]:
+        lines = ["STRICT CATEGORY DICTIONARY (use ONLY these values for category):"]
+        for keyword, category in list(mapping.items())[:30]:
             lines.append(f'  "{keyword}" → category="{category}"')
         lines.append(
-            "Якщо запит не підходить до жодного ключового слова — category=null.\n"
-            "STRICT MODE: будь-яке значення category НЕ зі словника вище = null."
+            "If query matches no keyword → category=null.\n"
+            "STRICT MODE: any category value NOT from the dictionary above = null."
         )
         return "\n".join(lines)
+
+    def _build_negative_keywords_hint(self) -> str:
+        keywords = self._intent_hints.get("negative_keywords", [])
+        if not keywords:
+            return ""
+        return (
+            "UNSUPPORTED KEYWORDS (if query contains these → category=null, action=CONSULT):\n"
+            + ", ".join(f'"{k}"' for k in keywords[:20])
+        )
 
     def _build_intent_prompt(
         self, negative_examples: list, chat_context: str, model_name: str
     ) -> str:
-        schema_keys = getattr(self.ctx, "schema_keys", [])
-        schema_hint = (
-            "Доступні поля фільтрації (entities.properties): " + ", ".join(schema_keys)
-            if schema_keys
-            else ""
-        )
-
+        schema_keys  = getattr(self.ctx, "schema_keys", [])
         expertise    = getattr(self.ctx, 'profile', {}).get('expertise_fields', [])
-        cat_examples = (
-            ", ".join(f'"{c}"' for c in expertise[:6])
-            if expertise
-            else '"іграшка", "лежак", "одяг", "корм", "нашийник"'
+        currency     = getattr(self.ctx, 'currency', 'USD')
+        store_name   = self.slug
+
+        schema_hint = (
+            "Available filter fields (entities.properties): " + ", ".join(schema_keys)
+            if schema_keys else ""
         )
 
-        example_cat = expertise[0] if expertise else "лежанка"
+        # Few-shot пример строится из данных магазина, без захардкоженных значений
+        example_cat  = expertise[0] if expertise else "product"
+        cat_examples = ", ".join(f'"{c}"' for c in expertise[:6]) if expertise else f'"{example_cat}"'
 
-        # Few-shot пример с правильной структурой JSON
+        props_example = {}
+        prop_fields   = self._search_config.get("example_properties", {})
+        if prop_fields:
+            props_example = prop_fields
+        elif schema_keys:
+            props_example = {schema_keys[0]: "example_value"}
+
         few_shot_example = (
-            "\nОБОВ'ЯЗКОВИЙ ЗРАЗОК JSON (копіюй структуру точно):\n"
+            "\nREQUIRED JSON STRUCTURE (copy exactly):\n"
             "{\n"
-            "  \"action\": \"SEARCH\",\n"
-            f"  \"reason\": \"Запит про {example_cat}\",\n"
-            "  \"entities\": {\n"
-            f"    \"category\": \"{example_cat}\",\n"
-            "    \"brand\": null,\n"
-            "    \"price_limit\": null,\n"
-            "    \"properties\": {\n"
-            "      \"Тварина\": \"кіт\"\n"
-            "    }\n"
+            '  "action": "SEARCH",\n'
+            f'  "reason": "Query about {example_cat}",\n'
+            '  "entities": {\n'
+            f'    "category": "{example_cat}",\n'
+            '    "brand": null,\n'
+            '    "price_limit": null,\n'
+            '    "properties": ' + json.dumps(props_example, ensure_ascii=False) + '\n'
             "  },\n"
-            "  \"temperature\": \"HARD_SEARCH\",\n"
-            "  \"language\": \"Ukrainian\"\n"
+            '  "temperature": "HARD_SEARCH",\n'
+            f'  "language": "{self.language}"\n'
             "}\n"
-            "КРИТИЧНО: \"category\" = назва товару (" + cat_examples + ").\n"
-            "ЗАБОРОНЕНО в \"category\": назви полів схеми ("
-            + ", ".join(f'"{k}"' for k in schema_keys[:4])
-            + ") — це фільтри, а не категорії.\n"
-            "Всі характеристики (тварина, розмір, колір) — ТІЛЬКИ всередині \"properties\".\n"
+            f'CRITICAL: "category" = product name ({cat_examples}).\n'
+            + (
+                'FORBIDDEN in "category": schema field names ('
+                + ", ".join(f'"{k}"' for k in schema_keys[:4])
+                + ") — these are filters, not categories.\n"
+                if schema_keys else ""
+            )
+            + "All characteristics (size, color, type) → ONLY inside \"properties\".\n"
         )
 
-        # Строгий маппинг категорий — ключевое изменение v7.7.4
-        category_mapping_hint = self._build_category_mapping_hint()
-
-        slug_line = "\nТи — суворий бібліотекар-класифікатор у магазині \"" + self.slug + "\".\n"
-        role_hint = (
-            "НЕ аналізуй, НЕ інтерпретуй вільно. "
-            "Тільки заповнюй поля за словником вище.\n"
-        )
-        obov = "ОБОВ'ЯЗКОВІ ПОЛЯ В JSON:\n"
+        category_mapping_hint    = self._build_category_mapping_hint()
+        negative_keywords_hint   = self._build_negative_keywords_hint()
 
         header = (
-            slug_line
-            + role_hint
-            + "Завдання: перетворити запит користувача на структурований JSON.\n"
-            + "\nІСТОРІЯ ДІАЛОГУ:\n" + chat_context + "\n"
-            + "\nПРИКЛАДИ НЕГАТИВУ: " + str(negative_examples[:5]) + "\n"
+            f'\nYou are a strict classifier for store "{store_name}".\n'
+            "DO NOT analyse freely. Fill fields from the dictionary only.\n"
+            "Task: convert user query into structured JSON.\n"
+            "\nDIALOG HISTORY:\n" + chat_context + "\n"
+            "\nNEGATIVE EXAMPLES: " + str(negative_examples[:5]) + "\n"
             + ("\n" + schema_hint + "\n" if schema_hint else "")
             + ("\n" + category_mapping_hint + "\n" if category_mapping_hint else "")
+            + ("\n" + negative_keywords_hint + "\n" if negative_keywords_hint else "")
             + few_shot_example
-            + "\n" + obov
-            + "1. \"action\": SEARCH (пошук), CONSULT (консультація), CHAT (флуд), TROLL (атака).\n"
-            + "2. \"temperature\": HARD_SEARCH (конкретна покупка), SOFT_ADVISORY (порада), VIBE_CHECK (флуд).\n"
-            + "3. \"entities\": {\"category\": str, \"brand\": str, \"price_limit\": int, \"properties\": dict}.\n"
-            + "4. \"language\": мова запиту.\n"
-            + "5. \"reason\": коротке пояснення логіки (string).\n"
+            + "\nREQUIRED JSON FIELDS:\n"
+            + '1. "action": SEARCH (product query), CONSULT (advice, no product), CHAT (small talk), TROLL (abuse).\n'
+            + '2. "temperature": HARD_SEARCH (specific purchase), SOFT_ADVISORY (advice), VIBE_CHECK (small talk).\n'
+            + '3. "entities": {"category": str, "brand": str, "price_limit": int, "properties": dict}.\n'
+            + '4. "language": language of the query.\n'
+            + '5. "reason": short explanation of logic (string).\n'
         )
         rules = (
-            "\nПРАВИЛА ДЛЯ \"action\":\n"
-            + "- SEARCH: будь-який запит про товар, в т.ч. питальна форма (\"є куртки?\").\n"
-            + "- TROLL: образи, мат, агресія.\n"
+            '\nRULES FOR "action":\n'
+            + '- SEARCH: any product query, including question form ("do you have jackets?").\n'
+            + "- TROLL: insults, profanity, aggression.\n"
             + "  " + self._build_troll_hint() + "\n"
-            + "- CHAT: беззмістовний текст, вітання.\n"
-            + "- CONSULT: загальні питання БЕЗ конкретного товару (\"що порадите для кота?\").\n"
-            + "\nПРАВИЛА ДЛЯ \"entities\":\n"
+            + "- CHAT: meaningless text, greetings.\n"
+            + '- CONSULT: general questions WITHOUT a specific product ("what do you recommend?").\n'
+            + '\nRULES FOR "entities":\n'
             + self._build_category_hint()
-            + "- \"brand\": ТІЛЬКИ власні назви брендів виробника.\n"
+            + '- "brand": ONLY manufacturer brand names.\n'
             + "  " + self._build_brand_ignore_hint() + "\n"
-            + "- \"price_limit\": числова межа ціни в грн або null.\n"
-            + "- \"properties\": dict з додатковими характеристиками (Тварина, розмір тощо).\n"
-            + "\nVERY IMPORTANT: ВІДПОВІДАЙ ВИКЛЮЧНО JSON. NO MARKDOWN. NO BACKTICKS. NO PREAMBLE.\n"
+            + f'- "price_limit": numeric price ceiling in {currency} or null.\n'
+            + '- "properties": dict with extra characteristics (size, color, type, etc.).\n'
+            + "\nVERY IMPORTANT: RESPOND WITH JSON ONLY. NO MARKDOWN. NO BACKTICKS. NO PREAMBLE.\n"
         )
         return header + rules
 
     # ── Fallback intent ───────────────────────────────────────────────────────
 
     def _get_fallback_intent(self, text: str) -> dict:
-        r"""Fallback regex extraction при падении LLM."""
-        logger.info(f"🛠️ [FALLBACK] Universal regex extraction for: {str(text)[:50]}...")
+        """Fallback regex extraction при падении LLM."""
+        logger.info(f"🛠️ [FALLBACK] Regex extraction for: {str(text)[:50]}...")
         text_low = str(text).lower()
 
         price_limit: Optional[int] = None
 
+        # Паттерны цены — универсальные числовые, без привязки к валюте
         price_with_marker = re.search(
-            r'(\d{3,6})\s*(грн|₴|uah|грн\.|гривен|гривень)',
+            r'(\d{3,6})\s*([a-z₴$€£¥₹]{1,4})',
             text_low,
         )
         price_with_context = re.search(
-            r'(?:до|за|не\s*більше|менше\s*ніж|не\s*дорожче)\s+(\d{3,6})',
+            r'(?:up to|max|under|less than|до|за|не більше|менше ніж)\s+(\d{3,6})',
             text_low,
         )
 
+        min_price = self._search_config.get("min_price_threshold", 10)
+
         if price_with_marker:
             candidate = int(price_with_marker.group(1))
-            if candidate >= 100:
+            if candidate >= min_price:
                 price_limit = candidate
         elif price_with_context:
             candidate = int(price_with_context.group(1))
-            if candidate >= 100:
+            if candidate >= min_price:
                 price_limit = candidate
         else:
             standalone = re.search(
-                r'(?<![a-zа-яёіїєґ])(\d{3,6})(?![a-zа-яёіїєґ])',
+                r'(?<![a-zа-яёіїєґ\d])(\d{3,6})(?![a-zа-яёіїєґ\d])',
                 text_low,
             )
             if standalone:
                 candidate = int(standalone.group(1))
-                if candidate >= 100:
+                if candidate >= min_price:
                     price_limit = candidate
 
         category = None
         for key in getattr(self.ctx, 'schema_keys', []):
-            if key.lower() in text_low:
+            if re.search(r'\b' + re.escape(key.lower()) + r'\b', text_low):
                 category = key
                 break
 
@@ -474,7 +468,7 @@ class DialogManager:
         profile    = getattr(self.ctx, 'profile', {})
         top_brands = profile.get('brand_matrix', {}).get('top_brands', [])
         for b in top_brands:
-            if b and b.lower() in text_low:
+            if b and re.search(r'\b' + re.escape(b.lower()) + r'\b', text_low):
                 brand = b
                 break
 
@@ -490,6 +484,54 @@ class DialogManager:
             "language": getattr(self.ctx, 'language', 'Ukrainian'),
         }
 
+    async def _handle_troll_response(self, user_text: str) -> str:
+        import random
+        troll_responses = self._search_config.get("troll_responses", [])
+        prompt_path_raw = self._search_config.get("troll_prompt", "")
+
+        if prompt_path_raw:
+            prompt_path = prompt_path_raw if os.path.isabs(prompt_path_raw) else os.path.join(self.base_path, prompt_path_raw)
+        else:
+            prompt_path = ""
+
+        if prompt_path and os.path.exists(prompt_path):
+            try:
+                with open(prompt_path, "r", encoding="utf-8") as f:
+                    prompt_template = f.read()
+                prompt = prompt_template.format(
+                    store_name=self.slug,
+                    language=self.language,
+                )
+                result_obj = await self.selector.get_fast()
+                if isinstance(result_obj, tuple):
+                    client, model = result_obj
+                else:
+                    client = result_obj
+                    model  = getattr(result_obj, 'model_name', None)
+                response = await asyncio.wait_for(
+                    client.chat.completions.create(
+                        model=model,
+                        messages=[
+                            {"role": "system", "content": prompt},
+                            {"role": "user",   "content": user_text},
+                        ],
+                        temperature=0.7,
+                        max_tokens=80,
+                    ),
+                    timeout=8.0,
+                )
+                text = ""
+                if response.choices:
+                    text = getattr(response.choices[0].message, 'content', '').strip()
+                if text:
+                    return text
+            except Exception as e:
+                logger.warning(f"[{self.slug}] Troll LLM failed: {e} → using fallback")
+
+        if troll_responses:
+            return random.choice(troll_responses)
+        return "🙃"
+
     # ── Intent analysis ───────────────────────────────────────────────────────
 
     async def analyze_intent(
@@ -503,12 +545,37 @@ class DialogManager:
 
             if user_text.lower().strip() in patterns:
                 logger.warning(f"🛡️ [INTENT_TRACE] Fast-Reject: Known Troll Pattern for {chat_id}")
+                # Полный сброс кэша — следующий запрос будет чистым стартом
+                self._intent_cache.pop(str(chat_id), None)
+                try:
+                    conn = sqlite3.connect(self.session_db_path, timeout=5.0)
+                    conn.execute("DELETE FROM intent_cache WHERE chat_id = ?", (str(chat_id),))
+                    conn.commit()
+                    conn.close()
+                except Exception as _e:
+                    logger.debug(f"[{self.slug}] Cache clear on TROLL error: {_e}")
+                witty = await self._handle_troll_response(user_text)
                 return {
                     "action":      "TROLL",
                     "temperature": "VIBE_CHECK",
                     "entities":    {"properties": {}},
                     "language":    self.language,
+                    "witty_text":  witty,
                 }
+
+            # Pre-LLM Guard: проверка unsupported keywords до вызова LLM
+            negative_keywords = self._intent_hints.get("negative_keywords", [])
+            if negative_keywords:
+                text_low = user_text.lower()
+                if any(kw.lower() in text_low for kw in negative_keywords):
+                    logger.info(f"[{self.slug}] Pre-LLM Guard: unsupported keyword detected → CONSULT")
+                    return {
+                        "action":      "CONSULT",
+                        "temperature": "SOFT_ADVISORY",
+                        "entities":    {"category": None, "brand": None, "price_limit": None, "properties": {}},
+                        "language":    self.language,
+                        "reason":      "unsupported_keyword",
+                    }
 
             _cached      = self._cache_get(str(chat_id))
             _is_followup = bool(_cached and time.time() - _cached.get("ts", 0) < 2700)
@@ -542,13 +609,16 @@ class DialogManager:
                     {"role": "system", "content": prompt},
                     {"role": "user",   "content": user_text},
                 ],
-                temperature=0.0,  # v7.7.4: 0.1 → 0.0 для детерминизма категорий
+                temperature=0.0,
                 max_tokens=150,
             )
 
+            if not response.choices:
+                logger.warning(f"[{self.slug}] LLM returned empty choices for {chat_id}")
+                return self._get_fallback_intent(user_text)
+
             content = getattr(response.choices[0].message, 'content', '{}')
 
-            # v7.7.4: принудительная очистка markdown-оберток до парсинга
             content = re.sub(r'^```(?:json)?\s*', '', content.strip(), flags=re.IGNORECASE)
             content = re.sub(r'\s*```$', '', content.strip())
             content = content.strip()
@@ -560,9 +630,7 @@ class DialogManager:
                     f"-------------------------------------------------"
                 )
 
-            raw_intent = safe_extract_json(content)
-
-            # Нормализация entities — зайві ключі → properties
+            raw_intent   = safe_extract_json(content)
             raw_entities = raw_intent.get("entities", {})
             if isinstance(raw_entities, dict):
                 raw_intent["entities"] = self._normalize_entities(raw_entities)
@@ -673,9 +741,9 @@ class DialogManager:
         top_k: int = 5,
         raw_products: Optional[List[Dict]] = None,
     ) -> List[Dict]:
-        status              = "SUCCESS"
+        status               = "SUCCESS"
         products_to_process: List[Dict] = []
-        is_empty            = False
+        is_empty             = False
 
         if raw_products is not None:
             products_to_process = raw_products
@@ -720,8 +788,8 @@ class DialogManager:
             return products_to_process[:top_k]
 
     def __repr__(self):
-        return f"<DialogManager v7.7.5 slug={self.slug}>"
+        return f"<DialogManager v7.8.3 slug={self.slug}>"
 
 
 def get_version():
-    return "7.7.5"
+    return "7.8.3"

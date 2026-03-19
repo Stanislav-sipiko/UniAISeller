@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/core/retrieval.py v9.5.6
+# /root/ukrsell_v4/core/retrieval.py v9.7.2
 
 from typing import List, Dict, Optional, Any, Union
 import os
@@ -15,20 +15,30 @@ from concurrent.futures import ThreadPoolExecutor
 from core.logger import logger, log_event, log_retrieval
 from core.intelligence import entity_filter, get_stem
 
-# Минимальный final_score для включения результата в выдачу
+# Дефолтный порог — переопределяется из search_config.json магазина
 RELEVANCE_SCORE_THRESHOLD = 0.30
+
 
 
 class RetrievalEngine:
     """
-    Universal SaaS Retrieval Engine v9.5.6.
+    Universal SaaS Retrieval Engine v9.7.2.
 
+    v9.7.0:
+      - _apply_attribute_filter: агностик-фильтр вместо _apply_animal_filter.
+        Логика (field, aliases, hard_filter, score_match, title_exclusions) — в search_config.json.
+      - _get_product_attributes: единый метод парсинга attrs, убирает дублирование.
+      - Thread safety: _ready_event вместо _init_task в search().
+      - try/except вокруг model.encode → MODEL_ERROR статус.
+      - GRAY_ZONE логируется, поиск продолжается с предупреждением.
+      - executor.shutdown(wait=True) — нет утечек потоков.
+      - Лог attribute_filter.field при старте.
+    v9.6.1:
+      - Abort gate до FAISS: category в abort_categories → NOT_FOUND_SECURE.
+    v9.6.0:
+      - Animal filter, ABORT policy из search_config.json.
     v9.5.6:
-      - FIX #2: category=null gate — если category не задана и action=SEARCH,
-        возвращает NO_CATEGORY без FAISS. Останавливает поиск мусора.
-      - FIX #3: Score threshold RELEVANCE_SCORE_THRESHOLD=0.30 — результаты
-        с final_score < порога отсекаются после _semantic_rerank.
-        Soft fallback (L1/L2/L3) применяется только для action=SEARCH.
+      - category=null gate, score threshold 0.30, Three-level Fallback L1/L2/L3.
     """
 
     def __init__(self, ctx: Any, shared_model: Any, shared_translator: Any = None):
@@ -58,11 +68,30 @@ class RetrievalEngine:
         self.products_db_path = os.path.join(ctx.base_path, "products.db")
         self._price_cleaner = re.compile(r'[^\d.,]')
         self._init_error: Optional[Exception] = None
+        self.search_config = self._load_search_config()
+        self._ready_event: asyncio.Event = asyncio.Event()
 
         self._init_task: Optional[asyncio.Task] = asyncio.create_task(
             self._initialize_assets_async()
         )
         self._init_task.add_done_callback(lambda _t: setattr(self, '_init_task', None))
+
+    def _load_search_config(self) -> dict:
+        path = Path(self.ctx.base_path) / "search_config.json"
+        if path.exists():
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+                attr_field = cfg.get("attribute_filter", {}).get("field", "none")
+                logger.info(
+                    f"[{self.slug}] search_config.json loaded. "
+                    f"Attribute filter field: '{attr_field}'"
+                )
+                return cfg
+            except Exception as e:
+                logger.warning(f"[{self.slug}] search_config.json load error: {e}. Using defaults.")
+        logger.warning(f"[{self.slug}] search_config.json not found. Attribute filter disabled.")
+        return {}
 
     # ── Инициализация ─────────────────────────────────────────────────────────
 
@@ -79,6 +108,13 @@ class RetrievalEngine:
             if not self.id_list:
                 await self._finalize_id_mapping()
 
+            # Проверяем что инициализация дала результат
+            if not self.id_list or not self.metadata:
+                raise RuntimeError(
+                    f"Init incomplete: id_list={len(self.id_list)}, metadata={len(self.metadata)}. "
+                    f"Check faiss_map table and deduplicated_products.json."
+                )
+
             init_elapsed = round(time.perf_counter() - init_start, 3)
             if init_elapsed > 5.0:
                 logger.warning(
@@ -87,18 +123,21 @@ class RetrievalEngine:
                 )
             else:
                 logger.info(
-                    f"🚀 [{self.slug}] Retrieval Engine v9.5.6 READY in {init_elapsed}s "
+                    f"🚀 [{self.slug}] Retrieval Engine v9.7.2 READY in {init_elapsed}s "
                     f"(items={len(self.metadata)}, ids={len(self.id_list)})"
                 )
 
             if hasattr(self.ctx, 'data_ready') and isinstance(self.ctx.data_ready, asyncio.Event):
                 self.ctx.data_ready.set()
 
+            self._ready_event.set()
+
         except asyncio.CancelledError:
             logger.warning(f"[{self.slug}] Asset initialization cancelled.")
             raise
         except Exception as e:
             self._init_error = e
+            self._ready_event.set()
             logger.error(
                 f"[{self.slug}] Async Init Failed: {e}. "
                 f"All subsequent searches will return INIT_FAILED.",
@@ -399,6 +438,87 @@ class RetrievalEngine:
                 return "GRAY_ZONE"
         return None
 
+    def _get_product_attributes(self, product: Dict[str, Any]) -> Dict[str, Any]:
+        attrs = product.get("attributes", {})
+        if isinstance(attrs, dict):
+            return attrs
+        if isinstance(attrs, str) and attrs.strip():
+            try:
+                parsed = json.loads(attrs)
+                return parsed if isinstance(parsed, dict) else {}
+            except Exception:
+                return {}
+        return {}
+
+    def _get_attribute_value_from_entities(self, entities: Dict[str, Any]) -> Optional[tuple]:
+        """Возвращает (field, value) из entities.properties по конфигу магазина."""
+        attr_cfg = self.search_config.get("attribute_filter", {})
+        if not attr_cfg:
+            return None
+        field   = attr_cfg.get("field", "")
+        aliases = attr_cfg.get("field_aliases", [field])
+        props   = entities.get("properties") or {}
+        for alias in [field] + list(aliases):
+            v = props.get(alias) or entities.get(alias)
+            if v and str(v).lower() not in ("none", "null", "any", ""):
+                return (field, str(v).lower().strip())
+        return None
+
+    def _get_attribute_value_from_product(self, product: Dict[str, Any]) -> Optional[str]:
+        """Возвращает значение атрибута из товара по конфигу магазина."""
+        attr_cfg = self.search_config.get("attribute_filter", {})
+        if not attr_cfg:
+            return None
+        field   = attr_cfg.get("field", "")
+        aliases = attr_cfg.get("field_aliases", [field])
+        attrs   = self._get_product_attributes(product)
+        for alias in [field] + list(aliases):
+            v = attrs.get(alias) or product.get(alias)
+            if v and str(v).lower() not in ("none", "null", "any", ""):
+                return str(v).lower().strip()
+        return None
+
+    def _apply_attribute_filter(
+        self,
+        product:  Dict[str, Any],
+        entities: Dict[str, Any],
+    ) -> float:
+        """Агностик-фильтр по атрибуту из search_config магазина.
+        Возвращает: 0.0 = стоп, score_match = буст, 1.0 = нет фильтра."""
+        attr_cfg = self.search_config.get("attribute_filter", {})
+        if not attr_cfg:
+            return 1.0
+
+        hard_filter = attr_cfg.get("hard_filter", True)
+        score_match = float(attr_cfg.get("score_match", 1.3))
+        exclusions  = attr_cfg.get("title_exclusions", {})
+
+        query_attr = self._get_attribute_value_from_entities(entities)
+        if not query_attr:
+            return 1.0
+
+        _, query_val      = query_attr
+        product_attr_val  = self._get_attribute_value_from_product(product)
+
+        if not product_attr_val:
+            return 0.0 if hard_filter else 1.0
+
+        # Стемминг для корректного матчинга склонений: "кіт" → "котів"
+        query_stems   = {get_stem(t) for t in query_val.split()}
+        product_stems = {get_stem(t) for t in product_attr_val.split()}
+        if not (query_stems & product_stems):
+            return 0.0 if hard_filter else 1.0
+
+        # title_exclusions — только если attribute совпал, как дополнительная защита
+        if exclusions and query_val in exclusions:
+            title = str(product.get("title") or product.get("name", "")).lower()
+            for excl_word in exclusions[query_val]:
+                if excl_word.lower() in title:
+                    logger.debug(f"[{self.slug}] title_exclusion hit: '{excl_word}' in '{title[:50]}'")
+                    return 0.0
+
+        return score_match
+
     def _apply_unified_filters(
         self,
         product:     Dict[str, Any],
@@ -421,17 +541,7 @@ class RetrievalEngine:
         if not entities:
             return True
 
-        raw_attrs = product.get('attributes')
-        if isinstance(raw_attrs, dict):
-            p_attrs = raw_attrs
-        elif isinstance(raw_attrs, str) and raw_attrs.strip():
-            try:
-                parsed_attrs = json.loads(raw_attrs)
-                p_attrs = parsed_attrs if isinstance(parsed_attrs, dict) else {}
-            except (json.JSONDecodeError, ValueError):
-                p_attrs = {}
-        else:
-            p_attrs = {}
+        p_attrs = self._get_product_attributes(product)
 
         for key, val in entities.items():
             if val is None or str(val).lower() in [
@@ -504,8 +614,7 @@ class RetrievalEngine:
             if v_lower in str(product.get(k_lower, "")).lower():
                 continue
 
-            raw_attrs = product.get('attributes', {})
-            p_attrs   = raw_attrs if isinstance(raw_attrs, dict) else {}
+            p_attrs = self._get_product_attributes(product)
             if v_lower in str(p_attrs.get(key, p_attrs.get(k_lower, ""))).lower():
                 continue
 
@@ -582,9 +691,9 @@ class RetrievalEngine:
         """
         start_time = time.perf_counter()
 
-        if self._init_task is not None and not self._init_task.done():
+        if not self._ready_event.is_set():
             try:
-                await asyncio.wait_for(asyncio.shield(self._init_task), timeout=10.0)
+                await asyncio.wait_for(self._ready_event.wait(), timeout=10.0)
             except asyncio.TimeoutError:
                 logger.error(
                     f"🛑 [{self.slug}] Search timeout: Assets not ready after 10s."
@@ -595,8 +704,6 @@ class RetrievalEngine:
                     "all_products": [],
                     "is_empty":     True,
                 }
-            except Exception as e:
-                logger.error(f"[{self.slug}] Init task wait error: {e}")
 
         if self._init_error is not None:
             logger.error(
@@ -610,8 +717,8 @@ class RetrievalEngine:
                 "is_empty":     True,
             }
 
-        id_list_snap:  List[str]                   = self.id_list
-        metadata_snap: Dict[str, Any]              = self.metadata
+        id_list_snap:  List[str]                   = list(self.id_list)
+        metadata_snap: Dict[str, Any]              = dict(self.metadata)
         index_snap:    Optional[faiss.IndexFlatIP] = self.index
 
         if not index_snap or not id_list_snap:
@@ -677,17 +784,40 @@ class RetrievalEngine:
             enriched_q = self._enrich_query(query)
             det_cat    = ent.get("category") or self._detect_category(query)
 
-            search_text = target if len(target) > 2 else enriched_q
-            q_emb = await loop.run_in_executor(
-                self.executor,
-                lambda: self.model.encode(
-                    f"query: {search_text}", normalize_embeddings=True
-                ).astype('float32'),
-            )
+            # Abort gate: abort_categories из search_config — до FAISS
+            _abort_cats = {c.lower() for c in self.search_config.get("abort_categories", [])}
+            if _abort_cats and det_cat and det_cat.lower() in _abort_cats:
+                logger.info(
+                    f"[{self.slug}] Abort gate: category='{det_cat}' in abort_categories → NOT_FOUND_SECURE."
+                )
+                return {
+                    "status":            "NOT_FOUND_SECURE",
+                    "products":          [],
+                    "all_products":      [],
+                    "detected_category": det_cat,
+                    "is_empty":          True,
+                    "fallback_level":    0,
+                    "fallback_reason":   "abort_gate",
+                }
 
-            if self._check_negative_intent(q_emb) == "STRICT_REJECT":
+            search_text = target if len(target) > 2 else enriched_q
+            try:
+                q_emb = await loop.run_in_executor(
+                    self.executor,
+                    lambda: self.model.encode(
+                        f"query: {search_text}", normalize_embeddings=True
+                    ).astype('float32'),
+                )
+            except Exception as enc_err:
+                logger.error(f"[{self.slug}] Encoding failed: {enc_err}")
+                return {"status": "MODEL_ERROR", "products": [], "all_products": [], "is_empty": True}
+
+            negative_intent = self._check_negative_intent(q_emb)
+            if negative_intent == "STRICT_REJECT":
                 logger.warning(f"🛡️ [{self.slug}] Negative intent blocked (Strict).")
                 return {"status": "SEMANTIC_REJECT", "products": [], "all_products": []}
+            if negative_intent == "GRAY_ZONE":
+                logger.info(f"⚠️ [{self.slug}] Negative intent GRAY_ZONE — continuing with caution.")
 
             scores, idxs = await loop.run_in_executor(
                 self.executor,
@@ -712,7 +842,7 @@ class RetrievalEngine:
                     self.executor,
                     lambda: self.model.encode(
                         f"query: {target}", normalize_embeddings=True
-                    ),
+                    ).astype('float32'),
                 )
                 if target
                 else None
@@ -737,51 +867,87 @@ class RetrievalEngine:
             candidate_list: List[Dict] = []
             for pid in merged_ids:
                 p = metadata_snap.get(pid)
-                if p and self._apply_unified_filters(p, ent, price_limit):
-                    candidate_list.append({
-                        "product": p,
-                        "score":   v_map.get(pid, 0.1),
-                        "id":      pid,
-                    })
+                if not p:
+                    continue
+                attr_mult = self._apply_attribute_filter(p, ent)
+                if attr_mult == 0.0:
+                    continue
+                if not self._apply_unified_filters(p, ent, price_limit):
+                    continue
+                base_score = v_map.get(pid, 0.1)
+                candidate_list.append({
+                    "product": p,
+                    "score":   base_score * attr_mult,
+                    "id":      pid,
+                })
 
             reranked = self._semantic_rerank(
                 candidate_list, target, det_cat or "", t_vec, q_words
             )
 
-            # FIX #3: отсекаем результаты ниже порога релевантности
-            reranked = [
-                r for r in reranked
-                if r.get("final_score", 0) >= RELEVANCE_SCORE_THRESHOLD
-            ]
-            if len(candidate_list) > 0 and not reranked:
-                logger.info(
-                    f"[{self.slug}] Score threshold ({RELEVANCE_SCORE_THRESHOLD}) "
-                    f"dropped all {len(candidate_list)} candidates."
-                )
-
+            # entity_filter ДО threshold — чтобы не терять релевантные товары
             intel_filtered = entity_filter(
                 [r["product"] for r in reranked],
                 ent,
                 intent_mapping=self.intent_mapping,
                 category_map=getattr(self.ctx, "category_map", {}),
             )
-            intel_ids = {
-                str(p.get("product_id") or p.get("id")) for p in intel_filtered
-            }
-            final_products = [
-                r for r in reranked
-                if str(r["product"].get("product_id") or r["product"].get("id"))
-                in intel_ids
-            ]
+            # Применяем только если intel_filter вернул результаты — иначе оставляем reranked
+            if intel_filtered:
+                intel_ids = {
+                    str(p.get("product_id") or p.get("id")) for p in intel_filtered
+                }
+                reranked = [
+                    r for r in reranked
+                    if str(r["product"].get("product_id") or r["product"].get("id"))
+                    in intel_ids
+                ]
+            else:
+                logger.info(f"[{self.slug}] entity_filter returned empty — keeping reranked as-is.")
 
-            # ── Soft Fallback (оригинальный) ──────────────────────────────────
-            if not final_products and reranked:
-                best_score = reranked[0].get("final_score", 0)
+            # Score threshold из search_config магазина — после entity_filter
+            _score_threshold = float(
+                self.search_config.get("score_threshold", RELEVANCE_SCORE_THRESHOLD)
+            )
+            reranked = [
+                r for r in reranked
+                if r.get("final_score", 0) >= _score_threshold
+            ]
+            if len(candidate_list) > 0 and not reranked:
+                logger.info(
+                    f"[{self.slug}] Score threshold ({_score_threshold}) "
+                    f"dropped all {len(candidate_list)} candidates."
+                )
+
+            # ABORT policy: никаких fallback для abort_categories при нулевых результатах
+            _cat_lower = (det_cat or "").lower()
+            if _abort_cats and _cat_lower in _abort_cats and not reranked:
+                logger.info(f"[{self.slug}] ABORT policy: category='{det_cat}', no results → NOT_FOUND.")
+                return {
+                    "status":            "NOT_FOUND",
+                    "products":          [],
+                    "all_products":      [],
+                    "detected_category": det_cat,
+                    "is_empty":          True,
+                    "fallback_level":    0,
+                    "fallback_reason":   "abort_policy",
+                }
+
+            final_products: List[Dict] = []
+
+            # Soft Fallback — если entity_filter оставил результаты, берём их
+            if reranked:
+                final_products = reranked
+            elif candidate_list:
+                # entity_filter выкинул всё — rerank candidate_list и проверяем score
+                reranked_fb = self._semantic_rerank(
+                    candidate_list[:top_k * 2], target, det_cat or "", t_vec, q_words
+                )
+                best_score = reranked_fb[0].get("final_score", 0) if reranked_fb else 0
                 if best_score > self.semantic_filter_threshold:
-                    final_products = reranked[:top_k]
+                    final_products = reranked_fb[:top_k]
                     logger.info(
-                        f"⚠️ [{self.slug}] Soft Fallback activated. "
-                        f"Best score: {best_score}"
+                        f"⚠️ [{self.slug}] Soft Fallback activated. Best score: {best_score}"
                     )
 
             fallback_level  = 0
@@ -808,6 +974,10 @@ class RetrievalEngine:
                     l1_candidates: List[Dict] = []
                     for pid in merged_ids:
                         p = metadata_snap.get(pid)
+                        if not p:
+                            continue
+                        if self._apply_attribute_filter(p, ent) == 0.0:
+                            continue
                         if p and self._apply_unified_filters_relaxed(
                             p, ent, price_limit, skip_properties=True
                         ):
@@ -832,20 +1002,23 @@ class RetrievalEngine:
                     l2_candidates: List[Dict] = []
                     for pid in merged_ids:
                         p = metadata_snap.get(pid)
-                        if p:
-                            avail = str(p.get("availability", "instock")).lower()
-                            if avail in ["outofstock", "немає в наявності", "нет в наличии"]:
+                        if not p:
+                            continue
+                        if self._apply_attribute_filter(p, ent) == 0.0:
+                            continue
+                        avail = str(p.get("availability", "instock")).lower()
+                        if avail in ["outofstock", "немає в наявності", "нет в наличии"]:
+                            continue
+                        if price_limit is not None:
+                            raw_price = p.get("price", "0")
+                            parsed    = self._parse_price(str(raw_price))
+                            if parsed is not None and parsed > price_limit:
                                 continue
-                            if price_limit is not None:
-                                raw_price = p.get("price", "0")
-                                parsed    = self._parse_price(str(raw_price))
-                                if parsed is not None and parsed > price_limit:
-                                    continue
-                            l2_candidates.append({
-                                "product": p,
-                                "score":   v_map.get(pid, 0.1),
-                                "id":      pid,
-                            })
+                        l2_candidates.append({
+                            "product": p,
+                            "score":   v_map.get(pid, 0.1),
+                            "id":      pid,
+                        })
                     if l2_candidates:
                         final_products = self._semantic_rerank(
                             l2_candidates, target, det_cat or "", t_vec, q_words
@@ -914,13 +1087,13 @@ class RetrievalEngine:
             self._init_task.cancel()
             logger.info(f"[{self.slug}] Init task cancellation requested (best-effort).")
 
-        self.executor.shutdown(wait=False)
+        self.executor.shutdown(wait=True)
         self.index = None
         self.id_list.clear()
         self.metadata.clear()
-        logger.info(f"🛑 [{self.slug}] Retrieval Engine v9.5.6 closed.")
+        logger.info(f"🛑 [{self.slug}] Retrieval Engine v9.7.2 closed.")
 
     def __repr__(self):
         return (
-            f"<RetrievalEngine v9.5.6 slug={self.slug} items={len(self.metadata)}>"
+            f"<RetrievalEngine v9.7.2 slug={self.slug} items={len(self.metadata)}>"
         )

@@ -1,10 +1,4 @@
-# /root/ukrsell_v4/kernel.py v8.5.4
-"""
-UkrSell AI Kernel v8.5.4.
-
-v8.5.4:
-
-"""
+# /root/ukrsell_v4/kernel.py v8.6.0
 
 import os
 import json
@@ -28,44 +22,32 @@ from core.translator import TextTranslator
 from core.confidence import evaluate as confidence_evaluate
 from core.cache_manager import SemanticCache
 from core.dialog_manager import DialogManager
+from core.kernel_config import (
+    BASE_MAX_TOKENS, TOKENS_PER_PRODUCT, MAX_TOKENS_CAP,
+    MAX_PRODUCTS_IN_PROMPT, MAX_ATTRS_PER_PRODUCT,
+    COMPLEX_ENTITIES_THRESHOLD, COMPLEX_QUERY_LENGTH,
+    LLM_MIN_RESPONSE_LEN, LANG_RU_RATIO_THRESHOLD,
+    MIN_VALID_PRODUCTS_FOR_LLM, ATTRS_BLACKLIST,
+)
 from engine.base import StoreEngine
 
-
-# ── Константы ─────────────────────────────────────────────────────────────────
-
-BASE_MAX_TOKENS    = 800
-TOKENS_PER_PRODUCT = 120
-MAX_TOKENS_CAP     = 2000
-
-MAX_PRODUCTS_IN_PROMPT = 5
-MAX_ATTRS_PER_PRODUCT  = 3
-
-COMPLEX_ENTITIES_THRESHOLD = 2
-COMPLEX_QUERY_LENGTH       = 40
-
-_ATTRS_BLACKLIST = frozenset({
-    "id", "sku", "uid", "uuid", "product_id", "item_id",
-    "created_at", "updated_at", "last_updated",
-    "html", "description_html", "meta", "seo",
-    "position", "sort_order", "weight_g", "volume_ml",
-})
-
-LLM_MIN_RESPONSE_LEN    = 60
-LANG_RU_RATIO_THRESHOLD = 0.35
-MIN_VALID_PRODUCTS_FOR_LLM = 2
+_DEFAULT_PROMPTS_PATH = os.path.join(
+    os.path.dirname(__file__), "core", "kernel_prompts.json"
+)
 
 
 class UkrSellKernel:
-    """AI Kernel v8.5.3."""
+    """AI Kernel v8.6.0."""
 
     def __init__(self, model_name: str = 'intfloat/multilingual-e5-small'):
         if HF_TOKEN:
             os.environ["HF_TOKEN"] = HF_TOKEN
             logger.info("HF_TOKEN set in environment.")
 
-        self.model_name = model_name
+        self.model_name    = model_name
         self._request_cache: Dict[str, float] = {}
-        self._cache_ttl = 5
+        self._cache_ttl    = 5
+        self._default_prompts: Dict[str, Any] = self._load_default_prompts()
 
         self.model      = None
         self.translator = TextTranslator()
@@ -73,11 +55,45 @@ class UkrSellKernel:
         self.registry   = None
         self.llm_ready  = asyncio.Event()
 
+    # ── Промпты ───────────────────────────────────────────────────────────────
+
+    def _load_default_prompts(self) -> Dict[str, Any]:
+        try:
+            with open(_DEFAULT_PROMPTS_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            logger.error(f"[kernel] Failed to load kernel_prompts.json: {e}")
+            return {}
+
+    def _load_prompts(self, base_path: str) -> Dict[str, Any]:
+        store_path = os.path.join(base_path, "prompts.json")
+        store_prompts: Dict[str, Any] = {}
+        if os.path.exists(store_path):
+            try:
+                with open(store_path, "r", encoding="utf-8") as f:
+                    store_prompts = json.load(f)
+                logger.info(f"[kernel] Store prompts loaded from {store_path}")
+            except Exception as e:
+                logger.warning(f"[kernel] Store prompts load error: {e}. Using defaults.")
+        merged = {**self._default_prompts, **store_prompts}
+        return merged
+
+    def _p(self, prompts: Dict, key: str, lang: str = "uk", **kwargs) -> str:
+        block = prompts.get(key, self._default_prompts.get(key, {}))
+        lang_key = "uk" if lang == "Ukrainian" else "ru"
+        text = block.get(lang_key, block.get("uk", "")) if isinstance(block, dict) else str(block)
+        if kwargs:
+            try:
+                text = text.format(**kwargs)
+            except (KeyError, ValueError):
+                pass
+        return text
+
     # ── Инициализация ─────────────────────────────────────────────────────────
 
     async def initialize(self):
         start_time = time.time()
-        logger.info(f"🚀 Initializing UkrSell Kernel v8.5.4. Model: {self.model_name}")
+        logger.info(f"🚀 Initializing UkrSell Kernel v8.6.0. Model: {self.model_name}")
 
         try:
             self.model = SentenceTransformer(self.model_name)
@@ -94,6 +110,7 @@ class UkrSellKernel:
             ctx.selector          = self.selector
             ctx.kernel            = self
             ctx.negative_examples = self._load_store_negative_examples(ctx.base_path)
+            ctx.kernel_prompts    = self._load_prompts(ctx.base_path)
 
             ctx.analyzer       = Analyzer(ctx)
             ctx.retrieval      = RetrievalEngine(ctx, self.model)
@@ -210,7 +227,7 @@ class UkrSellKernel:
                 break
             if key in result:
                 continue
-            if key.lower() in _ATTRS_BLACKLIST:
+            if key.lower() in ATTRS_BLACKLIST:
                 continue
             val_str = str(val) if val is not None else ""
             if "<" in val_str and ">" in val_str:
@@ -331,6 +348,8 @@ class UkrSellKernel:
         profile     = getattr(ctx, "profile", {})
         currency    = getattr(ctx, "currency", "грн")
         schema_keys = getattr(ctx, "schema_keys", [])
+        language    = getattr(ctx, "language", "Ukrainian")
+        prompts     = getattr(ctx, "kernel_prompts", self._default_prompts)
         top_brands  = [
             b.lower()
             for b in profile.get("brand_matrix", {}).get("top_brands", [])
@@ -343,10 +362,11 @@ class UkrSellKernel:
         )
         price_limit_f = self._parse_price_limit(raw_price_limit)
 
-        products_for_prompt = products[:MAX_PRODUCTS_IN_PROMPT]
+        store_prompts = getattr(ctx, "prompts", {})
+        view_label    = store_prompts.get("view_button", "Переглянути")
 
         product_cards: List[str] = []
-        for i, res in enumerate(products_for_prompt, 1):
+        for i, res in enumerate(products[:MAX_PRODUCTS_IN_PROMPT], 1):
             p     = self._normalize_product(res)
             title = p["title"]
             brand = p["brand"]
@@ -393,28 +413,22 @@ class UkrSellKernel:
 
         products_block      = "\n\n".join(product_cards) if product_cards else "Товарів не знайдено."
         store_context_block = self._build_dynamic_context(ctx, intent)
-        prompts             = getattr(ctx, "prompts", {})
-        view_label          = prompts.get("view_button", "Переглянути")
+
+        role  = prompts.get("dynamic_prompt_role", "You are an expert sales consultant.")
+        rules = prompts.get("dynamic_prompt_rules", [])
+        rules_text = "\n".join(f"- {r.format(max_products=MAX_PRODUCTS_IN_PROMPT, view_label=view_label)}" for r in rules)
 
         system_prompt = (
             f"{store_context_block}\n\n"
-            "РОЛЬ: Ти — експертний продавець-консультант. "
-            "Твоє завдання — коротко, переконливо і доброзичливо презентувати знайдені товари.\n\n"
-            "ПРАВИЛА:\n"
-            "- Виділяй переваги 🏆 Перевірений бренд та 💰 Вигідна ціна якщо вони є.\n"
-            f"- Максимум {MAX_PRODUCTS_IN_PROMPT} позицій у відповіді.\n"
-            "- Кожна позиція: назва, ціна, короткий аргумент чому варто.\n"
-            f"- Кнопка «{view_label}» або пряме посилання для кожного товару.\n"
-            "- Завершуй коротким питанням для продовження діалогу.\n"
-            "- СУВОРА ЗАБОРОНА: не вигадуй назви, ціни або бренди яких немає в списку.\n"
-            "- СУВОРА ЗАБОРОНА: не перемикай мову відповіді.\n\n"
+            f"РОЛЬ: {role}\n\n"
+            f"ПРАВИЛА:\n{rules_text}\n\n"
             f"ЗНАЙДЕНІ ТОВАРИ:\n{products_block}"
         )
 
         user_message = query or "Покажи знайдені товари."
         return system_prompt, user_message
 
-    # ── Валидация и вспомогательные методы форматирования ────────────────────
+    # ── Валидация ─────────────────────────────────────────────────────────────
 
     def _validate_llm_response(self, text: str, ctx: StoreContext) -> bool:
         if not text or len(text.strip()) < LLM_MIN_RESPONSE_LEN:
@@ -445,7 +459,7 @@ class UkrSellKernel:
                 count += 1
         return count
 
-    # ── format_products — единственная точка LLM для ответа ──────────────────
+    # ── format_products ───────────────────────────────────────────────────────
 
     async def format_products(
         self,
@@ -511,11 +525,10 @@ class UkrSellKernel:
                     BASE_MAX_TOKENS + len(products[:MAX_PRODUCTS_IN_PROMPT]) * TOKENS_PER_PRODUCT,
                     MAX_TOKENS_CAP,
                 )
-                prompt_size = len(system_prompt)
                 logger.info(
                     f"[{slug_for_log}] format_products: Heavy Path "
                     f"({model}), products={len(products)}, valid={valid_count}, "
-                    f"entities={n_entities}, prompt_chars={prompt_size}, "
+                    f"entities={n_entities}, prompt_chars={len(system_prompt)}, "
                     f"max_tokens={max_tokens}."
                 )
                 response = await asyncio.wait_for(
@@ -533,27 +546,15 @@ class UkrSellKernel:
                 result = response.choices[0].message.content or ""
 
                 if self._validate_llm_response(result, ctx):
-                    logger.info(
-                        f"[{slug_for_log}] format_products: Heavy Path OK, "
-                        f"response_chars={len(result)}."
-                    )
+                    logger.info(f"[{slug_for_log}] format_products: Heavy Path OK, response_chars={len(result)}.")
                     return result.strip()
 
-                logger.warning(
-                    f"[{slug_for_log}] format_products: Heavy Path response failed validation "
-                    f"(len={len(result)}) → Fallback to template."
-                )
+                logger.warning(f"[{slug_for_log}] format_products: Heavy Path failed validation → template.")
 
             except asyncio.TimeoutError:
-                logger.warning(
-                    f"[{slug_for_log}] format_products: Heavy Path timeout → "
-                    f"Fallback to template."
-                )
+                logger.warning(f"[{slug_for_log}] format_products: Heavy Path timeout → template.")
             except Exception as e:
-                logger.warning(
-                    f"[{slug_for_log}] format_products: Heavy Path error: {e} → "
-                    f"Fallback to template."
-                )
+                logger.warning(f"[{slug_for_log}] format_products: Heavy Path error: {e} → template.")
         else:
             logger.info(
                 f"[{slug_for_log}] format_products: Light Path "
@@ -564,10 +565,7 @@ class UkrSellKernel:
             ctx, products, raw_text,
             fallback_reason=intent.get("fallback_reason") if intent else None,
         )
-        logger.info(
-            f"[{slug_for_log}] format_products: Light Path (template), "
-            f"response_chars={len(result)}."
-        )
+        logger.info(f"[{slug_for_log}] format_products: Light Path (template), response_chars={len(result)}.")
         return result
 
     # ── handle_message ────────────────────────────────────────────────────────
@@ -575,16 +573,7 @@ class UkrSellKernel:
     async def handle_message(
         self, text: str, chat_id: str, slug: Optional[str] = None
     ) -> Dict[str, Any]:
-        """
-        Industrial Entry Point for test_chat.py and CLI.
-
-        FIX v8.5.3:
-          1. Використовує dialog_manager.analyze_intent замість analyzer.extract_intent.
-             Це активує _normalize_entities, few-shot промпт, L1+L2 intent cache.
-          2. Зберігає user + assistant повідомлення в chat_history.
-             Виправляє "Zero Memory" — follow-up запити бачать контекст.
-          3. Використовує format_products для форматування замість synthesize_response.
-        """
+        """Industrial Entry Point for test_chat.py and CLI."""
         if not self.llm_ready.is_set():
             await asyncio.wait_for(self.llm_ready.wait(), timeout=10.0)
 
@@ -602,119 +591,83 @@ class UkrSellKernel:
         start_time_perf = time.perf_counter()
 
         try:
-            # FIX: використовуємо dialog_manager.analyze_intent — активує всі фікси v7.7.3
-            # (few-shot промпт, _normalize_entities, L1+L2 cache, follow-up merge)
             if hasattr(ctx, "dialog_manager"):
                 intent = await ctx.dialog_manager.analyze_intent(
-                    user_text=text,
-                    chat_id=chat_id,
+                    user_text=text, chat_id=chat_id,
                 )
             else:
-                # fallback для сторів без dialog_manager
-                history_context = ""
-                intent = await ctx.analyzer.extract_intent(
-                    text, chat_context=history_context
-                )
+                intent = await ctx.analyzer.extract_intent(text, chat_context="")
 
-            action = intent.get("action", "SEARCH")
+            action   = intent.get("action", "SEARCH")
+            language = getattr(ctx, "language", "Ukrainian")
+            prompts  = getattr(ctx, "kernel_prompts", self._default_prompts)
 
-            # FIX #1: Intent gate — CONSULT не идёт в retrieval
-            if action == "CONSULT":
-                response_text = await self._build_advisory_response(ctx, text)
+            def _save(role: str, content: str):
                 if hasattr(ctx, "dialog_manager"):
-                    asyncio.create_task(ctx.dialog_manager.save_history(chat_id, "user", text))
-                    asyncio.create_task(ctx.dialog_manager.save_history(chat_id, "assistant", response_text))
+                    asyncio.create_task(ctx.dialog_manager.save_history(chat_id, role, content))
+
+            def _result(response_text: str, intent_applied: str, count: int = 0) -> Dict:
                 llm_status   = self.selector.get_status()
                 active_model = next((k for k, v in llm_status.items() if v != "OFFLINE"), "N/A")
                 return {
                     "text":           response_text,
-                    "intent_applied": "CONSULT",
+                    "intent_applied": intent_applied,
                     "status":         "SUCCESS",
                     "model":          active_model,
                     "ms":             int((time.perf_counter() - start_time_perf) * 1000),
-                    "trace":          {"entities": intent.get("entities", {}), "count": 0, "chat_id": chat_id, "slug": target_slug},
+                    "trace":          {"entities": intent.get("entities", {}), "count": count, "chat_id": chat_id, "slug": target_slug},
                 }
+
+            if action == "CONSULT":
+                response_text = await self._build_advisory_response(ctx, text, prompts)
+                _save("user", text); _save("assistant", response_text)
+                return _result(response_text, "CONSULT")
+
+            if action == "TROLL":
+                response_text = intent.get("witty_text") or await self._handle_troll_response(ctx, prompts)
+                _save("user", text); _save("assistant", response_text)
+                return _result(response_text, "TROLL")
 
             search_results = {"products": [], "status": "EMPTY"}
-            if action not in ("OFF_TOPIC", "TROLL"):
+            if action not in ("OFF_TOPIC", "CHAT"):
                 search_results = await ctx.retrieval.search(
-                    query=text,
-                    entities=intent.get("entities", {}),
-                    top_k=5,
+                    query=text, entities=intent.get("entities", {}), top_k=5,
                 )
 
-            # FIX #2: NO_CATEGORY → честный ответ без мусора
-            if search_results.get("status") == "NO_CATEGORY":
-                response_text = self._build_no_category_response(ctx, text)
-                if hasattr(ctx, "dialog_manager"):
-                    asyncio.create_task(ctx.dialog_manager.save_history(chat_id, "user", text))
-                    asyncio.create_task(ctx.dialog_manager.save_history(chat_id, "assistant", response_text))
-                llm_status   = self.selector.get_status()
-                active_model = next((k for k, v in llm_status.items() if v != "OFFLINE"), "N/A")
-                return {
-                    "text":           response_text,
-                    "intent_applied": action,
-                    "status":         "SUCCESS",
-                    "model":          active_model,
-                    "ms":             int((time.perf_counter() - start_time_perf) * 1000),
-                    "trace":          {"entities": intent.get("entities", {}), "count": 0, "chat_id": chat_id, "slug": target_slug},
-                }
+            status = search_results.get("status")
+
+            if status == "NO_CATEGORY":
+                response_text = self._p(prompts, "no_category", language,
+                    categories=', '.join(getattr(ctx, 'profile', {}).get('expertise_fields', [])[:4]))
+                _save("user", text); _save("assistant", response_text)
+                return _result(response_text, action)
+
+            if status == "NOT_FOUND_SECURE":
+                response_text = self._p(prompts, "not_found_secure", language)
+                _save("user", text); _save("assistant", response_text)
+                return _result(response_text, action)
 
             products = search_results.get("products", [])
 
-            # FIX: format_products — єдина точка LLM для форматування відповіді
             response_text = await self.format_products(
-                raw_text=text,
-                products=products,
-                user_id=chat_id,
-                ctx=ctx,
-                intent=intent,
+                raw_text=text, products=products, user_id=chat_id, ctx=ctx, intent=intent,
             )
 
-            # Якщо format_products повернув None (пустий текст) — fallback
             if not response_text:
-                if action == "TROLL":
-                    response_text = await self._handle_troll_response(ctx)
-                elif action in ("OFF_TOPIC", "CHAT"):
-                    response_text = self._get_off_topic_response(ctx)
+                if action in ("OFF_TOPIC", "CHAT"):
+                    response_text = self._p(prompts, "off_topic", language)
                 else:
                     response_text = await self._build_template_response(ctx, products, text)
 
-            # FIX: зберігаємо обидва повідомлення для контексту follow-up запитів
-            if hasattr(ctx, "dialog_manager"):
-                asyncio.create_task(
-                    ctx.dialog_manager.save_history(chat_id, "user", text)
-                )
-                asyncio.create_task(
-                    ctx.dialog_manager.save_history(chat_id, "assistant", response_text)
-                )
-
-            llm_status   = self.selector.get_status()
-            active_model = "N/A"
-            for k, v in llm_status.items():
-                if v != "OFFLINE":
-                    active_model = k
-                    break
-
-            return {
-                "text":           response_text,
-                "intent_applied": action,
-                "status":         "SUCCESS",
-                "model":          active_model,
-                "ms":             int((time.perf_counter() - start_time_perf) * 1000),
-                "trace": {
-                    "entities": intent.get("entities", {}),
-                    "count":    len(products),
-                    "chat_id":  chat_id,
-                    "slug":     target_slug,
-                },
-            }
+            _save("user", text); _save("assistant", response_text)
+            return _result(response_text, action, len(products))
 
         except Exception as e:
             logger.error(f"Kernel handle_message error: {e}")
             traceback.print_exc()
+            language = getattr(ctx, "language", "Ukrainian") if ctx else "Ukrainian"
             return {
-                "text":   "Виникла технічна помилка. Спробуйте пізніше.",
+                "text":   self._p(self._default_prompts, "error", language),
                 "status": "ERROR",
             }
 
@@ -770,29 +723,27 @@ class UkrSellKernel:
     ) -> str:
         start_time   = time.time()
         slug_for_log = getattr(ctx, "slug", "?")
+        language     = getattr(ctx, "language", "Ukrainian")
+        prompts      = getattr(ctx, "kernel_prompts", self._default_prompts)
 
-        # Semantic cache — пропускаємо якщо є entities
         _cached_answer_candidate = None
         if hasattr(ctx, 'semantic_cache'):
             cached_answer = ctx.semantic_cache.get_answer(query)
             if cached_answer and not isinstance(cached_answer, (dict, list)):
                 _cached_answer_candidate = str(cached_answer)
 
-        # Intent через dialog_manager (всі фікси v7.7.3 активні)
         dialog_context = ""
         if hasattr(ctx, "dialog_manager") and ctx.dialog_manager:
             dialog_context = await ctx.dialog_manager.get_chat_context(user_id, minutes=5)
 
-        intent = await ctx.analyzer.extract_intent(
-            query, chat_context=dialog_context
-        )
+        intent = await ctx.analyzer.extract_intent(query, chat_context=dialog_context)
 
         if filters:
             if not intent.get("entities"):
                 intent["entities"] = {}
             intent["entities"].update(filters)
 
-        _intent_entities  = intent.get("entities", {}) or {}
+        _intent_entities   = intent.get("entities", {}) or {}
         _nonempty_entities = [
             v for v in _intent_entities.values()
             if v and str(v).lower() not in ("none", "null", "any", "")
@@ -802,45 +753,35 @@ class UkrSellKernel:
             logger.info(f"[{slug_for_log}] get_recommendations: cache hit (no entities).")
             return _cached_answer_candidate
 
-        log_pipeline_step(
-            "INTENT_ANALYSIS",
-            time.time() - start_time,
-            extra={"intent": intent},
-        )
+        log_pipeline_step("INTENT_ANALYSIS", time.time() - start_time, extra={"intent": intent})
 
         action = intent.get("action", "SEARCH")
 
-        # FIX #1: CONSULT intent gate — advisory без retrieval
         if action == "CONSULT":
-            return await self._build_advisory_response(ctx, query)
+            return await self._build_advisory_response(ctx, query, prompts)
 
         if action == "TROLL":
-            return await self._handle_troll_response(ctx)
+            return intent.get("witty_text") or await self._handle_troll_response(ctx, prompts)
+
         if action in ("CHAT", "OFF_TOPIC"):
-            return str(
-                intent.get("response_text")
-                or self._get_off_topic_response(ctx)
-            )
+            return str(intent.get("response_text") or self._p(prompts, "off_topic", language))
 
         search_results = await ctx.retrieval.search(
-            query=query,
-            entities=intent.get("entities", {}),
-            top_k=top_k * 3,
+            query=query, entities=intent.get("entities", {}), top_k=top_k * 3,
         )
 
-        # FIX #2: NO_CATEGORY → честный ответ
         if search_results.get("status") == "NO_CATEGORY":
-            return self._build_no_category_response(ctx, query)
+            return self._p(prompts, "no_category", language,
+                categories=', '.join(getattr(ctx, 'profile', {}).get('expertise_fields', [])[:4]))
 
-        # Пробрасываем fallback_reason в intent для _build_template_response
+        if search_results.get("status") == "NOT_FOUND_SECURE":
+            return self._p(prompts, "not_found_secure", language)
+
         if search_results.get("fallback_reason"):
             intent["fallback_reason"] = search_results["fallback_reason"]
 
         final_products = await ctx.dialog_manager.process_search_pipeline(
-            chat_id=str(user_id),
-            search_response=search_results,
-            intent=intent,
-            top_k=top_k,
+            chat_id=str(user_id), search_response=search_results, intent=intent, top_k=top_k,
         )
 
         confidence_result = confidence_evaluate(
@@ -853,98 +794,65 @@ class UkrSellKernel:
         log_pipeline_step("CONFIDENCE", time.time() - start_time, extra=confidence_result)
 
         response_text = await self.format_products(
-            raw_text=query,
-            products=final_products,
-            user_id=user_id,
-            ctx=ctx,
-            intent=intent,
+            raw_text=query, products=final_products, user_id=user_id, ctx=ctx, intent=intent,
         )
 
         if not response_text:
-            logger.warning(
-                f"[{slug_for_log}] get_recommendations: format_products returned None → "
-                f"using empty fallback."
-            )
-            response_text = self._get_off_topic_response(ctx)
+            logger.warning(f"[{slug_for_log}] get_recommendations: format_products returned None → fallback.")
+            response_text = self._p(prompts, "off_topic", language)
 
-        if (
-            hasattr(ctx, 'semantic_cache')
-            and final_products
-            and len(response_text) > 20
-        ):
+        if hasattr(ctx, 'semantic_cache') and final_products and len(response_text) > 20:
             ctx.semantic_cache.add(query, response_text)
 
         return response_text
 
-    # ── Шаблонный ответ (fallback) ────────────────────────────────────────────
+    # ── Шаблонный ответ ───────────────────────────────────────────────────────
 
     async def _build_template_response(
         self, ctx: StoreContext, products: List[Dict], query: str,
         fallback_reason: Optional[str] = None,
     ) -> str:
         language    = getattr(ctx, "language", "Ukrainian")
-        view_label  = ctx.prompts.get("view_button", "Переглянути")
-        price_label = ctx.prompts.get("price_label", "Ціна")
+        prompts     = getattr(ctx, "kernel_prompts", self._default_prompts)
+        store_p     = getattr(ctx, "prompts", {})
+        view_label  = store_p.get("view_button", "Переглянути")
+        price_label = store_p.get("price_label", "Ціна")
         currency    = getattr(ctx, "currency", "грн")
 
-        # FIX #5/#7: контекстный заголовок вместо "Чудовий вибір!"
         if not products:
-            intro = (
-                "На жаль, нічого не знайдено за вашим запитом. 😔"
-                if language == "Ukrainian"
-                else "К сожалению, по вашему запросу ничего не найдено. 😔"
-            )
-            return intro
-        elif fallback_reason in ("no_results_with_properties", "no_results_without_properties",
-                                  "no_results_faiss_only"):
-            intro = (
-                "Саме такого товару немає, але ось схожі варіанти:"
-                if language == "Ukrainian"
-                else "Именно такого товара нет, но вот похожие варианты:"
-            )
+            return self._p(prompts, "no_results", language)
+
+        if fallback_reason in ("no_results_with_properties", "no_results_without_properties",
+                                "no_results_faiss_only"):
+            intro = self._p(prompts, "similar_found", language)
         else:
-            intro = (
-                "Ось що вдалося знайти:"
-                if language == "Ukrainian"
-                else "Вот что удалось найти:"
-            )
+            intro = self._p(prompts, "results_found", language)
 
         parts = [intro, ""]
 
         for i, res in enumerate(products[:MAX_PRODUCTS_IN_PROMPT], 1):
-            p     = self._normalize_product(res)
-            name  = p["title"]
-            price = p["price"]
-            url   = p["url"]
-
-            price_str = f"{price} {currency}" if price is not None else "---"
-            line      = f"{i}. 🛍 **{name}**\n   {price_label}: {price_str}"
-            if url:
-                line += f"\n   [{view_label}]({url})"
+            p         = self._normalize_product(res)
+            price_str = f"{p['price']} {currency}" if p['price'] is not None else "---"
+            line      = f"{i}. 🛍 **{p['title']}**\n   {price_label}: {price_str}"
+            if p['url']:
+                line += f"\n   [{view_label}]({p['url']})"
             parts.append(line)
 
-        footer = (
-            "Підсказати щось конкретне щодо цих моделей?"
-            if language == "Ukrainian"
-            else "Подсказать детали по этим моделям?"
-        )
-        parts.append(f"\n{footer}")
+        parts.append(f"\n{self._p(prompts, 'results_footer', language)}")
         return "\n".join(parts)
 
     # ── Вспомогательные методы ────────────────────────────────────────────────
 
-    async def _build_advisory_response(self, ctx: StoreContext, query: str) -> str:
-        """CONSULT intent — советник без показа товаров через retrieval."""
+    async def _build_advisory_response(
+        self, ctx: StoreContext, query: str, prompts: Dict
+    ) -> str:
         language  = getattr(ctx, "language", "Ukrainian")
         store_bio = ctx.get_store_bio() if hasattr(ctx, "get_store_bio") else ""
         lang_note = "Пиши українською." if language == "Ukrainian" else "Пиши на русском."
-        prompt = (
-            f"{store_bio}\n{lang_note}\n"
-            "Покупець просить консультацію. "
-            "Дай коротку фахову пораду (2-3 речення). "
-            "Якщо товару немає в асортименті — чесно скажи і запропонуй альтернативу з магазину. "
-            "Завершуй питанням для уточнення потреби."
-        )
+
+        prompt_template = prompts.get("advisory_prompt", self._default_prompts.get("advisory_prompt", ""))
+        prompt = prompt_template.format(store_bio=store_bio, lang_note=lang_note)
+
         try:
             client, model = await self.selector.get_fast()
             response = await asyncio.wait_for(
@@ -964,43 +872,17 @@ class UkrSellKernel:
                 return result.strip()
         except Exception as e:
             logger.warning(f"[kernel] _build_advisory_response error: {e}")
-        language = getattr(ctx, "language", "Ukrainian")
-        return (
-            "На жаль, такого товару зараз немає в нашому асортименті. "
-            "Чим ще можу допомогти? 🙂"
-            if language == "Ukrainian"
-            else "К сожалению, такого товара сейчас нет в нашем ассортименте. Чем ещё помочь? 🙂"
-        )
 
-    def _build_no_category_response(self, ctx: StoreContext, query: str) -> str:
-        """NO_CATEGORY статус — честный ответ без мусора."""
-        language = getattr(ctx, "language", "Ukrainian")
-        if language == "Ukrainian":
-            return (
-                "На жаль, такого товару немає в нашому асортименті. 😔\n"
-                "Можу підібрати щось із наявних категорій: "
-                f"{', '.join(getattr(ctx, 'profile', {}).get('expertise_fields', [])[:4])}. "
-                "Що вас цікавить?"
-            )
-        return (
-            "К сожалению, такого товара нет в нашем ассортименте. 😔\n"
-            "Могу предложить из доступных категорий: "
-            f"{', '.join(getattr(ctx, 'profile', {}).get('expertise_fields', [])[:4])}. "
-            "Что вас интересует?"
-        )
+        return self._p(prompts, "advisory_fallback", language)
 
-    async def _handle_troll_response(self, ctx: StoreContext) -> str:
+    async def _handle_troll_response(self, ctx: StoreContext, prompts: Dict) -> str:
         language  = getattr(ctx, "language", "Ukrainian")
         store_bio = ctx.get_store_bio() if hasattr(ctx, "get_store_bio") else ""
-        lang_note = (
-            "Пиши українською." if language == "Ukrainian" else "Пиши на русском."
-        )
-        prompt = (
-            f"{store_bio}\n{lang_note}\n"
-            "Користувач написав щось абсурдне або тролить. "
-            "Відповідь: дотепна, тепла, 1–2 речення. "
-            "М'яко поверни до реальних товарів магазину."
-        )
+        lang_note = "Пиши українською." if language == "Ukrainian" else "Пиши на русском."
+
+        prompt_template = prompts.get("troll_prompt", self._default_prompts.get("troll_prompt", ""))
+        prompt = prompt_template.format(store_bio=store_bio, lang_note=lang_note)
+
         try:
             client, model = await self.selector.get_fast()
             response = await asyncio.wait_for(
@@ -1017,13 +899,8 @@ class UkrSellKernel:
                 return result.strip()
         except Exception as e:
             logger.warning(f"[kernel] _handle_troll_response error: {e}")
-        return "🙃 Цікавий запит! Може, підберемо щось реальне для вас?"
 
-    def _get_off_topic_response(self, ctx: StoreContext) -> str:
-        language = getattr(ctx, "language", "Ukrainian")
-        if language == "Ukrainian":
-            return "Вибачте, це поза нашою спеціалізацією. Чим ще можу допомогти? 🙂"
-        return "Извините, это не по нашей специализации. Чем ещё могу помочь? 🙂"
+        return self._p(prompts, "troll_fallback", language)
 
     def _load_store_negative_examples(self, base_path: str) -> list:
         patch_path = os.path.join(base_path, "fsm_soft_patch.json")
@@ -1031,11 +908,7 @@ class UkrSellKernel:
             try:
                 with open(patch_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                    return (
-                        data
-                        if isinstance(data, list)
-                        else data.get("troll_patterns", [])
-                    )
+                    return data if isinstance(data, list) else data.get("troll_patterns", [])
             except Exception:
                 pass
         return []
@@ -1045,18 +918,13 @@ class UkrSellKernel:
             return False
         request_hash = hashlib.md5(f"{user_id}:{text}".encode()).hexdigest()
         now = time.time()
-        self._request_cache = {
-            k: v for k, v in self._request_cache.items()
-            if now - v < self._cache_ttl
-        }
+        self._request_cache = {k: v for k, v in self._request_cache.items() if now - v < self._cache_ttl}
         if request_hash in self._request_cache:
             return True
         self._request_cache[request_hash] = now
         return False
 
-    async def _normalize_update_language(
-        self, engine: StoreEngine, update: Dict[str, Any]
-    ):
+    async def _normalize_update_language(self, engine: StoreEngine, update: Dict[str, Any]):
         message    = update.get("message", {})
         text       = message.get("text")
         if not text or len(text.strip()) < 2:
@@ -1100,4 +968,4 @@ class UkrSellKernel:
         return self.registry.get_all_slugs() if self.registry else []
 
     def __repr__(self):
-        return f"<UkrSellKernel v8.5.4 stores={len(self.get_all_active_slugs())}>"
+        return f"<UkrSellKernel v8.6.0 stores={len(self.get_all_active_slugs())}>"

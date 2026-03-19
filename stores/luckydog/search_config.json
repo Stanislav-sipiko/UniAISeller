@@ -1,0 +1,39 @@
+{
+  "_comment": "Store-level search & dialog policy. Kernel reads this, never hardcodes it.",
+
+  "score_threshold": 0.30,
+  "on_zero_results": "ABORT",
+  "abort_categories": ["meds", "vet", "pharmacy", "медикаменти", "ліки"],
+
+  "attribute_filter": {
+    "field": "Тварина",
+    "field_aliases": ["animal", "вид тварини", "для тварини", "pet_type"],
+    "hard_filter": true,
+    "score_match": 1.3,
+    "title_exclusions": {
+      "кіт": ["для собак", "собачий", "dog"],
+      "кішка": ["для собак", "собачий", "dog"],
+      "собака": ["для котів", "котячий", "cat"],
+      "пес": ["для котів", "котячий", "cat"]
+    }
+  },
+
+  "label_buyer": "Покупець",
+  "label_consultant": "Консультант",
+
+  "example_properties": {
+    "Тварина": "кіт"
+  },
+
+  "context_ttl_min": 15,
+  "min_price_threshold": 10,
+
+  "troll_prompt": "troll_prompt.md",
+  "troll_responses": [
+    "Цікавий запит! Може, підберемо щось реальне для вашого улюбленця? 🐾",
+    "Такого в каталозі немає, але є багато чудових речей! 😄",
+    "Ми спеціалізуємось на реальних товарах для реальних тварин 🐶🐱"
+  ],
+
+  "not_found_secure_text": "На жаль, ліки та ветпрепарати ми не продаємо. Зверніться до ветеринарної аптеки. 🐾"
+}

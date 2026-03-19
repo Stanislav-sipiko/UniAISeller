@@ -1,0 +1,70 @@
+{
+  "_comment": "Default kernel response texts. Override per-store via stores/[slug]/prompts.json",
+
+  "no_results": {
+    "uk": "На жаль, нічого не знайдено за вашим запитом. 😔",
+    "ru": "К сожалению, по вашему запросу ничего не найдено. 😔"
+  },
+
+  "similar_found": {
+    "uk": "Саме такого товару немає, але ось схожі варіанти:",
+    "ru": "Именно такого товара нет, но вот похожие варианты:"
+  },
+
+  "results_found": {
+    "uk": "Ось що вдалося знайти:",
+    "ru": "Вот что удалось найти:"
+  },
+
+  "results_footer": {
+    "uk": "Підсказати щось конкретне щодо цих моделей?",
+    "ru": "Подсказать детали по этим моделям?"
+  },
+
+  "no_category": {
+    "uk": "На жаль, такого товару немає в нашому асортименті. 😔\nМожу підібрати щось із наявних категорій: {categories}. Що вас цікавить?",
+    "ru": "К сожалению, такого товара нет в нашем ассортименте. 😔\nМогу предложить из доступных категорий: {categories}. Что вас интересует?"
+  },
+
+  "not_found_secure": {
+    "uk": "На жаль, цього товару немає в нашому асортименті. 😔",
+    "ru": "К сожалению, этого товара нет в нашем ассортименте. 😔"
+  },
+
+  "advisory_fallback": {
+    "uk": "На жаль, такого товару зараз немає в нашому асортименті. Чим ще можу допомогти? 🙂",
+    "ru": "К сожалению, такого товара сейчас нет в нашем ассортименте. Чем ещё помочь? 🙂"
+  },
+
+  "off_topic": {
+    "uk": "Вибачте, це поза нашою спеціалізацією. Чим ще можу допомогти? 🙂",
+    "ru": "Извините, это не по нашей специализации. Чем ещё могу помочь? 🙂"
+  },
+
+  "troll_fallback": {
+    "uk": "🙃 Цікавий запит! Може, підберемо щось реальне для вас?",
+    "ru": "🙃 Интересный запрос! Может, подберём что-то реальное для вас?"
+  },
+
+  "error": {
+    "uk": "Виникла технічна помилка. Спробуйте пізніше.",
+    "ru": "Возникла техническая ошибка. Попробуйте позже."
+  },
+
+  "advisory_prompt": "You are an expert consultant for {store_bio}.\n{lang_note}\nThe buyer is asking for advice. Give a short professional response (2-3 sentences).\nIf the product is not in the assortment — say so honestly and suggest an alternative from the store.\nEnd with a clarifying question.",
+
+  "troll_prompt": "You are a store assistant for {store_bio}.\n{lang_note}\nThe user wrote something absurd or is trolling.\nResponse: witty, warm, 1-2 sentences. Gently redirect to real store products.",
+
+  "dynamic_prompt_role": "You are an expert sales consultant. Present the found products briefly, persuasively and in a friendly manner.",
+
+  "dynamic_prompt_rules": [
+    "Highlight advantages 🏆 Verified brand and 💰 Good price if present.",
+    "Maximum {max_products} items in response.",
+    "Each item: name, price, short argument why it's worth it.",
+    "Button or direct link for each product.",
+    "End with a short question to continue the dialogue.",
+    "STRICT PROHIBITION: do not invent names, prices or brands not in the list.",
+    "STRICT PROHIBITION: do not switch response language.",
+    "STRICT PROHIBITION: do not reference previous messages, do not use phrases like 'as you asked earlier', 'you mentioned', 'in the previous message'."
+  ]
+}

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# /root/ukrsell_v4/core/intelligence.py v7.6.7
+# /root/ukrsell_v4/core/intelligence.py v7.7.0
 
 import numpy as np
 import re
@@ -126,24 +126,24 @@ def entity_filter(
         entities = {}
     
     SERVICE_KEYS = {
-        "price_limit", "action", "target", "properties", 
-        "excluded_ids", "taxonomy_hint", "category", 
+        "price_limit", "action", "target", "properties",
+        "excluded_ids", "taxonomy_hint", "category",
         "temperature", "language"
     }
     GARBAGE_VALUES = {"none", "null", "any", "unknown", "", "все", "любой", "товари"}
 
     active_filters = {}
     brand_ignore_list = []
-    
+
     if store_hints and "brand_ignore" in store_hints:
         brand_ignore_list = [str(b).lower() for b in store_hints["brand_ignore"]]
 
     for k, v in entities.items():
         if k in SERVICE_KEYS or v is None:
             continue
-        
+
         val_str = str(v).lower().strip()
-        
+
         if k == "brand" and any(b_ign in val_str for b_ign in brand_ignore_list):
             logger.debug(f"[INTEL] Brand Filter suppressed for: {val_str}")
             continue
@@ -151,16 +151,27 @@ def entity_filter(
         if val_str and val_str not in GARBAGE_VALUES:
             active_filters[k] = val_str
 
+    # Разворачиваем properties в active_filters через intent_mapping магазина
+    props = entities.get("properties") or {}
+    if isinstance(props, dict) and intent_mapping:
+        for prop_key, prop_val in props.items():
+            if prop_val is None:
+                continue
+            val_str = str(prop_val).lower().strip()
+            if not val_str or val_str in GARBAGE_VALUES:
+                continue
+            # Ищем prop_key в intent_mapping — если есть, добавляем как фильтр
+            if prop_key in intent_mapping or prop_key.lower() in {k.lower() for k in intent_mapping}:
+                active_filters[prop_key] = val_str
+                logger.debug(f"[INTEL] Property expanded to filter: {prop_key}={val_str}")
+
     if not products:
         return []
 
     logger.info(f"⚙️ [ENTITY_FILTER] Active filters applied: {active_filters}")
 
-    mapping = intent_mapping or {
-        "brand": ["brand", "manufacturer", "vendor", "бренд"],
-        "color": ["color", "colour", "color_ref", "колір"],
-        "subtype": ["subtype", "product_type", "підтип"]
-    }
+    # Маппинг берётся только из intent_mapping магазина — ядро не знает деталей
+    mapping = intent_mapping or {}
 
     filtered = []
     raw_excluded = intent.get("excluded_ids")
@@ -303,4 +314,4 @@ def deduplicate_products(products: list, top_k: int = 5) -> list:
     return result
 
 def get_version():
-    return "7.6.7-ZERO-OMISSION"
+    return "7.7.0"
