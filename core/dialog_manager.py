@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# /root/ukrsell_v4/core/dialog_manager.py v7.8.3
+# /root/ukrsell_v4/core/dialog_manager.py v7.8.4
 
 import json
 import os
@@ -25,7 +24,7 @@ _ALLOWED_ENTITY_KEYS = frozenset({"category", "brand", "price_limit", "propertie
 
 
 class DialogManager:
-    """Intelligent Dialog & Intent Manager v7.8.3. Store-agnostic."""
+    """Intelligent Dialog & Intent Manager v7.8.4. Store-agnostic."""
 
     def __init__(self, ctx, llm_selector):
         self.ctx             = ctx
@@ -42,7 +41,7 @@ class DialogManager:
         self._negative_examples_cache: Optional[List] = None
 
         self._init_db()
-        logger.info(f"✅ [DM_INIT] DialogManager v7.8.3 Active. Store: {self.slug}")
+        logger.info(f"✅ [DM_INIT] DialogManager v7.8.4 Active. Store: {self.slug}")
 
     # ── DB Init ───────────────────────────────────────────────────────────────
 
@@ -532,6 +531,43 @@ class DialogManager:
             return random.choice(troll_responses)
         return "🙃"
 
+    async def _rewrite_query(self, user_text: str, chat_context: str) -> str:
+        """Переписывает короткий follow-up в полноценный поисковый запрос."""
+        prompt = (
+            "You are a search query rewriter for an online store.\n"
+            "Given a dialog history and a short follow-up question, "
+            "rewrite the follow-up as a standalone search query.\n"
+            "Preserve the language of the follow-up.\n"
+            "Output ONLY the rewritten query, nothing else. No explanation.\n\n"
+            f"Dialog history:\n{chat_context}\n\n"
+            f"Follow-up: {user_text}\n"
+            "Rewritten query:"
+        )
+        try:
+            result_obj = await self.selector.get_fast()
+            if isinstance(result_obj, tuple):
+                client, model = result_obj
+            else:
+                client = result_obj
+                model  = getattr(result_obj, 'model_name', None)
+            response = await asyncio.wait_for(
+                client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.0,
+                    max_tokens=40,
+                ),
+                timeout=5.0,
+            )
+            if response.choices:
+                rewritten = response.choices[0].message.content.strip()
+                if rewritten and len(rewritten) > len(user_text):
+                    logger.info(f"[{self.slug}] Query rewritten: '{user_text}' → '{rewritten}'")
+                    return rewritten
+        except Exception as e:
+            logger.debug(f"[{self.slug}] Query rewrite failed: {e}")
+        return user_text
+
     # ── Intent analysis ───────────────────────────────────────────────────────
 
     async def analyze_intent(
@@ -541,7 +577,12 @@ class DialogManager:
             user_text = str(user_text)
             await asyncio.wait_for(self.selector.ensure_ready(), timeout=5.0)
             chat_context = await self.get_chat_context(chat_id)
-            patterns     = self.get_negative_examples()
+
+            # Query Rewriting — только для коротких follow-up при наличии истории
+            if chat_context and len(user_text.split()) <= 5:
+                user_text = await self._rewrite_query(user_text, chat_context)
+
+            patterns = self.get_negative_examples()
 
             if user_text.lower().strip() in patterns:
                 logger.warning(f"🛡️ [INTENT_TRACE] Fast-Reject: Known Troll Pattern for {chat_id}")
@@ -697,7 +738,7 @@ class DialogManager:
             retrieval = getattr(self.ctx, 'retrieval', None)
             if retrieval:
                 logger.info(f"🔍 [RETRIEVAL_STEP] Triggering search with entities: {intent.get('entities')}")
-                search_results = await retrieval.search(user_query, entities=intent.get("entities", {}))
+                search_results = await retrieval.search(user_query, entities=intent)
             else:
                 logger.error(f"[{self.slug}] Retrieval index missing.")
 
@@ -788,8 +829,8 @@ class DialogManager:
             return products_to_process[:top_k]
 
     def __repr__(self):
-        return f"<DialogManager v7.8.3 slug={self.slug}>"
+        return f"<DialogManager v7.8.4 slug={self.slug}>"
 
 
 def get_version():
-    return "7.8.3"
+    return "7.8.4"
