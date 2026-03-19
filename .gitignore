@@ -1,7 +1,31 @@
-core/config.py
-logs/
-*.log
+# /root/ukrsell_v4/.gitignore
+
+# ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
+*.py[cod]
+*.pyo
 venv/
 .env
-stores/*/normalized_products_final.json
+
+# ── Логи ─────────────────────────────────────────────────────────────────────
+logs/
+*.log
+*.jsonl
+
+# ── Secrets ───────────────────────────────────────────────────────────────────
+core/config.py
+
+# ── Runtime БД (пересоздаются автоматически) ─────────────────────────────────
+stores/*/sessions.db
+stores/*/users.db
+stores/*/products.db
+
+# ── FAISS индексы (пересобираются скриптом) ──────────────────────────────────
+stores/*/faiss.index
+
+# ── Runtime кэш ───────────────────────────────────────────────────────────────
+stores/*/semantic_cache.json
+
+# ── Артефакты пайплайна (не нужны в git) ─────────────────────────────────────
+stores/*/failed_batches/
+stores/*/llm_responses/
