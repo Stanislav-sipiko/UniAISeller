@@ -78,7 +78,7 @@ class UkrSellKernel:
         merged = {**self._default_prompts, **store_prompts}
         return merged
 
-    def _p(self, prompts: Dict, key: str, lang: str = "uk", **kwargs) -> str:
+    def _p(self, prompts: Dict, key: str, lang: str = "Ukrainian", **kwargs) -> str:
         block = prompts.get(key, self._default_prompts.get(key, {}))
         lang_key = "uk" if lang == "Ukrainian" else "ru"
         text = block.get(lang_key, block.get("uk", "")) if isinstance(block, dict) else str(block)

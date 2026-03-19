@@ -1,36 +1,7 @@
-# /root/ukrsell_v4/core/store_profiler.py v8.2.1
+# /root/ukrsell_v4/core/store_profiler.py v8.2.2
 """
-StoreProfiler v8.2.1 — SQL-native профилировщик магазина.
+StoreProfiler v8.2.2 — SQL-native профилировщик магазина.
 
-Changelog v8.2.1:
-  - FIX: schema_keys подзапрос — добавлен ORDER BY last_updated DESC.
-    Без него LIMIT 100000 режет произвольный срез; теперь schema строится
-    по самым актуальным товарам, а не по первым попавшимся.
-  - FIX: self._slug добавлен guard `or "unknown_store"` — защита логгера
-    от пустой строки при нестандартном store_path.
-
-Changelog v8.2.0:
-  - FIX (критично #1): schema_keys SQL — подзапрос с LIMIT, GROUP BY снаружи, без DISTINCT.
-  - FIX (критично #2): key_counts[row[0]] = row[1] — GROUP BY уже агрегирует.
-  - FIX (критично #3): _needs_rebuild_sql — guard 'last_data_update' not in meta,
-    COUNT(*) + MAX(last_updated) в одном запросе, обработан max_updated is None.
-  - FIX (важно #5): safe parse — guard на None после json.loads.
-  - FIX (важно #6): attributes LIKE '{%' — строгая проверка начала JSON.
-  - FIX (важно #7): total_brands через SELECT COUNT(DISTINCT brand).
-  - FIX (оптимизация #8): COUNT(*) + MAX(last_updated) в одном запросе.
-  - FIX (оптимизация #9): retry в _needs_rebuild_sql.
-
-Changelog v8.1.0:
-  - Одно соединение aiosqlite на весь rebuild.
-  - Bootstrap без LLM: базовый профиль сохраняется до генерации персоны.
-  - Даты через datetime.fromisoformat() + нормализация timezone.
-  - Retry при database is locked.
-  - detect_language_from_titles из core.utils (DRY).
-
-Changelog v8.0.0:
-  - Источник данных: products.db (store_meta) вместо JSON-файлов.
-  - Статистика через SQL-агрегаты вместо Python-итерации.
-  - store_profile.json — только bootstrap fallback.
 """
 
 import json
@@ -59,7 +30,7 @@ DB_LOCK_RETRY_WAIT = 0.5  # секунды между попытками
 
 class StoreProfiler:
     """
-    StoreProfiler v8.2.1 — SQL-native.
+    StoreProfiler v8.2.2 — SQL-native.
 
     Читает агрегированную статистику из products.db (store_meta).
     При пересборке — вычисляет агрегаты через SQL, сохраняет в store_meta.
@@ -491,6 +462,7 @@ class StoreProfiler:
                 "language":           _parse("language", "Ukrainian"),
                 "last_data_update":   raw.get("last_data_update", ""),
                 "ai_welcome_message": raw.get("ai_welcome_message", ""),
+                "intent_mapping":     _safe_dict("intent_mapping"),
             }
 
         except aiosqlite.OperationalError as e:
@@ -535,6 +507,7 @@ class StoreProfiler:
             ("language",              _serialize(profile.get("language", "Ukrainian")),       now),
             ("last_data_update",      profile.get("last_data_update", now),                   now),
             ("ai_welcome_message",    profile.get("ai_welcome_message", ""),                  now),
+            ("intent_mapping",        _serialize(profile.get("intent_mapping", {})),           now),
         ]
 
         try:
