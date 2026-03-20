@@ -628,10 +628,19 @@ class UkrSellKernel:
                 _save("user", text); _save("assistant", response_text)
                 return _result(response_text, "TROLL")
 
+            if action == "CLARIFY":
+                response_text = intent.get("witty_text", "")
+                if not response_text:
+                    response_text = self._p(prompts, "advisory_fallback", language)
+                _save("user", text); _save("assistant", response_text)
+                return _result(response_text, "CLARIFY")
+
             search_results = {"products": [], "status": "EMPTY"}
             if action not in ("OFF_TOPIC", "CHAT"):
+                # Используем переписанный запрос если есть — иначе оригинал
+                search_query = intent.get("refined_query") or text
                 search_results = await ctx.retrieval.search(
-                    query=text, entities=intent.get("entities", {}), top_k=5,
+                    query=search_query, entities=intent.get("entities", {}), top_k=5,
                 )
 
             status = search_results.get("status")
@@ -763,11 +772,16 @@ class UkrSellKernel:
         if action == "TROLL":
             return intent.get("witty_text") or await self._handle_troll_response(ctx, prompts)
 
+        if action == "CLARIFY":
+            return intent.get("witty_text") or self._p(prompts, "advisory_fallback", language)
+
         if action in ("CHAT", "OFF_TOPIC"):
             return str(intent.get("response_text") or self._p(prompts, "off_topic", language))
 
         search_results = await ctx.retrieval.search(
-            query=query, entities=intent.get("entities", {}), top_k=top_k * 3,
+            query=intent.get("refined_query") or query,
+            entities=intent.get("entities", {}),
+            top_k=top_k * 3,
         )
 
         if search_results.get("status") == "NO_CATEGORY":

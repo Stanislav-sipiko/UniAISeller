@@ -1,0 +1,6 @@
+{
+  "_comment": "Consultation Gate config. Store-specific. Kernel reads, never hardcodes.",
+  "max_clarifications": 2,
+  "vague_threshold_words": 4,
+  "clarification_prompt": "clarification_prompt.md"
+}

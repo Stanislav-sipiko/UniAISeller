@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# /root/ukrsell_v4/core/intelligence.py v7.7.0
+# /root/ukrsell_v4/core/intelligence.py v7.7.3
 
 import numpy as np
 import re
@@ -23,8 +22,10 @@ def get_stem(text: str) -> str:
     word = re.sub(r'[^\w\s]', '', word)
     
     # Регулярное выражение для типичных окончаний (UA/RU/EN)
-    suffixes = r'(атор|ами|іця|иця|ов|ам|ів|ий|ый|ое|ая|ие|ы|і|а|я|у|е|ом|різ|лов|чик|s|es|ed|ing|ка|ок|ик|ою|є|ї|ої|их|ых|им|ым)$'
-    word = re.sub(suffixes, '', word)
+    suffixes = r'(атор|ами|іця|иця|ій|ий|ый|ое|ая|ие|ів|ам|ов|ою|є|ї|ої|их|ых|им|ым|s|es|ed|ing|ка|ок|ик|є)$'
+    stemmed = re.sub(suffixes, '', word)
+    # Guard: не обрезаем если результат слишком короткий
+    word = stemmed if len(stemmed) >= 3 else word
     
     return word if len(word) >= 3 else word
 
@@ -53,6 +54,11 @@ def safe_extract_json(text: str) -> dict:
         match = re.search(r"(\{.*\})", text, re.DOTALL)
         if match:
             json_str = match.group(1).replace('\t', ' ')
+            # Нормализация типографских кавычек и невидимых символов
+            json_str = json_str.replace('\u00ab', '"').replace('\u00bb', '"')
+            json_str = json_str.replace('\u201c', '"').replace('\u201d', '"')
+            json_str = json_str.replace('\u2018', "'").replace('\u2019', "'")
+            json_str = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', json_str)
             result = json.loads(json_str)
         else:
             result = json.loads(text)
@@ -189,9 +195,13 @@ def entity_filter(
 
         if price_limit:
             try:
-                p_price = float(p.get("price", 0))
+                raw_price = p.get("price", 0)
+                # Очищаем строку от валюты и пробелов
+                clean_price = re.sub(r'[^\d.,]', '', str(raw_price)).replace(',', '.')
+                p_price = float(clean_price) if clean_price else 0.0
                 if p_price > float(price_limit): continue
-            except: pass
+            except (ValueError, TypeError):
+                pass
 
         p_attrs = p.get("attributes") or {}
         p_title = str(p.get("name") or p.get("title", "")).lower()
@@ -248,9 +258,9 @@ def merge_followup(prev_intent: dict, new_intent: dict, category_map: dict = Non
     if not isinstance(new_intent, dict): return prev_intent
 
     merged = prev_intent.copy()
-    new_ents = new_intent.get("entities", {})
-    prev_ents = prev_intent.get("entities", {})
-    
+    new_ents = new_intent.get("entities") or {}
+    prev_ents = prev_intent.get("entities") or {}
+
     if not isinstance(new_ents, dict): new_ents = {}
     if not isinstance(prev_ents, dict): prev_ents = {}
     
@@ -281,11 +291,28 @@ def merge_followup(prev_intent: dict, new_intent: dict, category_map: dict = Non
             merged_ents[k] = v
 
     merged["entities"] = merged_ents
-    merged["action"] = new_intent.get("action", prev_intent.get("action", "SEARCH"))
+    prev_action = prev_intent.get("action", "SEARCH")
+    new_action  = new_intent.get("action", "SEARCH")
+
+    # Если предыдущий был SEARCH и новый CONSULT без категории —
+    # это ответ на уточняющий вопрос, сохраняем SEARCH
+    if (prev_action == "SEARCH"
+            and new_action == "CONSULT"
+            and not new_ents.get("category")):
+        merged["action"] = "SEARCH"
+        logger.info("[MERGE] action: CONSULT→SEARCH (clarification answer, no new category)")
+    else:
+        merged["action"] = new_action
     
-    new_excl = new_intent.get("excluded_ids", [])
+    new_excl  = new_intent.get("excluded_ids", [])
     prev_excl = prev_intent.get("excluded_ids", [])
-    merged["excluded_ids"] = list(set(str(i) for i in ( (new_excl if isinstance(new_excl, list) else []) + (prev_excl if isinstance(prev_excl, list) else []) )))
+    # dict.fromkeys сохраняет порядок + дедупликация; [-20:] — ротация по времени
+    merged["excluded_ids"] = list(dict.fromkeys(
+        str(i) for i in (
+            (new_excl  if isinstance(new_excl,  list) else []) +
+            (prev_excl if isinstance(prev_excl, list) else [])
+        )
+    ))[-20:]
 
     return merged
 
@@ -314,4 +341,4 @@ def deduplicate_products(products: list, top_k: int = 5) -> list:
     return result
 
 def get_version():
-    return "7.7.0"
+    return "7.7.3"

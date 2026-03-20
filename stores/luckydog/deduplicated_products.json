@@ -9,7 +9,7 @@
     "price_min": 175.0,
     "price_max": 175.0,
     "image_url": "https://images.prom.ua/2984809484_w640_h640_kogterez-poperechnyj-dlya.jpg",
-    "search_blob": "salon tatra догляд догляду кігтеріз кігтями поперечний",
+    "search_blob": "cat cats dog dogs grooming salon tatra груминг догляд догляду кот котик котів кігтеріз кігтями кіт кішка кішок пес поперечний собак собака собаки цуценя шампунь щітка",
     "attributes": {
       "subtype": "Кігтеріз",
       "purpose": "Догляд за кігтями"
@@ -34,7 +34,7 @@
     "price_min": 329.0,
     "price_max": 329.0,
     "image_url": "https://images.prom.ua/4592604947_w640_h320_poilka-dlya-sobak.jpg",
-    "search_blob": "води пляшка портативна поїлка поїлка-пляшка",
+    "search_blob": "cat cats dog dogs feeding води годування кот котик котів кіт кішка кішок миска пес пляшка портативна поїлка поїлка-пляшка собак собака собаки цуценя",
     "attributes": {
       "subtype": "Поїлка",
       "purpose": "Для води"
@@ -59,7 +59,7 @@
     "price_min": 415.0,
     "price_max": 415.0,
     "image_url": "https://images.prom.ua/6286422029_w640_h320_sviter-dlya-koshek.jpg",
-    "search_blob": "bomba в'язаний котів светр",
+    "search_blob": "apparel bomba cat cats dogs в'язаний кот котiв котик котів кіт кішка кішок одежда одяг светр",
     "attributes": {
       "subtype": "Светр",
       "purpose": "Для котів"
@@ -84,7 +84,7 @@
     "price_min": 580.0,
     "price_max": 875.0,
     "image_url": "https://images.prom.ua/4102002395_w640_h640_zimnij-kombinezon-dlya.jpg",
-    "search_blob": "бульдогів зимовий комбінезон принтом",
+    "search_blob": "apparel dog dogs бульдогів зимовий комбінезон одежда одяг пес принтом собак собака собаки цуценя",
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Для собак"
@@ -226,7 +226,7 @@
     "price_min": 187.0,
     "price_max": 199.0,
     "image_url": "https://images.prom.ua/4320622513_w640_h320_schetka-puhoderka-dlya.jpg",
-    "search_blob": "догляд кнопкою пуходірка самоочищення шерстю щітка",
+    "search_blob": "cat cats dog dogs grooming груминг догляд кнопкою кот котик котів кігтеріз кіт кішка кішок пес пуходірка самоочищення собак собака собаки цуценя шампунь шерстю щітка",
     "attributes": {
       "subtype": "пуходірка",
       "purpose": "Догляд за шерстю"
@@ -258,7 +258,7 @@
     "price_min": 146.0,
     "price_max": 146.0,
     "image_url": "https://images.prom.ua/5366104372_w640_h320_nozhnitsy-kogterez.jpg",
-    "search_blob": "догляд кігтеріз кігтями ножиці",
+    "search_blob": "cat cats dog dogs grooming груминг догляд кот котик котів кігтеріз кігтями кіт кішка кішок ножиці пес собак собака собаки цуценя шампунь щітка",
     "attributes": {
       "subtype": "Кігтеріз",
       "purpose": "Догляд за кігтями"
@@ -283,7 +283,7 @@
     "price_min": 162.0,
     "price_max": 162.0,
     "image_url": "https://images.prom.ua/4237748015_w640_h320_kogterez-sekator-dlya-koshek.jpg",
-    "search_blob": "salon tatra догляд догляду кігтеріз кігтеріз-секатор кігтями секатор",
+    "search_blob": "cat cats dog dogs grooming salon tatra груминг догляд догляду кот котик котів кігтеріз кігтеріз-секатор кігтями кіт кішка кішок пес секатор собак собака собаки цуценя шампунь щітка",
     "attributes": {
       "subtype": "Кігтеріз-секатор",
       "purpose": "Догляд за кігтями"
@@ -308,7 +308,7 @@
     "price_min": 269.0,
     "price_max": 536.25,
     "image_url": "https://images.prom.ua/5364001393_w640_h320_schetka-dlya-gruminga.jpg",
-    "search_blob": "грумінгу догляд фурмінатор шерстю щітка",
+    "search_blob": "care cat cats dog dogs грумінгу догляд кот котик котів кіт кішка кішок пес собак собака собаки фурмінатор цуценя шерстю щітка",
     "attributes": {
       "subtype": "Фурмінатор",
       "purpose": "Догляд за шерстю"
@@ -342,7 +342,7 @@
     "price_min": 600.0,
     "price_max": 900.0,
     "image_url": "https://images.prom.ua/3347535455_w640_h640_zimnij-kombinezon-dlya.jpg",
-    "search_blob": "зимовий зручний комбінезон одяг стильний теплий",
+    "search_blob": "apparel dog dogs зимовий зручний комбінезон одежда одяг пес собак собака собаки стильний теплий цуценя",
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Зимовий одяг"
@@ -409,7 +409,7 @@
     "price_min": 189.0,
     "price_max": 244.0,
     "image_url": "https://images.prom.ua/4604717642_w640_h320_trusy-gigienicheskie-dlya.jpg",
-    "search_blob": "гігієна гігієнічні регульовані труси тічки",
+    "search_blob": "apparel dog dogs гігієна гігієнічні одежда одяг пес регульовані собак собака собаки труси тічки цуценя",
     "attributes": {
       "subtype": "Гігієнічні труси",
       "purpose": "Гігієна під час тічки"
@@ -455,7 +455,7 @@
     "price_min": 249.0,
     "price_max": 250.0,
     "image_url": "https://images.prom.ua/4438986844_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "nasa nylon qr-паспортом waudog малюнок нейлонова паспортом прогулянок шлейка шлея",
+    "search_blob": "cat cats dog dogs nasa nylon qr-паспортом walking waudog вигул кот котик котів кіт кішка кішок малюнок нашийник нейлонова паспортом пес повідець прогулянка прогулянок собак собака собаки цуценя шлейка шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -487,7 +487,7 @@
     "price_min": 195.0,
     "price_max": 358.33,
     "image_url": "https://images.prom.ua/4253406538_w640_h320_setchataya-shlejka-s.jpg",
-    "search_blob": "дихаюча легка м'яка повідком прогулянок регульована сітчаста шлея",
+    "search_blob": "cat cats dog dogs walking вигул дихаюча кот котик котів кіт кішка кішок легка м'яка нашийник пес повідець повідком прогулянка прогулянок регульована собак собака собаки сітчаста цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -570,7 +570,7 @@
     "price_min": 380.0,
     "price_max": 380.0,
     "image_url": "https://images.prom.ua/4794514270_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "bororo кожної комфорт контроль прогулянки прогулянок шлея",
+    "search_blob": "bororo cat cats dog dogs walking вигул кожної комфорт контроль кот котик котів кіт кішка кішок нашийник пес повідець прогулянка прогулянки прогулянок собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -609,7 +609,7 @@
     "price_min": 250.0,
     "price_max": 260.0,
     "image_url": "https://images.prom.ua/4388185157_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "капюшоном одяг повсякденний худі",
+    "search_blob": "apparel cat cats dog dogs капюшоном кот котик котів кіт кішка кішок одежда одяг пес повсякденний собак собака собаки худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Повсякденний одяг"
@@ -642,7 +642,7 @@
     "price_min": 549.0,
     "price_max": 900.0,
     "image_url": "https://images.prom.ua/2970773310_w640_h320_zimnyaya-odezhda-dlya.jpg",
-    "search_blob": "зимовий кобеля комбінезон одяг період прогулянок",
+    "search_blob": "apparel dog dogs зимовий кобеля комбінезон одежда одяг період пес прогулянок собак собака собаки цуценя",
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Для прогулянок у зимовий період"
@@ -779,7 +779,7 @@
     "price_min": 466.66,
     "price_max": 466.66,
     "image_url": "https://images.prom.ua/3462578667_w640_h320_tyoplaya-zhiletka-dlya.jpg",
-    "search_blob": "жилет жилетка захист зимовий комфорт одяг осінньо осінньо-зимовий пору року тепла холодну",
+    "search_blob": "apparel dog dogs жилет жилетка захист зимовий комфорт одежда одяг осінньо осінньо-зимовий пес пору року собак собака собаки тепла холодну цуценя",
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Осінньо-зимовий одяг"
@@ -804,7 +804,7 @@
     "price_min": 334.0,
     "price_max": 334.0,
     "image_url": "https://images.prom.ua/3971179246_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "bomba кофта одяг повсякденний понад светр україна усе",
+    "search_blob": "apparel bomba dog dogs кофта одежда одяг пес повсякденний понад светр собак собака собаки україна усе цуценя",
     "attributes": {
       "subtype": "Светр",
       "purpose": "Повсякденний одяг"
@@ -829,7 +829,7 @@
     "price_min": 450.0,
     "price_max": 793.75,
     "image_url": "https://images.prom.ua/3937588859_w640_h320_zimnyaya-zhiletka-universalnaya.jpg",
-    "search_blob": "жилет жилетка зимова зимовий одяг тепла універсальна",
+    "search_blob": "apparel dog dogs жилет жилетка зимова зимовий одежда одяг пес собак собака собаки тепла універсальна цуценя",
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Зимовий одяг"
@@ -950,7 +950,7 @@
     "price_min": 554.0,
     "price_max": 554.0,
     "image_url": "https://images.prom.ua/6156756030_w640_h320_dozhdevik-dlya-sobak.jpg",
-    "search_blob": "bomba дощовик дощу захист парасольки",
+    "search_blob": "apparel bomba dog dogs дощовик дощу захист одежда одяг парасольки пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Захист від дощу"
@@ -1010,7 +1010,7 @@
     "price_min": 450.0,
     "price_max": 450.0,
     "image_url": "https://images.prom.ua/6537117336_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "прогулянок шлея",
+    "search_blob": "dog dogs walking вигул нашийник пес повідець прогулянка прогулянок собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -1042,7 +1042,7 @@
     "price_min": 340.0,
     "price_max": 566.67,
     "image_url": "https://images.prom.ua/2970772709_w640_h320_kurtka-dlya-sobak.jpg",
-    "search_blob": "fashion демісезонний кожній куртка одяг прогулянці стиль тепло",
+    "search_blob": "apparel dog dogs fashion демісезонний кожній куртка одежда одяг пес прогулянці собак собака собаки стиль тепло цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Демісезонний одяг"
@@ -1116,7 +1116,7 @@
     "price_min": 190.0,
     "price_max": 300.0,
     "image_url": "https://images.prom.ua/4393266542_w640_h320_vodonepronitsaemye-rezinovye-sapogi.jpg",
-    "search_blob": "взуття водонепроникні гумові захист лап чоботи",
+    "search_blob": "apparel dog dogs взуття водонепроникні гумові захист лап одежда одяг пес собак собака собаки цуценя чоботи",
     "attributes": {
       "subtype": "Взуття",
       "purpose": "Захист лап"
@@ -1181,7 +1181,7 @@
     "price_min": 369.0,
     "price_max": 545.0,
     "image_url": "https://images.prom.ua/3234281692_w640_h640_povodok-dlya-sobak.jpg",
-    "search_blob": "waterproof waudog водостійкий довжина поводок повідець прогулянок ширина",
+    "search_blob": "cat cats dog dogs walking waterproof waudog вигул водостійкий довжина кот котик котів кіт кішка кішок нашийник пес поводок повідець прогулянка прогулянок собак собака собаки цуценя ширина шлея",
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для прогулянок"
@@ -1230,7 +1230,7 @@
     "price_min": 179.0,
     "price_max": 259.0,
     "image_url": "https://images.prom.ua/3242618690_w640_h320_oshejnik-dlya-sobak.jpg",
-    "search_blob": "qr-паспортом waterproof waudog блакитний водостійкий довжина нашийник паспортом ширина",
+    "search_blob": "cat cats dog dogs qr-паспортом walking waterproof waudog блакитний вигул водостійкий довжина кот котик котів кіт кішка кішок нашийник паспортом пес повідець прогулянка собак собака собаки цуценя ширина шлея",
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і кішок"
@@ -1302,7 +1302,7 @@
     "price_min": 114.0,
     "price_max": 375.0,
     "image_url": "https://images.prom.ua/3250360507_w640_h320_oshejnik-dlya-sobak.jpg",
-    "search_blob": "nylon waudog авокадо довжина котів малюнок нашийник нейлоновий паспортом пластиковий фастекс ширина",
+    "search_blob": "cat cats dog dogs nylon walking waudog авокадо вигул довжина кот котик котів кіт кішка кішок малюнок нашийник нейлоновий паспортом пес пластиковий повідець прогулянка собак собака собаки фастекс цуценя ширина шлея",
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і котів"
@@ -1398,7 +1398,7 @@
     "price_min": 259.0,
     "price_max": 399.0,
     "image_url": "https://images.prom.ua/3796821670_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "h-подібна nasa nylon qr-паспортом waudog анатомічна котів малюнок паспортом подібна шлейка шлея",
+    "search_blob": "cat cats dog dogs h-подібна nasa nylon qr-паспортом walking waudog анатомічна вигул кот котик котів кіт кішка кішок малюнок нашийник паспортом пес повідець подібна прогулянка собак собака собаки цуценя шлейка шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак і котів"
@@ -1454,7 +1454,7 @@
     "price_min": 440.0,
     "price_max": 440.0,
     "image_url": "https://images.prom.ua/4573800244_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "кожної комфорт контроль прогулянки прогулянок регульована шлея",
+    "search_blob": "dog dogs walking вигул кожної комфорт контроль нашийник пес повідець прогулянка прогулянки прогулянок регульована собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -1479,7 +1479,7 @@
     "price_min": 232.0,
     "price_max": 232.0,
     "image_url": "https://images.prom.ua/4160986351_w640_h320_shleya-s-povodkom.jpg",
-    "search_blob": "cotton re-cotton waudog дрібних котів паспортом повідцем порід шлея",
+    "search_blob": "cat cats cotton dog dogs re-cotton walking waudog вигул дрібних кот котик котів кіт кішка кішок нашийник паспортом пес повідець повідцем порід прогулянка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак і котів"
@@ -1512,7 +1512,7 @@
     "price_min": 499.0,
     "price_max": 499.0,
     "image_url": "https://images.prom.ua/3796797820_w640_h320_shleya-dlya-sobak.jpg",
-    "search_blob": "qr-паспортом waterproof waudog паспортом прогулянок шлейка шлея",
+    "search_blob": "cat cats dog dogs qr-паспортом walking waterproof waudog вигул кот котик котів кіт кішка кішок нашийник паспортом пес повідець прогулянка прогулянок собак собака собаки цуценя шлейка шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -1537,7 +1537,7 @@
     "price_min": 67.0,
     "price_max": 200.0,
     "image_url": "https://images.prom.ua/4287485546_w640_h320_oshejnik-dog-extreme.jpg",
-    "search_blob": "collar extreme довжина котів нашийник нейлону регульований різнокольоровий ширина",
+    "search_blob": "cat cats collar dog dogs extreme walking вигул довжина кот котик котів кіт кішка кішок нашийник нейлону пес повідець прогулянка регульований різнокольоровий собак собака собаки цуценя ширина шлея",
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і котів"
@@ -1633,7 +1633,7 @@
     "price_min": 107.0,
     "price_max": 175.0,
     "image_url": "https://images.prom.ua/4235519527_w640_h320_oshejnik-dlya-sobak.jpg",
-    "search_blob": "nylon waudog довжина котів малюнок мілітарі нашийник паспортом ширина",
+    "search_blob": "cat cats dog dogs nylon walking waudog вигул довжина кот котик котів кіт кішка кішок малюнок мілітарі нашийник паспортом пес повідець прогулянка собак собака собаки цуценя ширина шлея",
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і котів"
@@ -1721,7 +1721,7 @@
     "price_min": 149.0,
     "price_max": 149.0,
     "image_url": "https://images.prom.ua/5314484303_w640_h640_avtomobilnyj-remen-bezopasnosti.jpg",
-    "search_blob": "автомобільний автомобілі безпека безпеки ремінь",
+    "search_blob": "cat cats dog dogs walking автомобільний автомобілі безпека безпеки вигул кот котик котів кіт кішка кішок нашийник пес повідець прогулянка ремінь собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Ремінь безпеки",
       "purpose": "Безпека в автомобілі"
@@ -1746,7 +1746,7 @@
     "price_min": 420.0,
     "price_max": 420.0,
     "image_url": "https://images.prom.ua/6223435953_w640_h640_povodok-sparka-dlya-dvuh.jpg",
-    "search_blob": "двома двох нейлонові повідець повідець-спарка повідці подвійні прогулянок сворка спарка тварин тваринами",
+    "search_blob": "cat cats dog dogs walking вигул двома двох кот котик котів кіт кішка кішок нашийник нейлонові пес повідець повідець-спарка повідці подвійні прогулянка прогулянок сворка собак собака собаки спарка тварин тваринами цуценя шлея",
     "attributes": {
       "subtype": "Сворка",
       "purpose": "Для прогулянок з двома тваринами"
@@ -1771,7 +1771,7 @@
     "price_min": 119.0,
     "price_max": 199.0,
     "image_url": "https://images.prom.ua/5892982322_w640_h320_namordnik-dlya-sobak.jpg",
-    "search_blob": "намордник пластиковий",
+    "search_blob": "dog dogs walking вигул намордник нашийник пес пластиковий повідець прогулянка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Для собак"
@@ -1838,7 +1838,7 @@
     "price_min": 219.0,
     "price_max": 389.0,
     "image_url": "https://images.prom.ua/5907504099_w640_h320_nashijnik-dlya-sobak.jpg",
-    "search_blob": "led waudog застібка котів магнітна нашийник підсвічуванням",
+    "search_blob": "cat cats dog dogs led walking waudog вигул застібка кот котик котів кіт кішка кішок магнітна нашийник пес повідець прогулянка підсвічуванням собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і котів"
@@ -1886,7 +1886,7 @@
     "price_min": 315.0,
     "price_max": 315.0,
     "image_url": "https://images.prom.ua/6664986301_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "clothes nasa waudog м'яка малюнок паспортом прогулянок шлея",
+    "search_blob": "cat cats clothes dog dogs nasa walking waudog вигул кот котик котів кіт кішка кішок м'яка малюнок нашийник паспортом пес повідець прогулянка прогулянок собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -1911,7 +1911,7 @@
     "price_min": 399.0,
     "price_max": 419.0,
     "image_url": "https://images.prom.ua/6750558224_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "прогулянок шлейка шлея",
+    "search_blob": "dog dogs walking вигул нашийник пес повідець прогулянка прогулянок собак собака собаки цуценя шлейка шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -1943,7 +1943,7 @@
     "price_min": 525.0,
     "price_max": 861.25,
     "image_url": "https://images.prom.ua/4253686504_w640_h320_dozhdevik-dlya-sobak.jpg",
-    "search_blob": "fashion pet rain дощовик",
+    "search_blob": "apparel dog dogs fashion pet rain дощовик одежда одяг пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Для собак"
@@ -1992,7 +1992,7 @@
     "price_min": 589.0,
     "price_max": 589.0,
     "image_url": "https://images.prom.ua/3445612624_w640_h320_kombinezon-dlya-sobak.jpg",
-    "search_blob": "dogbaby зимовий комбінезон одяг",
+    "search_blob": "apparel dog dogbaby dogs зимовий комбінезон одежда одяг пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Зимовий одяг"
@@ -2033,7 +2033,7 @@
     "price_min": 156.0,
     "price_max": 284.0,
     "image_url": "https://images.prom.ua/3822401836_w640_h320_igrushka-dlya-sobak.jpg",
-    "search_blob": "fun waudog активна гра м'яка малюнок пищалкою яєчня іграшка",
+    "search_blob": "cat cats dog dogs fun toys waudog активна гра кот котик котів кіт кішка кішок м'яка малюнок пес пищалкою собак собака собаки цуценя яєчня іграшка",
     "attributes": {
       "subtype": "М'яка іграшка",
       "purpose": "Активна гра"
@@ -2072,7 +2072,7 @@
     "price_min": 319.0,
     "price_max": 319.0,
     "image_url": "https://images.prom.ua/6792485016_w640_h320_takticheskij-oshejnik-dlya.jpg",
-    "search_blob": "м'якою металевою нашийник пряжкою підкладкою тактичний чорний",
+    "search_blob": "dog dogs walking вигул м'якою металевою нашийник пес повідець прогулянка пряжкою підкладкою собак собака собаки тактичний цуценя чорний шлея",
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак"
@@ -2120,7 +2120,7 @@
     "price_min": 95.0,
     "price_max": 95.0,
     "image_url": "https://images.prom.ua/3822592299_w640_h320_myachik-lajker-5.jpg",
-    "search_blob": "liker активна гра лайкер м'яч м'ячик",
+    "search_blob": "cat cats dog dogs liker toys активна гра кот котик котів кіт кішка кішок лайкер м'яч м'ячик пес собак собака собаки цуценя іграшка",
     "attributes": {
       "subtype": "М'яч",
       "purpose": "Активна гра"
@@ -2146,7 +2146,7 @@
     "price_min": 245.0,
     "price_max": 245.0,
     "image_url": "https://images.prom.ua/3822651491_w640_h320_igrovaya-gantel-dlya.jpg",
-    "search_blob": "pitchdog апортировки гантель гра тренування ігрова",
+    "search_blob": "cat cats dog dogs pitchdog toys апортировки гантель гра кот котик котів кіт кішка кішок пес собак собака собаки тренування цуценя іграшка ігрова",
     "attributes": {
       "subtype": "Гантель",
       "purpose": "Тренування та гра"
@@ -2171,7 +2171,7 @@
     "price_min": 160.0,
     "price_max": 160.0,
     "image_url": "https://images.prom.ua/4199078761_w640_h640_ohlazhdayuschaya-igrushka-dlya.jpg",
-    "search_blob": "animall grizzzly гра догляд зелена зубами зубів охолоджувальна синьо синьо-зелена іграшка",
+    "search_blob": "animall cat cats dog dogs grizzzly toys гра догляд зелена зубами зубів кот котик котів кіт кішка кішок охолоджувальна пес синьо синьо-зелена собак собака собаки цуценя іграшка",
     "attributes": {
       "subtype": "Охолоджувальна іграшка",
       "purpose": "Догляд за зубами та гра"
@@ -2197,7 +2197,7 @@
     "price_min": 89.0,
     "price_max": 111.25,
     "image_url": "https://images.prom.ua/4849878295_w640_h320_kotyacha-myata-igrushka.jpg",
-    "search_blob": "гри котяча котячої котів кулька м'ята м'яти спресована стимуляція іграшка",
+    "search_blob": "cat cats meds гри кот котик котяча котячої котів кулька кіт кішка кішок ліки м'ята м'яти медикаменти спресована стимуляція іграшка",
     "attributes": {
       "subtype": "Котяча м'ята",
       "purpose": "Стимуляція до гри"
@@ -2229,7 +2229,7 @@
     "price_min": 279.0,
     "price_max": 279.0,
     "image_url": "https://images.prom.ua/4449237887_w640_h320_igrushka-dlya-sobak.jpg",
-    "search_blob": "flyber активна гра літаюча тарілка флайбер іграшка",
+    "search_blob": "dog dogs flyber toys активна гра літаюча пес собак собака собаки тарілка флайбер цуценя іграшка",
     "attributes": {
       "subtype": "Літаюча тарілка",
       "purpose": "Активна гра"
@@ -2254,7 +2254,7 @@
     "price_min": 245.0,
     "price_max": 275.0,
     "image_url": "https://images.prom.ua/5919727073_w640_h320_igrushka-dlya-sobak.jpg",
-    "search_blob": "fun natural waudog активна біорозкладна гра гума м'яч палиця іграшка",
+    "search_blob": "dog dogs fun natural toys waudog активна біорозкладна гра гума м'яч палиця пес собак собака собаки цуценя іграшка",
     "attributes": {
       "subtype": "Палиця",
       "purpose": "Активна гра"
@@ -2288,7 +2288,7 @@
     "price_min": 350.0,
     "price_max": 350.0,
     "image_url": "https://images.prom.ua/6700137684_w640_h640_lapomojka-dlya-sobak.jpg",
-    "search_blob": "carno лап лапомийка очищення",
+    "search_blob": "care carno dog dogs догляд лап лапомийка очищення пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Лапомийка",
       "purpose": "Очищення лап"
@@ -2313,7 +2313,7 @@
     "price_min": 356.0,
     "price_max": 512.5,
     "image_url": "https://images.prom.ua/4573065675_w640_h320_nabor-shlejka-i.jpg",
-    "search_blob": "блакитний комплект котів повідок шлея",
+    "search_blob": "cat cats dog dogs walking блакитний вигул комплект кот котик котів кіт кішка кішок нашийник пес повідець повідок прогулянка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак і котів"
@@ -2392,7 +2392,7 @@
     "price_min": 300.0,
     "price_max": 360.0,
     "image_url": "https://images.prom.ua/2972729268_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "безпека комфорт прогулянок прогулянці ручкою шлея",
+    "search_blob": "dog dogs walking безпека вигул комфорт нашийник пес повідець прогулянка прогулянок прогулянці ручкою собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -2438,7 +2438,7 @@
     "price_min": 419.0,
     "price_max": 623.75,
     "image_url": "https://images.prom.ua/3009806309_w640_h320_shleya-dlya-sobak.jpg",
-    "search_blob": "idog кожної комфорт контроль прогулянки прогулянок регулюється шлея",
+    "search_blob": "cat cats dog dogs idog walking вигул кожної комфорт контроль кот котик котів кіт кішка кішок нашийник пес повідець прогулянка прогулянки прогулянок регулюється собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -2484,7 +2484,7 @@
     "price_min": 290.0,
     "price_max": 290.0,
     "image_url": "https://images.prom.ua/4481071910_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "bororo прогулянок шлейка шлея",
+    "search_blob": "bororo cat cats dog dogs walking вигул кот котик котів кіт кішка кішок нашийник пес повідець прогулянка прогулянок собак собака собаки цуценя шлейка шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -2509,7 +2509,7 @@
     "price_min": 291.0,
     "price_max": 399.0,
     "image_url": "https://images.prom.ua/3811454254_w640_h640_shlejka-dlya-sobak.jpg",
-    "search_blob": "naa nylon waudog анатомічна малюнок паспортом прогулянок шлея",
+    "search_blob": "cat cats dog dogs naa nylon walking waudog анатомічна вигул кот котик котів кіт кішка кішок малюнок нашийник паспортом пес повідець прогулянка прогулянок собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -2550,7 +2550,7 @@
     "price_min": 349.0,
     "price_max": 349.0,
     "image_url": "https://images.prom.ua/3201201431_w640_h320_namordnik-myagkij-collar.jpg",
-    "search_blob": "collar безпека м'який намордник прогулянок спаніель",
+    "search_blob": "collar dog dogs walking безпека вигул м'який намордник нашийник пес повідець прогулянка прогулянок собак собака собаки спаніель цуценя шлея",
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Безпека під час прогулянок"
@@ -2575,7 +2575,7 @@
     "price_min": 126.0,
     "price_max": 139.0,
     "image_url": "https://images.prom.ua/3203851806_w640_h320_namordnik-nejlonovyj-dog.jpg",
-    "search_blob": "collar extrem безпека намордник нейлоновий прогулянок регульований сіткою",
+    "search_blob": "collar dog dogs extrem walking безпека вигул намордник нашийник нейлоновий пес повідець прогулянка прогулянок регульований собак собака собаки сіткою цуценя шлея",
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Безпека під час прогулянок"
@@ -2641,7 +2641,7 @@
     "price_min": 189.0,
     "price_max": 264.0,
     "image_url": "https://images.prom.ua/3824338672_w640_h320_namordnik-dlya-sobak.jpg",
-    "search_blob": "nylon waudog безпека малюнок намордник прогулянок червона шотландка",
+    "search_blob": "dog dogs nylon walking waudog безпека вигул малюнок намордник нашийник пес повідець прогулянка прогулянок собак собака собаки цуценя червона шлея шотландка",
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Безпека під час прогулянок"
@@ -2707,7 +2707,7 @@
     "price_min": 172.0,
     "price_max": 242.0,
     "image_url": "https://images.prom.ua/3207121900_w640_h320_oshejnik-dlya-sobak.jpg",
-    "search_blob": "collar безрозмірний довжина нашийник прогулянок ширина",
+    "search_blob": "cat cats collar dog dogs walking безрозмірний вигул довжина кот котик котів кіт кішка кішок нашийник пес повідець прогулянка прогулянок собак собака собаки цуценя ширина шлея",
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для прогулянок"
@@ -2741,7 +2741,7 @@
     "price_min": 102.0,
     "price_max": 135.0,
     "image_url": "https://images.prom.ua/3207151884_w640_h640_oshejnik-hb-tesma.jpg",
-    "search_blob": "collar довжина зелений нашийник прогулянок тасьма ширина",
+    "search_blob": "cat cats collar dog dogs walking вигул довжина зелений кот котик котів кіт кішка кішок нашийник пес повідець прогулянка прогулянок собак собака собаки тасьма цуценя ширина шлея",
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для прогулянок"
@@ -2775,7 +2775,7 @@
     "price_min": 479.0,
     "price_max": 679.0,
     "image_url": "https://images.prom.ua/3225731801_w640_h320_povodok-ruletka-dlya-sobak.jpg",
-    "search_blob": "leah naa r-leah waudog малюнок метрів поводок поводок-рулетка повідець рулетка",
+    "search_blob": "cat cats dog dogs leah naa r-leah walking waudog вигул кот котик котів кіт кішка кішок малюнок метрів нашийник пес поводок поводок-рулетка повідець прогулянка рулетка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для собак і кішок"
@@ -2816,7 +2816,7 @@
     "price_min": 419.0,
     "price_max": 723.75,
     "image_url": "https://images.prom.ua/3227580540_w640_h320_povodok-ruletka-dlya-sobak.jpg",
-    "search_blob": "collar метрів поводок поводок-рулетка повідець повідець-рулетка рулетка",
+    "search_blob": "cat cats collar dog dogs walking вигул кот котик котів кіт кішка кішок метрів нашийник пес поводок поводок-рулетка повідець повідець-рулетка прогулянка рулетка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для собак і кішок"
@@ -2888,7 +2888,7 @@
     "price_min": 726.0,
     "price_max": 726.0,
     "image_url": "https://images.prom.ua/3227463421_w640_h320_povodok-ruletka-dlya-sobak.jpg",
-    "search_blob": "coar collar голубий метрів повідець повідець-рулетка повідок повідок-рулетка прогулянок рулетка",
+    "search_blob": "cat cats coar collar dog dogs walking вигул голубий кот котик котів кіт кішка кішок метрів нашийник пес повідець повідець-рулетка повідок повідок-рулетка прогулянка прогулянок рулетка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Повідець-рулетка",
       "purpose": "Для прогулянок"
@@ -2914,7 +2914,7 @@
     "price_min": 139.0,
     "price_max": 489.0,
     "image_url": "https://images.prom.ua/3209347058_w640_h320_oshejnik-dlya-sobak.jpg",
-    "search_blob": "classic waudog довжина нашийник рожевий ширина шкіряний",
+    "search_blob": "cat cats classic dog dogs walking waudog вигул довжина кот котик котів кіт кішка кішок нашийник пес повідець прогулянка рожевий собак собака собаки цуценя ширина шкіряний шлея",
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і кішок"
@@ -3004,7 +3004,7 @@
     "price_min": 432.0,
     "price_max": 432.0,
     "image_url": "https://images.prom.ua/3227552333_w640_h640_povodok-ruletka-dlya-sobak.jpg",
-    "search_blob": "collar поводок поводок-рулетка повідець повідець-рулетка прогулянок рулетка",
+    "search_blob": "cat cats collar dog dogs walking вигул кот котик котів кіт кішка кішок нашийник пес поводок поводок-рулетка повідець повідець-рулетка прогулянка прогулянок рулетка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Повідець-рулетка",
       "purpose": "Для прогулянок"
@@ -3029,7 +3029,7 @@
     "price_min": 299.0,
     "price_max": 299.0,
     "image_url": "https://images.prom.ua/3229692721_w640_h320_povodok-hb-tesma.jpg",
-    "search_blob": "collar довжина поводок повідець прогулянок тесьма ширина",
+    "search_blob": "cat cats collar dog dogs walking вигул довжина кот котик котів кіт кішка кішок нашийник пес поводок повідець прогулянка прогулянок собак собака собаки тесьма цуценя ширина шлея",
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для прогулянок"
@@ -3055,7 +3055,7 @@
     "price_min": 539.0,
     "price_max": 539.0,
     "image_url": "https://images.prom.ua/3234233942_w640_h320_povodok-dlya-sobak.jpg",
-    "search_blob": "collar waterproof waudog водостійкий довжина повідець прогулянок червоний ширина",
+    "search_blob": "cat cats collar dog dogs walking waterproof waudog вигул водостійкий довжина кот котик котів кіт кішка кішок нашийник пес повідець прогулянка прогулянок собак собака собаки цуценя червоний ширина шлея",
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для прогулянок"
@@ -3081,7 +3081,7 @@
     "price_min": 449.0,
     "price_max": 449.0,
     "image_url": "https://images.prom.ua/6792597331_w640_h320_takticheskij-oshejnik-s.jpg",
-    "search_blob": "металевою нашийник повідком пряжкою тактичний",
+    "search_blob": "dog dogs walking вигул металевою нашийник пес повідець повідком прогулянка пряжкою собак собака собаки тактичний цуценя шлея",
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак"
@@ -3114,7 +3114,7 @@
     "price_min": 440.0,
     "price_max": 440.0,
     "image_url": "https://images.prom.ua/3554459389_w640_h320_zimnyaya-teplaya-kurtka.jpg",
-    "search_blob": "зимова зимовий куртка одяг тепла універсальна",
+    "search_blob": "apparel dog dogs зимова зимовий куртка одежда одяг пес собак собака собаки тепла універсальна цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Зимовий одяг"
@@ -3139,7 +3139,7 @@
     "price_min": 209.0,
     "price_max": 261.25,
     "image_url": "https://images.prom.ua/4182184207_w640_h640_miska-labirint-wahopet-slow.jpg",
-    "search_blob": "feeder slow wahopet коричнева лабіринт миска миска-лабіринт пластикова",
+    "search_blob": "cat cats dog dogs feeder feeding slow wahopet годування коричнева кот котик котів кіт кішка кішок лабіринт миска миска-лабіринт пес пластикова поїлка собак собака собаки цуценя",
     "attributes": {
       "subtype": "Миска",
       "purpose": "Для собак і кішок"
@@ -3171,7 +3171,7 @@
     "price_min": 269.0,
     "price_max": 269.0,
     "image_url": "https://images.prom.ua/4693160721_w640_h320_portativnaya-poilka-i.jpg",
-    "search_blob": "води годівничка дорозі корму портативна поїлка тварин",
+    "search_blob": "cat cats dog dogs feeding води годування годівничка дорозі корму кот котик котів кіт кішка кішок миска пес портативна поїлка собак собака собаки тварин цуценя",
     "attributes": {
       "subtype": "Поїлка",
       "purpose": "Для води та корму в дорозі"
@@ -3197,7 +3197,7 @@
     "price_min": 115.0,
     "price_max": 115.0,
     "image_url": "https://images.prom.ua/4306751939_w640_h320_poilka-nasadka-na-butylku.jpg",
-    "search_blob": "silicone waudog води дорозі насадка пляшку поїлка поїлка-насадка",
+    "search_blob": "cat cats dog dogs feeding silicone waudog води годування дорозі кот котик котів кіт кішка кішок миска насадка пес пляшку поїлка поїлка-насадка собак собака собаки цуценя",
     "attributes": {
       "subtype": "Поїлка",
       "purpose": "Для води в дорозі"
@@ -3222,7 +3222,7 @@
     "price_min": 538.0,
     "price_max": 672.5,
     "image_url": "https://images.prom.ua/4306787750_w640_h320_miska-skladnaya-waudog.jpg",
-    "search_blob": "silicone waudog годування дорозі миска складається",
+    "search_blob": "cat cats dog dogs feeding silicone waudog годування дорозі кот котик котів кіт кішка кішок миска пес поїлка складається собак собака собаки цуценя",
     "attributes": {
       "subtype": "Миска",
       "purpose": "Для годування в дорозі"
@@ -3261,7 +3261,7 @@
     "price_min": 224.0,
     "price_max": 261.25,
     "image_url": "https://images.prom.ua/4427614610_w640_h320_miska-labirint-dlya-medlennogo.jpg",
-    "search_blob": "годування зелена котів лабіринт миска миска-лабіринт пластикова повільного",
+    "search_blob": "cat cats dog dogs feeding годування зелена кот котик котів кіт кішка кішок лабіринт миска миска-лабіринт пес пластикова повільного поїлка собак собака собаки цуценя",
     "attributes": {
       "subtype": "Миска",
       "purpose": "Для собак і котів"
@@ -3300,7 +3300,7 @@
     "price_min": 199.0,
     "price_max": 199.0,
     "image_url": "https://images.prom.ua/5919795210_w640_h320_kovrik-dlya-slizyvaniya.jpg",
-    "search_blob": "silicone waudog годування злизування килимок повільне",
+    "search_blob": "cat cats dog dogs feeding silicone waudog годування злизування килимок кот котик котів кіт кішка кішок миска пес повільне поїлка собак собака собаки цуценя",
     "attributes": {
       "subtype": "Килимок для злизування",
       "purpose": "Повільне годування"
@@ -3326,7 +3326,7 @@
     "price_min": 230.0,
     "price_max": 230.0,
     "image_url": "https://images.prom.ua/6409873654_w640_h320_miska-neprolivajka-waudog-silicone.jpg",
-    "search_blob": "silicone waudog годування миска непроливайка",
+    "search_blob": "cat cats dog dogs feeding silicone waudog годування кот котик котів кіт кішка кішок миска непроливайка пес поїлка собак собака собаки цуценя",
     "attributes": {
       "subtype": "Миска",
       "purpose": "Для годування"
@@ -3351,7 +3351,7 @@
     "price_min": 135.0,
     "price_max": 135.0,
     "image_url": "https://images.prom.ua/6574562349_w640_h320_miska-dlya-sobak.jpg",
-    "search_blob": "animall годування діамант миска",
+    "search_blob": "animall cat cats dog dogs feeding годування діамант кот котик котів кіт кішка кішок миска пес поїлка собак собака собаки цуценя",
     "attributes": {
       "subtype": "Миска",
       "purpose": "Для годування"
@@ -3376,7 +3376,7 @@
     "price_min": 350.0,
     "price_max": 583.33,
     "image_url": "https://images.prom.ua/2970772893_w640_h320_zhiletka-dlya-sobak.jpg",
-    "search_blob": "блискавкою вітру дощ дощу жилет жилетка захист комфорт спині",
+    "search_blob": "apparel dog dogs блискавкою вітру дощ дощу жилет жилетка захист комфорт одежда одяг пес собак собака собаки спині цуценя",
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Захист від дощу та вітру"
@@ -3457,7 +3457,7 @@
     "price_min": 399.0,
     "price_max": 399.0,
     "image_url": "https://images.prom.ua/4128536693_w640_h320_hudi-dlya-sobak.jpg",
-    "search_blob": "teddy куртка одяг повсякденний",
+    "search_blob": "apparel dog dogs teddy куртка одежда одяг пес повсякденний собак собака собаки цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Повсякденний одяг"
@@ -3482,7 +3482,7 @@
     "price_min": 399.0,
     "price_max": 459.0,
     "image_url": "https://images.prom.ua/3061558111_w640_h640_tolstovka-dlya-sobak.jpg",
-    "search_blob": "heaven seven вашого затишок одяг повсякденний стиль толстовка улюбленця худі",
+    "search_blob": "apparel dog dogs heaven seven вашого затишок одежда одяг пес повсякденний собак собака собаки стиль толстовка улюбленця худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Повсякденний одяг"
@@ -3544,7 +3544,7 @@
     "price_min": 295.0,
     "price_max": 443.75,
     "image_url": "https://images.prom.ua/3908734340_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "весняно весняно-осінній капішоном кофта носіння осінній період худі щоденного",
+    "search_blob": "apparel dog dogs весняно весняно-осінній капішоном кофта носіння одежда одяг осінній період пес собак собака собаки худі цуценя щоденного",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння у весняно-осінній період"
@@ -3633,7 +3633,7 @@
     "price_min": 340.0,
     "price_max": 425.0,
     "image_url": "https://images.prom.ua/3083800385_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "aapa капюшоном рожевий толстовка худі",
+    "search_blob": "aapa apparel dog dogs капюшоном одежда одяг пес рожевий собак собака собаки толстовка худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для собак"
@@ -3746,7 +3746,7 @@
     "price_min": 230.0,
     "price_max": 230.0,
     "image_url": "https://images.prom.ua/3445975959_w640_h640_kofta-dlya-sobak.jpg",
-    "search_blob": "бавовни кофта одяг повсякденний светр",
+    "search_blob": "apparel dog dogs бавовни кофта одежда одяг пес повсякденний светр собак собака собаки цуценя",
     "attributes": {
       "subtype": "Светр",
       "purpose": "Повсякденний одяг"
@@ -3771,7 +3771,7 @@
     "price_min": 334.0,
     "price_max": 334.0,
     "image_url": "https://images.prom.ua/3410269351_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "капюшоном одяг повсякденний худі",
+    "search_blob": "apparel dog dogs капюшоном одежда одяг пес повсякденний собак собака собаки худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Повсякденний одяг"
@@ -3796,7 +3796,7 @@
     "price_min": 467.0,
     "price_max": 537.0,
     "image_url": "https://images.prom.ua/4134799720_w640_h320_sviter-vyazanyj-kosichka.jpg",
-    "search_blob": "bomba в'язаний зимовий косичка одяг светр синій",
+    "search_blob": "apparel bomba dog dogs в'язаний зимовий косичка одежда одяг пес светр синій собак собака собаки цуценя",
     "attributes": {
       "subtype": "Светр",
       "purpose": "Зимовий одяг"
@@ -3856,7 +3856,7 @@
     "price_min": 349.0,
     "price_max": 436.25,
     "image_url": "https://images.prom.ua/4119143127_w640_h320_sviter-angora-zmejka.jpg",
-    "search_blob": "bomba ангора змійка малина носіння розмір светр щоденного",
+    "search_blob": "apparel bomba dog dogs ангора змійка малина носіння одежда одяг пес розмір светр собак собака собаки цуценя щоденного",
     "attributes": {
       "subtype": "Светр",
       "purpose": "Для щоденного носіння"
@@ -3951,7 +3951,7 @@
     "price_min": 260.0,
     "price_max": 498.75,
     "image_url": "https://images.prom.ua/4388185157_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "капюшоном синій толстовка худі",
+    "search_blob": "apparel dog dogs капюшоном одежда одяг пес синій собак собака собаки толстовка худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для собак"
@@ -4072,7 +4072,7 @@
     "price_min": 375.0,
     "price_max": 375.0,
     "image_url": "https://images.prom.ua/4389027808_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "essentials капюшоном одяг повсякденний худі",
+    "search_blob": "apparel cat cats dog dogs essentials капюшоном кот котик котів кіт кішка кішок одежда одяг пес повсякденний собак собака собаки худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Повсякденний одяг"
@@ -4097,7 +4097,7 @@
     "price_min": 380.0,
     "price_max": 445.0,
     "image_url": "https://images.prom.ua/4422309257_w640_h320_kofta-kardigan-dlya.jpg",
-    "search_blob": "кардиган кофта носіння светр щоденного",
+    "search_blob": "apparel dog dogs кардиган кофта носіння одежда одяг пес светр собак собака собаки цуценя щоденного",
     "attributes": {
       "subtype": "Светр",
       "purpose": "Для щоденного носіння"
@@ -4138,7 +4138,7 @@
     "price_min": 399.0,
     "price_max": 399.0,
     "image_url": "https://images.prom.ua/4656997722_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "grandy одяг повсякденний худі",
+    "search_blob": "apparel dog dogs grandy одежда одяг пес повсякденний собак собака собаки худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Повсякденний одяг"
@@ -4163,7 +4163,7 @@
     "price_min": 299.0,
     "price_max": 299.0,
     "image_url": "https://images.prom.ua/4915322736_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "капішоном кофта одяг повсякденний худі",
+    "search_blob": "apparel dog dogs капішоном кофта одежда одяг пес повсякденний собак собака собаки худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Повсякденний одяг"
@@ -4188,7 +4188,7 @@
     "price_min": 399.0,
     "price_max": 498.75,
     "image_url": "https://images.prom.ua/6156989884_w640_h640_tolstovka-dlya-sobak.jpg",
-    "search_blob": "bomba зайчик капюшоном м'ята носіння худі щоденного",
+    "search_blob": "apparel bomba cat cats dog dogs зайчик капюшоном кот котик котів кіт кішка кішок м'ята носіння одежда одяг пес собак собака собаки худі цуценя щоденного",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння"
@@ -4283,7 +4283,7 @@
     "price_min": 259.0,
     "price_max": 259.0,
     "image_url": "https://images.prom.ua/5372260131_w640_h320_futbolka-dlya-sobak.jpg",
-    "search_blob": "bomba лапки літній період прогулянок україна футболка чорна",
+    "search_blob": "apparel bomba dog dogs лапки літній одежда одяг період пес прогулянок собак собака собаки україна футболка цуценя чорна",
     "attributes": {
       "subtype": "Футболка",
       "purpose": "Для прогулянок у літній період"
@@ -4322,7 +4322,7 @@
     "price_min": 270.0,
     "price_max": 270.0,
     "image_url": "https://images.prom.ua/6286391982_w640_h320_sviter-dlya-koshek.jpg",
-    "search_blob": "bomba велюр котів одяг повсякденний светр",
+    "search_blob": "apparel bomba cat cats dogs велюр кот котик котів кіт кішка кішок одежда одяг повсякденний светр",
     "attributes": {
       "subtype": "Светр",
       "purpose": "Повсякденний одяг"
@@ -4368,7 +4368,7 @@
     "price_min": 400.0,
     "price_max": 500.0,
     "image_url": "https://images.prom.ua/6228889145_w640_h320_vyazanyj-sviter-polosatyj.jpg",
-    "search_blob": "bomba в'язаний носіння светр серцем смугастий щоденного",
+    "search_blob": "apparel bomba dog dogs в'язаний носіння одежда одяг пес светр серцем смугастий собак собака собаки цуценя щоденного",
     "attributes": {
       "subtype": "Светр",
       "purpose": "Для щоденного носіння"
@@ -4414,7 +4414,7 @@
     "price_min": 645.0,
     "price_max": 912.5,
     "image_url": "https://images.prom.ua/6454956470_w640_h640_zhiletka-popona-dlya-bolshih.jpg",
-    "search_blob": "великих жилетка жилетка-попона зимовий одяг осінньо осінньо-зимовий попона порід",
+    "search_blob": "apparel dog dogs великих жилет жилетка жилетка-попона зимовий одежда одяг осінньо осінньо-зимовий пес попона порід собак собака собаки цуценя",
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Осінньо-зимовий одяг"
@@ -4467,7 +4467,7 @@
     "price_min": 450.0,
     "price_max": 450.0,
     "image_url": "https://images.prom.ua/6455750131_w640_h320_dvustoronnyaya-zhiletka-dlya.jpg",
-    "search_blob": "двостороння жилетка зимовий куртка одяг осінньо осінньо-зимовий",
+    "search_blob": "apparel dog dogs двостороння жилетка зимовий куртка одежда одяг осінньо осінньо-зимовий пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Осінньо-зимовий одяг"
@@ -4492,7 +4492,7 @@
     "price_min": 479.0,
     "price_max": 595.0,
     "image_url": "https://images.prom.ua/5889074248_w640_h320_dozhdevik-dlya-bolshih.jpg",
-    "search_blob": "великих дощовик дощу захист середніх",
+    "search_blob": "apparel dog dogs великих дощовик дощу захист одежда одяг пес середніх собак собака собаки цуценя",
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Захист від дощу"
@@ -4545,7 +4545,7 @@
     "price_min": 695.0,
     "price_max": 1363.0,
     "image_url": "https://images.prom.ua/4101745635_w640_h320_kurtka-dvustoronnyaya-airyvest.jpg",
-    "search_blob": "airyvest collar uni двостороння демісезонний куртка одяг червоно червоно-чорна чорна",
+    "search_blob": "airyvest apparel collar dog dogs uni двостороння демісезонний куртка одежда одяг пес собак собака собаки цуценя червоно червоно-чорна чорна",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Демісезонний одяг"
@@ -4577,7 +4577,7 @@
     "price_min": 569.0,
     "price_max": 569.0,
     "image_url": "https://images.prom.ua/3917439709_w640_h320_dozhdevik-dlya-sobak.jpg",
-    "search_blob": "bomba дощовик дощу захист",
+    "search_blob": "apparel bomba dog dogs дощовик дощу захист одежда одяг пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Захист від дощу"
@@ -4630,7 +4630,7 @@
     "price_min": 470.0,
     "price_max": 470.0,
     "image_url": "https://images.prom.ua/3917400244_w640_h320_dozhdevik-dlya-sobak.jpg",
-    "search_blob": "bomba дощовик дощу захист камуфляж синій",
+    "search_blob": "apparel bomba dog dogs дощовик дощу захист камуфляж одежда одяг пес синій собак собака собаки цуценя",
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Захист від дощу"
@@ -4656,7 +4656,7 @@
     "price_min": 420.0,
     "price_max": 420.0,
     "image_url": "https://images.prom.ua/4856165734_w640_h320_teplaya-kurtka-dlya.jpg",
-    "search_blob": "зимовий куртка одяг осінньо осінньо-зимовий",
+    "search_blob": "apparel dog dogs зимовий куртка одежда одяг осінньо осінньо-зимовий пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Осінньо-зимовий одяг"
@@ -4681,7 +4681,7 @@
     "price_min": 399.0,
     "price_max": 498.75,
     "image_url": "https://images.prom.ua/4153544775_w640_h640_kostyum-tekst-malina.jpg",
-    "search_blob": "bomba комбінезон костюм малина текст",
+    "search_blob": "apparel bomba dog dogs комбінезон костюм малина одежда одяг пес собак собака собаки текст цуценя",
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Для собак"
@@ -4734,7 +4734,7 @@
     "price_min": 390.0,
     "price_max": 575.0,
     "image_url": "https://images.prom.ua/6787427035_w640_h320_zhiletka-dlya-sobak.jpg",
-    "search_blob": "демісезонний жилет жилетка зручний наповнювачем одяг синтепон фасон",
+    "search_blob": "apparel dog dogs демісезонний жилет жилетка зручний наповнювачем одежда одяг пес синтепон собак собака собаки фасон цуценя",
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Демісезонний одяг"
@@ -4787,7 +4787,7 @@
     "price_min": 131.0,
     "price_max": 163.75,
     "image_url": "https://images.prom.ua/5927287408_w640_h640_lakomstva-dlya-sobak.jpg",
-    "search_blob": "treats waudog курячі ласощі маленькі суші",
+    "search_blob": "dog dogs feeding treats waudog годування курячі ласощі маленькі миска пес поїлка собак собака собаки суші цуценя",
     "attributes": {
       "subtype": "Ласощі",
       "purpose": "Для собак"
@@ -4826,7 +4826,7 @@
     "price_min": 659.0,
     "price_max": 659.0,
     "image_url": "https://images.prom.ua/3165025761_w640_h320_avtokreslo-dlya-sobak.jpg",
-    "search_blob": "автокрісло автомобілі захист комфорт котів перевезення поїздках",
+    "search_blob": "cat cats dog dogs walking автокрісло автомобілі вигул захист комфорт кот котик котів кіт кішка кішок нашийник перевезення пес повідець поїздках прогулянка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Автокрісло",
       "purpose": "Перевезення в автомобілі"
@@ -4851,7 +4851,7 @@
     "price_min": 1025.0,
     "price_max": 1025.0,
     "image_url": "https://images.prom.ua/6574300040_w640_h320_avtogamak-dlya-sobak.jpg",
-    "search_blob": "автогамак автомобільний автомобілі гамак перевезення",
+    "search_blob": "dog dogs walking автогамак автомобільний автомобілі вигул гамак нашийник перевезення пес повідець прогулянка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Автогамак",
       "purpose": "Перевезення в автомобілі"
@@ -4876,7 +4876,7 @@
     "price_min": 169.0,
     "price_max": 599.0,
     "image_url": "https://images.prom.ua/3330522908_w640_h320_trenerovochnyj-snaryad-dlya.jpg",
-    "search_blob": "puller гра кільце снаряд тренувальне тренувальний тренування",
+    "search_blob": "dog dogs puller toys гра кільце пес снаряд собак собака собаки тренувальне тренувальний тренування цуценя іграшка",
     "attributes": {
       "subtype": "Тренувальне кільце",
       "purpose": "Тренування та гра"
@@ -4925,7 +4925,7 @@
     "price_min": 320.0,
     "price_max": 320.0,
     "image_url": "https://images.prom.ua/3126990409_w640_h320_reguliruemaya-shlejka-dlya.jpg",
-    "search_blob": "bororo м'яка прогулянок регульована тиску шию шлея",
+    "search_blob": "bororo cat cats dog dogs walking вигул кот котик котів кіт кішка кішок м'яка нашийник пес повідець прогулянка прогулянок регульована собак собака собаки тиску цуценя шию шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -4957,7 +4957,7 @@
     "price_min": 290.0,
     "price_max": 290.0,
     "image_url": "https://images.prom.ua/3110914084_w640_h320_shleya-dlya-sobak.jpg",
-    "search_blob": "bororo дихаючий легкий матеріал прогулянок шлея",
+    "search_blob": "bororo cat cats dog dogs walking вигул дихаючий кот котик котів кіт кішка кішок легкий матеріал нашийник пес повідець прогулянка прогулянок собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -4982,7 +4982,7 @@
     "price_min": 291.0,
     "price_max": 399.0,
     "image_url": "https://images.prom.ua/3196545292_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "nylon qr-паспортом waudog авокадо анатомічна малюнок паспортом прогулянок шлейка шлея",
+    "search_blob": "cat cats dog dogs nylon qr-паспортом walking waudog авокадо анатомічна вигул кот котик котів кіт кішка кішок малюнок нашийник паспортом пес повідець прогулянка прогулянок собак собака собаки цуценя шлейка шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для прогулянок"
@@ -5021,7 +5021,7 @@
     "price_min": 470.0,
     "price_max": 550.0,
     "image_url": "https://images.prom.ua/2970774798_w640_h320_dozhdevik-dlya-sobak.jpg",
-    "search_blob": "дощовик дощу жовтий захист капюшоном",
+    "search_blob": "apparel dog dogs дощовик дощу жовтий захист капюшоном одежда одяг пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Захист від дощу"
@@ -5079,7 +5079,7 @@
     "price_min": 540.0,
     "price_max": 600.0,
     "image_url": "https://images.prom.ua/2970772936_w640_h320_zimnyaya-kurtka-dlya.jpg",
-    "search_blob": "зимова зимовий зручна капюшоном куртка кільцем одяг повідка тепла",
+    "search_blob": "apparel dog dogs зимова зимовий зручна капюшоном куртка кільцем одежда одяг пес повідка собак собака собаки тепла цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Зимовий одяг"
@@ -5125,7 +5125,7 @@
     "price_min": 460.0,
     "price_max": 510.0,
     "image_url": "https://images.prom.ua/3653298614_w640_h320_dozhdevik-dlya-sobak.jpg",
-    "search_blob": "безпека дощовик дощу захист комфорт прогулянок",
+    "search_blob": "apparel dog dogs безпека дощовик дощу захист комфорт одежда одяг пес прогулянок собак собака собаки цуценя",
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Захист від дощу"
@@ -5164,7 +5164,7 @@
     "price_min": 480.0,
     "price_max": 750.0,
     "image_url": "https://images.prom.ua/3554459389_w640_h320_zimnyaya-teplaya-kurtka.jpg",
-    "search_blob": "зимова зимовий куртка одяг тепла",
+    "search_blob": "apparel dog dogs зимова зимовий куртка одежда одяг пес собак собака собаки тепла цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Зимовий одяг"
@@ -5231,7 +5231,7 @@
     "price_min": 400.0,
     "price_max": 550.0,
     "image_url": "https://images.prom.ua/3932957212_w640_h320_zhiletka-dlya-sobak.jpg",
-    "search_blob": "великих демісезонний жилет жилетка малих одяг порід середніх",
+    "search_blob": "apparel dog dogs великих демісезонний жилет жилетка малих одежда одяг пес порід середніх собак собака собаки цуценя",
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Демісезонний одяг"
@@ -5296,7 +5296,7 @@
     "price_min": 540.0,
     "price_max": 775.0,
     "image_url": "https://images.prom.ua/3987366441_w640_h640_kurtka-dlya-sobak.jpg",
-    "search_blob": "весняно весняно-осінній куртка осінній період прогулянок розмір",
+    "search_blob": "apparel dog dogs весняно весняно-осінній куртка одежда одяг осінній період пес прогулянок розмір собак собака собаки цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для прогулянок у весняно-осінній період"
@@ -5353,7 +5353,7 @@
     "price_min": 799.0,
     "price_max": 998.75,
     "image_url": "https://images.prom.ua/3988625444_w640_h640_zimnyaya-zhiletka-popona-dlya.jpg",
-    "search_blob": "bomba жилетка жилетка-попона зимова зимовий мехом одяг плюшевим попона розмір",
+    "search_blob": "apparel bomba dog dogs жилет жилетка жилетка-попона зимова зимовий мехом одежда одяг пес плюшевим попона розмір собак собака собаки цуценя",
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Зимовий одяг"
@@ -5413,7 +5413,7 @@
     "price_min": 599.0,
     "price_max": 1249.0,
     "image_url": "https://images.prom.ua/4101039337_w640_h640_kurtochka-dlya-sobak.jpg",
-    "search_blob": "clothes waudog демісезонний жилет курточка одяг світловідбивна",
+    "search_blob": "apparel clothes dog dogs waudog демісезонний жилет куртка курточка одежда одяг пес світловідбивна собак собака собаки цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Демісезонний одяг"
@@ -5508,7 +5508,7 @@
     "price_min": 870.0,
     "price_max": 1190.0,
     "image_url": "https://images.prom.ua/4101745635_w640_h320_kurtka-dvustoronnyaya-airyvest.jpg",
-    "search_blob": "airyvest uni двостороння куртка червоно червоно-чорна чорна",
+    "search_blob": "airyvest apparel dog dogs uni двостороння куртка одежда одяг пес собак собака собаки цуценя червоно червоно-чорна чорна",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для собак"
@@ -5554,7 +5554,7 @@
     "price_min": 399.0,
     "price_max": 399.0,
     "image_url": "https://images.prom.ua/4128536693_w640_h640_hudi-dlya-sobak.jpg",
-    "search_blob": "teddy худі",
+    "search_blob": "apparel dog dogs teddy одежда одяг пес собак собака собаки худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для собак"
@@ -5600,7 +5600,7 @@
     "price_min": 885.0,
     "price_max": 1106.25,
     "image_url": "https://images.prom.ua/4151239069_w640_h320_zimnij-kombinezon-dlya.jpg",
-    "search_blob": "bomba зимовий знімними комбінезон розмір штанами",
+    "search_blob": "apparel bomba dog dogs зимовий знімними комбінезон одежда одяг пес розмір собак собака собаки цуценя штанами",
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Для собак"
@@ -5653,7 +5653,7 @@
     "price_min": 420.0,
     "price_max": 525.0,
     "image_url": "https://images.prom.ua/4856165734_w640_h320_teplaya-kurtka-dlya.jpg",
-    "search_blob": "куртка тепла",
+    "search_blob": "apparel dog dogs куртка одежда одяг пес собак собака собаки тепла цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для собак"
@@ -5706,7 +5706,7 @@
     "price_min": 440.0,
     "price_max": 666.25,
     "image_url": "https://images.prom.ua/3653298614_w640_h320_dozhdevik-dlya-sobak.jpg",
-    "search_blob": "дощовик",
+    "search_blob": "apparel dog dogs дощовик одежда одяг пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Для собак"
@@ -5760,7 +5760,7 @@
     "price_min": 500.0,
     "price_max": 575.0,
     "image_url": "https://images.prom.ua/2972415424_w640_h320_zhiletka-dlya-sobak.jpg",
-    "search_blob": "жилет жилетка",
+    "search_blob": "apparel dog dogs жилет жилетка одежда одяг пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Для собак"
@@ -5809,7 +5809,7 @@
     "price_min": 470.0,
     "price_max": 490.0,
     "image_url": "https://images.prom.ua/6455750131_w640_h320_dvustoronnyaya-kurtka-dlya.jpg",
-    "search_blob": "двостороння куртка",
+    "search_blob": "apparel dog dogs двостороння куртка одежда одяг пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для собак"
@@ -5843,7 +5843,7 @@
     "price_min": 520.0,
     "price_max": 520.0,
     "image_url": "https://images.prom.ua/6455750131_w640_h320_dvustoronnyaya-kurtka-dlya.jpg",
-    "search_blob": "двостороння куртка",
+    "search_blob": "apparel dog dogs двостороння куртка одежда одяг пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для собак"
@@ -5868,7 +5868,7 @@
     "price_min": 520.0,
     "price_max": 650.0,
     "image_url": "https://images.prom.ua/6883929136_w640_h320_kurtka-dlya-sobak.jpg",
-    "search_blob": "fashion куртка кільцем повідця",
+    "search_blob": "apparel dog dogs fashion куртка кільцем одежда одяг пес повідця собак собака собаки цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для собак"
@@ -5925,7 +5925,7 @@
     "price_min": 320.0,
     "price_max": 345.0,
     "image_url": "https://images.prom.ua/6923072695_w640_h320_novogodnij-vyazanyj-sviter.jpg",
-    "search_blob": "в'язаний зимових новорічний прогулянок светр свят",
+    "search_blob": "apparel cat cats dog dogs в'язаний зимових кот котик котів кіт кішка кішок новорічний одежда одяг пес прогулянок светр свят собак собака собаки цуценя",
     "attributes": {
       "subtype": "Светр",
       "purpose": "Для зимових прогулянок та свят"
@@ -5997,7 +5997,7 @@
     "price_min": 490.0,
     "price_max": 490.0,
     "image_url": "https://images.prom.ua/4564723968_w640_h640_dozhdevik-dlya-sobak.jpg",
-    "search_blob": "thedogface дощовик",
+    "search_blob": "apparel dog dogs thedogface дощовик одежда одяг пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Для собак"
@@ -6022,7 +6022,7 @@
     "price_min": 269.0,
     "price_max": 269.0,
     "image_url": "https://images.prom.ua/4594203356_w640_h320_shlejka-z-povodkom.jpg",
-    "search_blob": "повідець шлея",
+    "search_blob": "cat cats dog dogs walking вигул кот котик котів кіт кішка кішок нашийник пес повідець прогулянка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак і кішок"
@@ -6047,7 +6047,7 @@
     "price_min": 475.0,
     "price_max": 475.0,
     "image_url": "https://images.prom.ua/3987366441_w640_h640_kurtka-dlya-sobak.jpg",
-    "search_blob": "face the куртка",
+    "search_blob": "apparel dog dogs face куртка одежда одяг пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для собак"
@@ -6073,7 +6073,7 @@
     "price_min": 522.0,
     "price_max": 522.0,
     "image_url": "https://images.prom.ua/3201251690_w640_h640_namordnik-myagkij-collar.jpg",
-    "search_blob": "collar вівчарка далматин доберман м'який намордник чорний",
+    "search_blob": "collar dog dogs walking вигул вівчарка далматин доберман м'який намордник нашийник пес повідець прогулянка собак собака собаки цуценя чорний шлея",
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Для собак"
@@ -6098,7 +6098,7 @@
     "price_min": 187.5,
     "price_max": 187.5,
     "image_url": "https://images.prom.ua/2970775409_w640_h320_trixie-mintfresh-bejsbolnyj.jpg",
-    "search_blob": "mintfresh trixie бейсбольний м'ятою м'яч іграшка",
+    "search_blob": "cat cats dog dogs mintfresh toys trixie бейсбольний гра кот котик котів кіт кішка кішок м'ятою м'яч пес собак собака собаки цуценя іграшка",
     "attributes": {
       "subtype": "Іграшка",
       "purpose": "Для собак і кішок"
@@ -6124,7 +6124,7 @@
     "price_min": 564.0,
     "price_max": 599.0,
     "image_url": "https://images.prom.ua/3201254281_w640_h320_namordnik-myagkij-collar.jpg",
-    "search_blob": "collar лабрадор м'який малий намордник ротвейлер чорний",
+    "search_blob": "collar dog dogs walking вигул лабрадор м'який малий намордник нашийник пес повідець прогулянка ротвейлер собак собака собаки цуценя чорний шлея",
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Для собак"
@@ -6156,7 +6156,7 @@
     "price_min": 749.0,
     "price_max": 749.0,
     "image_url": "https://images.prom.ua/3227580540_w640_h320_povodok-ruletka-dlya-sobak.jpg",
-    "search_blob": "coar collar метрів поводок поводок-рулетка повідець рулетка",
+    "search_blob": "cat cats coar collar dog dogs walking вигул кот котик котів кіт кішка кішок метрів нашийник пес поводок поводок-рулетка повідець прогулянка рулетка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для собак і кішок"
@@ -6182,7 +6182,7 @@
     "price_min": 369.0,
     "price_max": 545.0,
     "image_url": "https://images.prom.ua/4575924138_w640_h320_povodok-dlya-sobak.jpg",
-    "search_blob": "waterproof waudog водостійкий довжина котів повідець ширина",
+    "search_blob": "cat cats dog dogs walking waterproof waudog вигул водостійкий довжина кот котик котів кіт кішка кішок нашийник пес повідець прогулянка собак собака собаки цуценя ширина шлея",
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для собак і котів"
@@ -6232,7 +6232,7 @@
     "price_min": 375.0,
     "price_max": 495.0,
     "image_url": "https://images.prom.ua/3229692721_w640_h320_povodok-hb-tesma.jpg",
-    "search_blob": "collar довжина повідець тасьма ширина",
+    "search_blob": "cat cats collar dog dogs walking вигул довжина кот котик котів кіт кішка кішок нашийник пес повідець прогулянка собак собака собаки тасьма цуценя ширина шлея",
     "attributes": {
       "subtype": "Повідець",
       "purpose": "Для собак і кішок"
@@ -6266,7 +6266,7 @@
     "price_min": 270.0,
     "price_max": 300.0,
     "image_url": "https://images.prom.ua/4388222158_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "капішоном толстовка худі",
+    "search_blob": "apparel dog dogs капішоном одежда одяг пес собак собака собаки толстовка худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для собак"
@@ -6316,7 +6316,7 @@
     "price_min": 344.0,
     "price_max": 374.0,
     "image_url": "https://images.prom.ua/4531743544_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "весняно весняно-осінній кофта осінній період прогулянок худі",
+    "search_blob": "apparel dog dogs весняно весняно-осінній кофта одежда одяг осінній період пес прогулянок собак собака собаки худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для прогулянок у весняно-осінній період"
@@ -6374,7 +6374,7 @@
     "price_min": 320.0,
     "price_max": 350.0,
     "image_url": "https://images.prom.ua/5039934062_w640_h320_novogodnij-vyazanyj-sviter.jpg",
-    "search_blob": "в'язаний котів новорічний светр тварин",
+    "search_blob": "apparel cat cats dog dogs в'язаний кот котик котів кіт кішка кішок новорічний одежда одяг пес светр собак собака собаки тварин цуценя",
     "attributes": {
       "subtype": "Светр",
       "purpose": "Для собак і котів"
@@ -6441,7 +6441,7 @@
     "price_min": 440.0,
     "price_max": 440.0,
     "image_url": "https://images.prom.ua/4573800244_w640_h320_shleya-dlya-sobak.jpg",
-    "search_blob": "шлея",
+    "search_blob": "dog dogs walking вигул нашийник пес повідець прогулянка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак"
@@ -6467,7 +6467,7 @@
     "price_min": 695.0,
     "price_max": 695.0,
     "image_url": "https://images.prom.ua/3796797820_w640_h320_shleya-dlya-sobak.jpg",
-    "search_blob": "qr-паспортом waterproof waudog котів паспортом шлея",
+    "search_blob": "cat cats dog dogs qr-паспортом walking waterproof waudog вигул кот котик котів кіт кішка кішок нашийник паспортом пес повідець прогулянка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак і котів"
@@ -6492,7 +6492,7 @@
     "price_min": 573.75,
     "price_max": 573.75,
     "image_url": "https://images.prom.ua/4333414676_w640_h320_shleya-dlya-sobak.jpg",
-    "search_blob": "asbrill регульована шлея",
+    "search_blob": "asbrill dog dogs walking вигул нашийник пес повідець прогулянка регульована собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак"
@@ -6518,7 +6518,7 @@
     "price_min": 290.0,
     "price_max": 290.0,
     "image_url": "https://images.prom.ua/3811478676_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "nasa nylon qr-паспортом waudog малюнок нейлонова паспортом шлейка шлея",
+    "search_blob": "dog dogs nasa nylon qr-паспортом walking waudog вигул малюнок нашийник нейлонова паспортом пес повідець прогулянка собак собака собаки цуценя шлейка шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак"
@@ -6544,7 +6544,7 @@
     "price_min": 399.0,
     "price_max": 419.0,
     "image_url": "https://images.prom.ua/6750558224_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "регульована синій шлейка шлея",
+    "search_blob": "dog dogs walking вигул нашийник пес повідець прогулянка регульована синій собак собака собаки цуценя шлейка шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак"
@@ -6610,7 +6610,7 @@
     "price_min": 269.0,
     "price_max": 336.25,
     "image_url": "https://images.prom.ua/4594203356_w640_h320_shlejka-z-povodkom.jpg",
-    "search_blob": "коричневий котів повідець шлейка шлея",
+    "search_blob": "cat cats dog dogs walking вигул коричневий кот котик котів кіт кішка кішок нашийник пес повідець прогулянка собак собака собаки цуценя шлейка шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак і котів"
@@ -6682,7 +6682,7 @@
     "price_min": 649.0,
     "price_max": 759.0,
     "image_url": "https://images.prom.ua/5359189329_w640_h320_povodok-ruletka-dlya-sobak.jpg",
-    "search_blob": "collar waudog контейнером котів пакетів повідець повідець-рулетка рулетка світловідбивна стрічка",
+    "search_blob": "cat cats collar dog dogs walking waudog вигул контейнером кот котик котів кіт кішка кішок нашийник пакетів пес повідець повідець-рулетка прогулянка рулетка світловідбивна собак собака собаки стрічка цуценя шлея",
     "attributes": {
       "subtype": "Повідець-рулетка",
       "purpose": "Для собак і котів"
@@ -6716,7 +6716,7 @@
     "price_min": 450.0,
     "price_max": 450.0,
     "image_url": "https://images.prom.ua/6537167835_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "регульована чорний шлея",
+    "search_blob": "dog dogs walking вигул нашийник пес повідець прогулянка регульована собак собака собаки цуценя чорний шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак"
@@ -6782,7 +6782,7 @@
     "price_min": 520.0,
     "price_max": 520.0,
     "image_url": "https://images.prom.ua/6883929136_w640_h320_kurtka-dlya-sobak.jpg",
-    "search_blob": "fahion fashion куртка кільцем повідка",
+    "search_blob": "apparel dog dogs fahion fashion куртка кільцем одежда одяг пес повідка собак собака собаки цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для собак"
@@ -6808,7 +6808,7 @@
     "price_min": 325.0,
     "price_max": 325.0,
     "image_url": "https://images.prom.ua/4312324127_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "face the капішоном кофта худі",
+    "search_blob": "apparel dog dogs face капішоном кофта одежда одяг пес собак собака собаки худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для собак"
@@ -6834,7 +6834,7 @@
     "price_min": 498.75,
     "price_max": 498.75,
     "image_url": "https://images.prom.ua/6156971960_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "bomba зайчик капюшоном м'ята розмір худі",
+    "search_blob": "apparel bomba dog dogs зайчик капюшоном кішок м'ята одежда одяг пес розмір собак собака собаки худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для собак"
@@ -6859,7 +6859,7 @@
     "price_min": 500.0,
     "price_max": 500.0,
     "image_url": "https://images.prom.ua/6924109109_w640_h320_obuv-dlya-zhivotnyh.jpg",
-    "search_blob": "взуття еко розмір тварин червоні шкіра",
+    "search_blob": "apparel dog dogs взуття еко одежда одяг пес розмір собак собака собаки тварин цуценя червоні шкіра",
     "attributes": {
       "subtype": "Взуття",
       "purpose": "Для собак"
@@ -6884,7 +6884,7 @@
     "price_min": 500.0,
     "price_max": 500.0,
     "image_url": "https://images.prom.ua/6855765339_w640_h640_obuv-dlya-zhivotnyh.jpg",
-    "search_blob": "holapet взуття лакові розмір тварин чорні",
+    "search_blob": "apparel dog dogs holapet взуття лакові одежда одяг пес розмір собак собака собаки тварин цуценя чорні",
     "attributes": {
       "subtype": "Взуття",
       "purpose": "Для собак"
@@ -6909,7 +6909,7 @@
     "price_min": 437.5,
     "price_max": 437.5,
     "image_url": "https://images.prom.ua/6574396766_w640_h320_povodok-ruletka-dlya-sobak.jpg",
-    "search_blob": "animall котів метри повідець повідець-рулетка рулетка",
+    "search_blob": "animall cat cats dog dogs walking вигул кот котик котів кіт кішка кішок метри нашийник пес повідець повідець-рулетка прогулянка рулетка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Повідець-рулетка",
       "purpose": "Для собак і котів"
@@ -6935,7 +6935,7 @@
     "price_min": 498.75,
     "price_max": 498.75,
     "image_url": "https://images.prom.ua/6574396766_w640_h640_povodok-ruletka-dlya-sobak.jpg",
-    "search_blob": "aniall animall котів метрів повідець повідець-рулетка рулетка",
+    "search_blob": "aniall animall cat cats dog dogs walking вигул кот котик котів кіт кішка кішок метрів нашийник пес повідець повідець-рулетка прогулянка рулетка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Повідець-рулетка",
       "purpose": "Для собак і котів"
@@ -6961,7 +6961,7 @@
     "price_min": 93.75,
     "price_max": 215.0,
     "image_url": "https://images.prom.ua/6228086748_w640_h640_miska-metallicheskaya-dlya.jpg",
-    "search_blob": "гумі котів металева миска",
+    "search_blob": "cat cats dog dogs feeding годування гумі кот котик котів кіт кішка кішок металева миска пес поїлка собак собака собаки цуценя",
     "attributes": {
       "subtype": "Миска",
       "purpose": "Для собак і котів"
@@ -7007,7 +7007,7 @@
     "price_min": 1073.75,
     "price_max": 1073.75,
     "image_url": "https://images.prom.ua/5901852762_w640_h640_sumka-perenoska-dlya-sobak.jpg",
-    "search_blob": "котів переноска сумка сумка-переноска",
+    "search_blob": "cat cats dog dogs walking вигул кот котик котів кіт кішка кішок нашийник переноска пес повідець прогулянка собак собака собаки сумка сумка-переноска цуценя шлея",
     "attributes": {
       "subtype": "Переноска",
       "purpose": "Для собак і котів"
@@ -7033,7 +7033,7 @@
     "price_min": 1123.75,
     "price_max": 1123.75,
     "image_url": "https://images.prom.ua/6224102108_w640_h640_sumka-perenoska-dlya-sobak.jpg",
-    "search_blob": "bomba котів переноска сумка сумка-переноска чорна",
+    "search_blob": "bomba cat cats dog dogs walking вигул кот котик котів кіт кішка кішок нашийник переноска пес повідець прогулянка собак собака собаки сумка сумка-переноска цуценя чорна шлея",
     "attributes": {
       "subtype": "Переноска",
       "purpose": "Для собак і котів"
@@ -7059,7 +7059,7 @@
     "price_min": 481.25,
     "price_max": 821.25,
     "image_url": "https://images.prom.ua/4185304570_w640_h640_lezhanka-dlya-sobak.jpg",
-    "search_blob": "відпочинку лежак лежанка сну",
+    "search_blob": "beds cat cats dog dogs furniture відпочинку відпочинок кот котик котів кошик кіт кішка кішок лежак лежанка місце пес сну собак собака собаки цуценя",
     "attributes": {
       "subtype": "Лежак",
       "purpose": "Для відпочинку та сну"
@@ -7101,7 +7101,7 @@
     "price_min": 93.75,
     "price_max": 93.75,
     "image_url": "https://images.prom.ua/6574478130_w640_h640_mylo-penka-dlya-mytya.jpg",
-    "search_blob": "animall догляд котів лап лапами мило мило-пінка миття пінка",
+    "search_blob": "animall care cat cats dog dogs догляд кот котик котів кіт кішка кішок лап лапами мило мило-пінка миття пес пінка собак собака собаки цуценя",
     "attributes": {
       "subtype": "Догляд за лапами",
       "purpose": "Для собак і котів"
@@ -7126,7 +7126,7 @@
     "price_min": 273.75,
     "price_max": 298.75,
     "image_url": "https://images.prom.ua/5927663333_w640_h640_bayer-advantix-advantiks.jpg",
-    "search_blob": "advantix bayer бліх кліщів краплі паразитів піпетка",
+    "search_blob": "advantix bayer dog dogs meds бліх кліщів краплі ліки медикаменти паразитів пес піпетка собак собака собаки цуценя",
     "attributes": {
       "subtype": "Краплі від паразитів",
       "purpose": "Для собак"
@@ -7160,7 +7160,7 @@
     "price_min": 43.75,
     "price_max": 245.85,
     "image_url": "https://images.prom.ua/5927890186_w640_h320_igrushka-animall-fun.jpg",
-    "search_blob": "animall fun зелена котів кістка іграшка",
+    "search_blob": "animall cat cats dog dogs fun toys гра зелена кот котик котів кістка кіт кішка кішок пес собак собака собаки цуценя іграшка",
     "attributes": {
       "subtype": "Іграшка",
       "purpose": "Для собак і котів"
@@ -7194,7 +7194,7 @@
     "price_min": 123.75,
     "price_max": 123.75,
     "image_url": "https://images.prom.ua/6574578533_w640_h320_igrushka-animall-fun.jpg",
-    "search_blob": "animall fun котів кільце сторін іграшка",
+    "search_blob": "animall cat cats dog dogs fun toys гра кот котик котів кільце кіт кішка кішок пес собак собака собаки сторін цуценя іграшка",
     "attributes": {
       "subtype": "Іграшка",
       "purpose": "Для собак і котів"
@@ -7220,7 +7220,7 @@
     "price_min": 633.33,
     "price_max": 633.33,
     "image_url": "https://images.prom.ua/3627158075_w640_h320_zhiletka-dlya-sobak.jpg",
-    "search_blob": "жилет жилетка планети пору прогулянок року холодну",
+    "search_blob": "apparel dog dogs жилет жилетка одежда одяг пес планети пору прогулянок року собак собака собаки холодну цуценя",
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Для прогулянок у холодну пору року"
@@ -7262,7 +7262,7 @@
     "price_min": 633.33,
     "price_max": 633.33,
     "image_url": "https://images.prom.ua/3311401830_w640_h640_zhiletka-dlya-sobak.jpg",
-    "search_blob": "жилет жилетка пору прогулянок року такси холодну",
+    "search_blob": "apparel dog dogs жилет жилетка одежда одяг пес пору прогулянок року собак собака собаки такси холодну цуценя",
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Для прогулянок у холодну пору року"
@@ -7288,7 +7288,7 @@
     "price_min": 365.0,
     "price_max": 365.0,
     "image_url": "https://images.prom.ua/3908734231_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "весняно весняно-осінній капюшоном носіння осінній період толстовка худі щоденного",
+    "search_blob": "apparel dog dogs весняно весняно-осінній капюшоном носіння одежда одяг осінній період пес собак собака собаки толстовка худі цуценя щоденного",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння у весняно-осінній період"
@@ -7313,7 +7313,7 @@
     "price_min": 400.0,
     "price_max": 400.0,
     "image_url": "https://images.prom.ua/3908734340_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "весняно весняно-осінній капюшоном носіння осінній період толстовка худі щоденного",
+    "search_blob": "apparel dog dogs весняно весняно-осінній капюшоном носіння одежда одяг осінній період пес собак собака собаки толстовка худі цуценя щоденного",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння у весняно-осінній період"
@@ -7338,7 +7338,7 @@
     "price_min": 399.0,
     "price_max": 498.75,
     "image_url": "https://images.prom.ua/4656997754_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "худі",
+    "search_blob": "apparel dog dogs одежда одяг пес собак собака собаки толстовка худі цуценя",
     "attributes": {
       "subtype": "Толстовка",
       "purpose": "Для собак"
@@ -7398,7 +7398,7 @@
     "price_min": 375.0,
     "price_max": 468.75,
     "image_url": "https://images.prom.ua/4389007389_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "essentials капюшоном носіння толстовка щоденного",
+    "search_blob": "apparel cat cats dog dogs essentials капюшоном кот котик котів кіт кішка кішок носіння одежда одяг пес собак собака собаки толстовка худі цуценя щоденного",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння"
@@ -7437,7 +7437,7 @@
     "price_min": 299.0,
     "price_max": 299.0,
     "image_url": "https://images.prom.ua/4915322736_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "носіння толстовка худі щоденного",
+    "search_blob": "apparel dog dogs носіння одежда одяг пес собак собака собаки толстовка худі цуценя щоденного",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння"
@@ -7487,7 +7487,7 @@
     "price_min": 430.0,
     "price_max": 430.0,
     "image_url": "https://images.prom.ua/3908734340_w640_h640_tolstovka-dlya-sobak.jpg",
-    "search_blob": "весняно весняно-осінній капюшоном носіння осінній період толстовка худі щоденного",
+    "search_blob": "apparel dog dogs весняно весняно-осінній капюшоном носіння одежда одяг осінній період пес собак собака собаки толстовка худі цуценя щоденного",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння у весняно-осінній період"
@@ -7512,7 +7512,7 @@
     "price_min": 415.0,
     "price_max": 415.0,
     "image_url": "https://images.prom.ua/3908734340_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "весняно весняно-осінній капюшоном носіння осінній період толстовка худі щоденного",
+    "search_blob": "apparel dog dogs весняно весняно-осінній капюшоном носіння одежда одяг осінній період пес собак собака собаки толстовка худі цуценя щоденного",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для щоденного носіння у весняно-осінній період"
@@ -7537,7 +7537,7 @@
     "price_min": 290.0,
     "price_max": 483.33,
     "image_url": "https://images.prom.ua/4481071910_w640_h320_shleya-dlya-sobak.jpg",
-    "search_blob": "bororo дихаючий легкий матеріал прогулянок шлея щоденних",
+    "search_blob": "bororo cat cats dog dogs walking вигул дихаючий кот котик котів кіт кішка кішок легкий матеріал нашийник пес повідець прогулянка прогулянок собак собака собаки цуценя шлея щоденних",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для щоденних прогулянок"
@@ -7597,7 +7597,7 @@
     "price_min": 415.0,
     "price_max": 415.0,
     "image_url": "https://images.prom.ua/6286422029_w640_h320_sviter-dlya-koshek.jpg",
-    "search_blob": "bomba в'язаний котів носіння светр щоденного",
+    "search_blob": "apparel bomba cat cats dogs в'язаний кот котик котів кіт кішка кішок носіння одежда одяг светр щоденного",
     "attributes": {
       "subtype": "Светр",
       "purpose": "Для щоденного носіння"
@@ -7622,7 +7622,7 @@
     "price_min": 739.0,
     "price_max": 739.0,
     "image_url": "https://images.prom.ua/3201260835_w640_h320_namordnik-myagkij-collar.jpg",
-    "search_blob": "collar ветеринара вівчарка відвідування кавказька людних м'який московська місцях намордник ньюфаундленд прогулянок сторожова чорний",
+    "search_blob": "collar dog dogs walking ветеринара вигул вівчарка відвідування кавказька людних м'який московська місцях намордник нашийник ньюфаундленд пес повідець прогулянка прогулянок собак собака собаки сторожова цуценя чорний шлея",
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Для відвідування ветеринара та прогулянок у людних місцях"
@@ -7647,7 +7647,7 @@
     "price_min": 124.0,
     "price_max": 192.5,
     "image_url": "https://images.prom.ua/3250360507_w640_h640_oshejnik-dlya-sobak.jpg",
-    "search_blob": "collar nylon waudog авокадо довжина малюнок нашийник нейлоновий паспортом пластиковий фастекс ширина",
+    "search_blob": "cat cats collar dog dogs nylon walking waudog авокадо вигул довжина кот котик котів кіт кішка кішок малюнок нашийник нейлоновий паспортом пес пластиковий повідець прогулянка собак собака собаки фастекс цуценя ширина шлея",
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і кішок"
@@ -7681,7 +7681,7 @@
     "price_min": 290.0,
     "price_max": 340.0,
     "image_url": "https://images.prom.ua/3811478676_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "collar nasa nylon qr-паспортом qr-ідентифікацією waudog малюнок нейлонова паспортом прогулянок шлейка шлея щоденних ідентифікацією",
+    "search_blob": "collar dog dogs nasa nylon qr-паспортом qr-ідентифікацією walking waudog вигул малюнок нашийник нейлонова паспортом пес повідець прогулянка прогулянок собак собака собаки цуценя шлейка шлея щоденних ідентифікацією",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для щоденних прогулянок з QR-ідентифікацією"
@@ -7713,7 +7713,7 @@
     "price_min": 562.5,
     "price_max": 562.5,
     "image_url": "https://images.prom.ua/5000985128_w640_h640_zimnyaya-zhiletka-dlya.jpg",
-    "search_blob": "жилет жилетка зимова пору прогулянок року універсальна холодну",
+    "search_blob": "apparel dog dogs жилет жилетка зимова одежда одяг пес пору прогулянок року собак собака собаки універсальна холодну цуценя",
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Для прогулянок у холодну пору року"
@@ -7738,7 +7738,7 @@
     "price_min": 489.0,
     "price_max": 489.0,
     "image_url": "https://images.prom.ua/3209347058_w640_h320_oshejnik-dlya-sobak.jpg",
-    "search_blob": "classic collar waudog довжина нашийник прогулянок рожевий ширина шкіряний щоденних",
+    "search_blob": "cat cats classic collar dog dogs walking waudog вигул довжина кот котик котів кіт кішка кішок нашийник пес повідець прогулянка прогулянок рожевий собак собака собаки цуценя ширина шкіряний шлея щоденних",
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для щоденних прогулянок"
@@ -7764,7 +7764,7 @@
     "price_min": 248.75,
     "price_max": 248.75,
     "image_url": "https://images.prom.ua/3865076489_w640_h640_oshejnik-dlya-sobak.jpg",
-    "search_blob": "collar nylon qr-паспортом qr-ідентифікацією waudog малюнок нашийник паспортом прапор прогулянок щоденних ідентифікацією",
+    "search_blob": "cat cats collar dog dogs nylon qr-паспортом qr-ідентифікацією walking waudog вигул кот котик котів кіт кішка кішок малюнок нашийник паспортом пес повідець прапор прогулянка прогулянок собак собака собаки цуценя шлея щоденних ідентифікацією",
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для щоденних прогулянок з QR-ідентифікацією"
@@ -7789,7 +7789,7 @@
     "price_min": 462.5,
     "price_max": 462.5,
     "image_url": "https://images.prom.ua/4074828370_w640_h320_novogodnyaya-tolstovka-snegoviki.jpg",
-    "search_blob": "bomba зимових новорічна прогулянок свят синій сніговики темно толстовка худі",
+    "search_blob": "apparel bomba dog dogs зимових новорічна одежда одяг пес прогулянок свят синій сніговики собак собака собаки темно толстовка худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для зимових свят та прогулянок"
@@ -7821,7 +7821,7 @@
     "price_min": 533.33,
     "price_max": 533.33,
     "image_url": "https://images.prom.ua/4087859370_w640_h320_kostyum-dlya-sobak.jpg",
-    "search_blob": "bomba весняно весняно-осінній зайчик комбінезон костюм носіння осінній період щоденного",
+    "search_blob": "apparel bomba dog dogs весняно весняно-осінній зайчик комбінезон костюм носіння одежда одяг осінній період пес собак собака собаки цуценя щоденного",
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Для щоденного носіння у весняно-осінній період"
@@ -7846,7 +7846,7 @@
     "price_min": 475.0,
     "price_max": 575.0,
     "image_url": "https://images.prom.ua/4159579036_w640_h320_obuv-dlya-zhivotnyh.jpg",
-    "search_blob": "взуття тварин",
+    "search_blob": "apparel dog dogs взуття одежда одяг пес собак собака собаки тварин цуценя",
     "attributes": {
       "subtype": "Взуття",
       "purpose": "Для собак"
@@ -7927,7 +7927,7 @@
     "price_min": 55.0,
     "price_max": 55.0,
     "image_url": "https://images.prom.ua/4199184550_w640_h640_igrushka-animall-fun.jpg",
-    "search_blob": "animall fun зелена зубів каштан м'яч рухливих чищення ігор іграшка",
+    "search_blob": "animall dog dogs fun toys гра зелена зубів каштан м'яч пес рухливих собак собака собаки цуценя чищення ігор іграшка",
     "attributes": {
       "subtype": "М'яч",
       "purpose": "Для рухливих ігор та чищення зубів"
@@ -7953,7 +7953,7 @@
     "price_min": 71.25,
     "price_max": 71.25,
     "image_url": "https://images.prom.ua/4199683590_w640_h640_igrushka-animall-fun.jpg",
-    "search_blob": "animall fun жування коралова кістка навчання іграшка",
+    "search_blob": "animall dog dogs fun toys гра жування коралова кістка навчання пес собак собака собаки цуценя іграшка",
     "attributes": {
       "subtype": "Кістка",
       "purpose": "Для жування та навчання"
@@ -7979,7 +7979,7 @@
     "price_min": 106.25,
     "price_max": 106.25,
     "image_url": "https://images.prom.ua/4200192903_w640_h640_shampun-animall-dlya.jpg",
-    "search_blob": "animall довгою догляд шампунь шерстю",
+    "search_blob": "animall care dog dogs довгою догляд пес собак собака собаки цуценя шампунь шерстю",
     "attributes": {
       "subtype": "Шампунь",
       "purpose": "Догляд за довгою шерстю"
@@ -8004,7 +8004,7 @@
     "price_min": 106.25,
     "price_max": 106.25,
     "image_url": "https://images.prom.ua/4200209455_w640_h640_shampun-animall-dlya.jpg",
-    "search_blob": "animall догляд короткою шампунь шерстю",
+    "search_blob": "animall care dog dogs догляд короткою пес собак собака собаки цуценя шампунь шерстю",
     "attributes": {
       "subtype": "Шампунь",
       "purpose": "Догляд за короткою шерстю"
@@ -8029,7 +8029,7 @@
     "price_min": 93.75,
     "price_max": 93.75,
     "image_url": "https://images.prom.ua/4200342494_w640_h640_shampun-animall-dlya.jpg",
-    "search_blob": "animall алоевера всіх догляд типів шампунь шерстю",
+    "search_blob": "animall care dog dogs алоевера всіх догляд пес собак собака собаки типів цуценя шампунь шерстю",
     "attributes": {
       "subtype": "Шампунь",
       "purpose": "Догляд за шерстю всіх типів"
@@ -8054,7 +8054,7 @@
     "price_min": 75.0,
     "price_max": 75.0,
     "image_url": "https://images.prom.ua/4200346455_w640_h640_shampun-animall-dlya.jpg",
-    "search_blob": "animall всіх догляд порід цуценят шампунь шерстю",
+    "search_blob": "animall care dog dogs всіх догляд пес порід собак собака собаки цуценя цуценят шампунь шерстю",
     "attributes": {
       "subtype": "Шампунь",
       "purpose": "Догляд за шерстю цуценят"
@@ -8079,7 +8079,7 @@
     "price_min": 936.25,
     "price_max": 1022.5,
     "image_url": "https://images.prom.ua/4201935099_w640_h640_perenoska-dlya-koshek.jpg",
-    "search_blob": "animall м'ятна переноска сіро сіро-м'ятна тварин транспортування",
+    "search_blob": "animall cat cats dog dogs walking вигул кот котик котів кіт кішка кішок м'ятна нашийник переноска пес повідець прогулянка собак собака собаки сіро сіро-м'ятна тварин транспортування цуценя шлея",
     "attributes": {
       "subtype": "Переноска",
       "purpose": "Для транспортування тварин"
@@ -8113,7 +8113,7 @@
     "price_min": 236.25,
     "price_max": 248.75,
     "image_url": "https://images.prom.ua/4227292266_w640_h320_svetyaschijsya-led-oshejnik.jpg",
-    "search_blob": "led usb зарядкою нашийник світиться",
+    "search_blob": "cat cats dog dogs led usb walking вигул зарядкою кот котик котів кіт кішка кішок нашийник пес повідець прогулянка світиться собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Нашийник",
       "purpose": "Для собак і кішок"
@@ -8146,7 +8146,7 @@
     "price_min": 125.0,
     "price_max": 125.0,
     "image_url": "https://images.prom.ua/4277693669_w640_h640_shampun-gills-bejbi.jpg",
-    "search_blob": "gill' gill's бейбі догляд захист зір кошенят псує цуценят шампунь шерстю",
+    "search_blob": "care cat cats dog dogs gill' gill's бейбі догляд захист зір кот котик котів кошенят кіт кішка кішок пес псує собак собака собаки цуценя цуценят шампунь шерстю",
     "attributes": {
       "subtype": "Шампунь",
       "purpose": "Догляд за шерстю кошенят та цуценят"
@@ -8172,7 +8172,7 @@
     "price_min": 105.0,
     "price_max": 105.0,
     "image_url": "https://images.prom.ua/4277750615_w640_h640_shampun-gills-dlya.jpg",
-    "search_blob": "gill' gill's догляд короткошерстних короткою шампунь шерстю",
+    "search_blob": "care cat cats dog dogs gill' gill's догляд короткошерстних короткою кот котик котів кіт кішка кішок пес собак собака собаки цуценя шампунь шерстю",
     "attributes": {
       "subtype": "Шампунь",
       "purpose": "Догляд за короткою шерстю"
@@ -8198,7 +8198,7 @@
     "price_min": 125.0,
     "price_max": 125.0,
     "image_url": "https://images.prom.ua/4277753426_w640_h640_shampun-gills-dlya.jpg",
-    "search_blob": "gill' gill's догляд кучерявою кучерявої м'якість об'єм шампунь шерстю шерсті",
+    "search_blob": "care cat cats dog dogs gill' gill's догляд кот котик котів кучерявою кучерявої кіт кішка кішок м'якість об'єм пес собак собака собаки цуценя шампунь шерстю шерсті",
     "attributes": {
       "subtype": "Шампунь",
       "purpose": "Догляд за кучерявою шерстю"
@@ -8224,7 +8224,7 @@
     "price_min": 561.25,
     "price_max": 600.0,
     "image_url": "https://images.prom.ua/4333414676_w640_h640_shleya-dlya-sobak.jpg",
-    "search_blob": "masbrill прогулянок регулюється шлея щоденних",
+    "search_blob": "dog dogs masbrill walking вигул нашийник пес повідець прогулянка прогулянок регулюється собак собака собаки цуценя шлея щоденних",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для щоденних прогулянок"
@@ -8263,7 +8263,7 @@
     "price_min": 286.25,
     "price_max": 286.25,
     "image_url": "https://images.prom.ua/4338541290_w640_h320_schetka-dlya-mytya.jpg",
-    "search_blob": "догляд купання миття тварин шерстю щітка",
+    "search_blob": "cat cats dog dogs grooming груминг догляд кот котик котів купання кігтеріз кіт кішка кішок миття пес собак собака собаки тварин цуценя шампунь шерстю щітка",
     "attributes": {
       "subtype": "Щітка",
       "purpose": "Догляд за шерстю під час купання"
@@ -8288,7 +8288,7 @@
     "price_min": 364.0,
     "price_max": 500.0,
     "image_url": "https://images.prom.ua/6664986301_w640_h320_shlejka-dlya-sobak.jpg",
-    "search_blob": "clothes collar nasa qr-ідентифікацією waudog м'яка малюнок паспортом прогулянок шлея щоденних ідентифікацією",
+    "search_blob": "cat cats clothes collar dog dogs nasa qr-ідентифікацією walking waudog вигул кот котик котів кіт кішка кішок м'яка малюнок нашийник паспортом пес повідець прогулянка прогулянок собак собака собаки цуценя шлея щоденних ідентифікацією",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для щоденних прогулянок з QR-ідентифікацією"
@@ -8341,7 +8341,7 @@
     "price_min": 739.0,
     "price_max": 739.0,
     "image_url": "https://images.prom.ua/5374231107_w640_h320_lezhanka-dlya-sobak.jpg",
-    "search_blob": "bomba відпочинку лежак лежанка махра сну",
+    "search_blob": "beds bomba cat cats dog dogs furniture відпочинку відпочинок кот котик котів кошик кіт кішка кішок лежак лежанка махра місце пес сну собак собака собаки цуценя",
     "attributes": {
       "subtype": "Лежак",
       "purpose": "Для відпочинку та сну"
@@ -8367,7 +8367,7 @@
     "price_min": 80.0,
     "price_max": 80.0,
     "image_url": "https://images.prom.ua/6574508794_w640_h640_igrushka-animall-fun.jpg",
-    "search_blob": "animall fun дресирування м'яч пищалкою рухливих хвиля ігор іграшка",
+    "search_blob": "animall dog dogs fun toys гра дресирування м'яч пес пищалкою рухливих собак собака собаки хвиля цуценя ігор іграшка",
     "attributes": {
       "subtype": "М'яч",
       "purpose": "Для рухливих ігор та дресирування"
@@ -8393,7 +8393,7 @@
     "price_min": 700.0,
     "price_max": 700.0,
     "image_url": "https://images.prom.ua/4489913862_w640_h640_kurtka-dlya-sobak.jpg",
-    "search_blob": "двостороння зимовий куртка одяг осінньо осінньо-зимовий період прогулянок",
+    "search_blob": "apparel dog dogs двостороння зимовий куртка одежда одяг осінньо осінньо-зимовий період пес прогулянок собак собака собаки цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для прогулянок у осінньо-зимовий період"
@@ -8432,7 +8432,7 @@
     "price_min": 700.0,
     "price_max": 700.0,
     "image_url": "https://images.prom.ua/4489913862_w640_h320_tyoplaya-dvustoronnyaya-vodonepronitsaemaya.jpg",
-    "search_blob": "водонепроникна двостороння зимовий куртка осінньо осінньо-зимовий період прогулянок тепла",
+    "search_blob": "apparel dog dogs водонепроникна двостороння зимовий куртка одежда одяг осінньо осінньо-зимовий період пес прогулянок собак собака собаки тепла цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для прогулянок у осінньо-зимовий період"
@@ -8457,7 +8457,7 @@
     "price_min": 575.0,
     "price_max": 750.0,
     "image_url": "https://images.prom.ua/2970772893_w640_h640_odezhda-dlya-sobak.jpg",
-    "search_blob": "дощову жилет жилетка одяг погоду прогулянок тварин холодну",
+    "search_blob": "apparel dog dogs дощову жилет жилетка одежда одяг пес погоду прогулянок собак собака собаки тварин холодну цуценя",
     "attributes": {
       "subtype": "Жилет",
       "purpose": "Для прогулянок у холодну та дощову погоду"
@@ -8517,7 +8517,7 @@
     "price_min": 500.0,
     "price_max": 500.0,
     "image_url": "https://images.prom.ua/4412829599_w640_h640_reguliruemaya-shlejka-dlya.jpg",
-    "search_blob": "bororo м'яка прогулянок регульована тиску шию шлея щоденних",
+    "search_blob": "bororo cat cats dog dogs walking вигул кот котик котів кіт кішка кішок м'яка нашийник пес повідець прогулянка прогулянок регульована собак собака собаки тиску цуценя шию шлея щоденних",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для щоденних прогулянок"
@@ -8542,7 +8542,7 @@
     "price_min": 633.33,
     "price_max": 633.33,
     "image_url": "https://images.prom.ua/3092846475_w640_h320_shleya-dlya-sobak.jpg",
-    "search_blob": "bororo new прогулянок регульована шлея щоденних",
+    "search_blob": "bororo cat cats dog dogs new walking вигул кот котик котів кіт кішка кішок нашийник пес повідець прогулянка прогулянок регульована собак собака собаки цуценя шлея щоденних",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для щоденних прогулянок"
@@ -8574,7 +8574,7 @@
     "price_min": 533.33,
     "price_max": 533.33,
     "image_url": "https://images.prom.ua/4087859370_w640_h320_kostyum-dlya-sobak.jpg",
-    "search_blob": "bomba весняно весняно-осінній комбінезон костюм носіння осінній період щоденного",
+    "search_blob": "apparel bomba dog dogs весняно весняно-осінній комбінезон костюм носіння одежда одяг осінній період пес собак собака собаки цуценя щоденного",
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Для щоденного носіння у весняно-осінній період"
@@ -8599,7 +8599,7 @@
     "price_min": 1461.25,
     "price_max": 1461.25,
     "image_url": "https://images.prom.ua/4101039337_w640_h640_kurtochka-dlya-sobak.jpg",
-    "search_blob": "clothes collar waudog весняно весняно-осінній видимістю куртка курточка осінній період прогулянок підвищеною світловідбивна",
+    "search_blob": "apparel clothes collar dog dogs waudog весняно весняно-осінній видимістю куртка курточка одежда одяг осінній період пес прогулянок підвищеною світловідбивна собак собака собаки цуценя",
     "attributes": {
       "subtype": "Куртка",
       "purpose": "Для прогулянок у весняно-осінній період з підвищеною видимістю"
@@ -8624,7 +8624,7 @@
     "price_min": 106.25,
     "price_max": 106.25,
     "image_url": "https://images.prom.ua/4199184853_w640_h640_igrushka-animall-fun.jpg",
-    "search_blob": "animall fun зелена каштан м'яч іграшка",
+    "search_blob": "animall cat cats dog dogs fun other зелена каштан кот котик котів кіт кішка кішок м'яч пес собак собака собаки цуценя іграшка інше",
     "attributes": {
       "subtype": null,
       "purpose": "Для собак і кішок"
@@ -8650,7 +8650,7 @@
     "price_min": 781.25,
     "price_max": 781.25,
     "image_url": "https://images.prom.ua/4253686504_w640_h320_dozhdevik-dlya-sobak.jpg",
-    "search_blob": "fashion pet rain дощовик такса",
+    "search_blob": "apparel dog dogs fashion pet rain дощовик одежда одяг пес собак собака собаки такса цуценя",
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Для собак"
@@ -8676,7 +8676,7 @@
     "price_min": 498.75,
     "price_max": 498.75,
     "image_url": "https://images.prom.ua/6156989884_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "bomba зайчик капюшоном м'ята толстовка",
+    "search_blob": "apparel bomba dog dogs зайчик капюшоном кішок м'ята одежда одяг пес собак собака собаки толстовка цуценя",
     "attributes": {
       "subtype": "Толстовка",
       "purpose": "Для собак"
@@ -8701,7 +8701,7 @@
     "price_min": 300.0,
     "price_max": 312.5,
     "image_url": "https://images.prom.ua/3445975959_w640_h320_kofta-dlya-sobak.jpg",
-    "search_blob": "кофта",
+    "search_blob": "apparel dog dogs кофта одежда одяг пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Кофта",
       "purpose": "Для собак"
@@ -8735,7 +8735,7 @@
     "price_min": 636.25,
     "price_max": 806.25,
     "image_url": "https://images.prom.ua/3796797820_w640_h640_shleya-dlya-sobak.jpg",
-    "search_blob": "collar qr-паспортом waterproof waudog паспортом шлея",
+    "search_blob": "cat cats collar dog dogs qr-паспортом walking waterproof waudog вигул кот котик котів кіт кішка кішок нашийник паспортом пес повідець прогулянка собак собака собаки цуценя шлея",
     "attributes": {
       "subtype": "Шлея",
       "purpose": "Для собак і кішок"
@@ -8767,7 +8767,7 @@
     "price_min": 306.25,
     "price_max": 306.25,
     "image_url": "https://images.prom.ua/3822630349_w640_h640_igrovaya-gantel-dlya.jpg",
-    "search_blob": "collar pitchdog апортировки гантель ігрова",
+    "search_blob": "cat cats collar dog dogs other pitchdog апортировки гантель кот котик котів кіт кішка кішок пес собак собака собаки цуценя ігрова інше",
     "attributes": {
       "subtype": null,
       "purpose": "Для собак і кішок"
@@ -8792,7 +8792,7 @@
     "price_min": 587.5,
     "price_max": 587.5,
     "image_url": "https://images.prom.ua/3917400244_w640_h640_dozhdevik-db-kamuflyazh.jpg",
-    "search_blob": "bomba дощовик камуфляж синій",
+    "search_blob": "apparel bomba dog dogs дощовик камуфляж одежда одяг пес синій собак собака собаки цуценя",
     "attributes": {
       "subtype": "Дощовик",
       "purpose": "Для собак"
@@ -8826,7 +8826,7 @@
     "price_min": 417.5,
     "price_max": 418.75,
     "image_url": "https://images.prom.ua/3971179246_w640_h320_tolstovka-dlya-sobak.jpg",
-    "search_blob": "bomba толстовка україна",
+    "search_blob": "apparel bomba dog dogs одежда одяг пес собак собака собаки толстовка україна цуценя",
     "attributes": {
       "subtype": "Толстовка",
       "purpose": "Для собак"
@@ -8872,7 +8872,7 @@
     "price_min": 475.0,
     "price_max": 475.0,
     "image_url": "https://images.prom.ua/4312324127_w640_h640_tolstovka-dlya-sobak.jpg",
-    "search_blob": "капішоном кофта толстовка",
+    "search_blob": "apparel dog dogs капішоном кофта одежда одяг пес собак собака собаки толстовка цуценя",
     "attributes": {
       "subtype": "Толстовка",
       "purpose": "Для собак"
@@ -8897,7 +8897,7 @@
     "price_min": 387.5,
     "price_max": 387.5,
     "image_url": "https://images.prom.ua/2970772651_w640_h320_novogodnyaya-odezhda-dlya.jpg",
-    "search_blob": "костюм новорічний одяг тварин",
+    "search_blob": "apparel dog dogs костюм новорічний одежда одяг пес собак собака собаки тварин цуценя",
     "attributes": {
       "subtype": "Костюм",
       "purpose": "Для собак"
@@ -8947,7 +8947,7 @@
     "price_min": 736.25,
     "price_max": 736.25,
     "image_url": "https://images.prom.ua/3445612624_w640_h320_kombinezon-dlya-sobak.jpg",
-    "search_blob": "dogbaby комбинезон комбінезон",
+    "search_blob": "apparel dog dogbaby dogs комбинезон комбінезон одежда одяг пес собак собака собаки цуценя",
     "attributes": {
       "subtype": "Комбінезон",
       "purpose": "Для собак"
@@ -8981,7 +8981,7 @@
     "price_min": 145.0,
     "price_max": 145.0,
     "image_url": "https://images.prom.ua/6228093423_w640_h320_miska-metallicheskaya-dlya.jpg",
-    "search_blob": "алегро гумі металева миска",
+    "search_blob": "cat cats dog dogs feeding алегро годування гумі кот котик котів кіт кішка кішок металева миска пес поїлка собак собака собаки цуценя",
     "attributes": {
       "subtype": "Миска",
       "purpose": "Для собак і кішок"
@@ -9006,7 +9006,7 @@
     "price_min": 562.5,
     "price_max": 562.5,
     "image_url": "https://images.prom.ua/6666922338_w640_h640_tolstovka-dlya-sobak.jpg",
-    "search_blob": "худі",
+    "search_blob": "apparel dog dogs одежда одяг пес собак собака собаки худі цуценя",
     "attributes": {
       "subtype": "Худі",
       "purpose": "Для собак"
@@ -9031,7 +9031,7 @@
     "price_min": 437.5,
     "price_max": 500.0,
     "image_url": "https://images.prom.ua/6855765339_w640_h640_obuv-dlya-zhivotnyh.jpg",
-    "search_blob": "holapet взуття лаковане тварин чорне",
+    "search_blob": "apparel dog dogs holapet взуття лаковане одежда одяг пес собак собака собаки тварин цуценя чорне",
     "attributes": {
       "subtype": "Взуття",
       "purpose": "Для собак"
@@ -9077,7 +9077,7 @@
     "price_min": 500.0,
     "price_max": 500.0,
     "image_url": "https://images.prom.ua/6924109109_w640_h640_obuv-dlya-zhivotnyh.jpg",
-    "search_blob": "взуття екошкіра тварин червоні",
+    "search_blob": "apparel dog dogs взуття екошкіра одежда одяг пес собак собака собаки тварин цуценя червоні",
     "attributes": {
       "subtype": "Взуття",
       "purpose": "Для собак"
@@ -9123,7 +9123,7 @@
     "price_min": 273.75,
     "price_max": 273.75,
     "image_url": "https://images.prom.ua/3205073151_w640_h640_namordnik-dlya-sobak.jpg",
-    "search_blob": "collar nylon waudog малюнок намордник червона шотландка",
+    "search_blob": "collar dog dogs nylon walking waudog вигул малюнок намордник нашийник пес повідець прогулянка собак собака собаки цуценя червона шлея шотландка",
     "attributes": {
       "subtype": "Намордник",
       "purpose": "Для собак"

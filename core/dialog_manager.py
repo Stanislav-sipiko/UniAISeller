@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/core/dialog_manager.py v7.8.4
+# /root/ukrsell_v4/core/dialog_manager.py v7.9.4
 
 import json
 import os
@@ -23,8 +23,18 @@ from core.intelligence import (
 _ALLOWED_ENTITY_KEYS = frozenset({"category", "brand", "price_limit", "properties"})
 
 
+# Паттерны «силового» запроса — пользователь хочет результат без уточнений
+_FORCE_SEARCH_PATTERNS = frozenset({
+    "покажи", "покажіть", "показати", "show", "давай", "давайте",
+    "все равно", "все одно", "будь що", "неважливо", "не важливо",
+    "що є", "що маєш", "що є в наявності", "хватит", "досить",
+    "достаточно", "просто покажи", "просто покажіть", "без разницы",
+    "без різниці", "любой", "будь-який", "whatever", "anything",
+})
+
+
 class DialogManager:
-    """Intelligent Dialog & Intent Manager v7.8.4. Store-agnostic."""
+    """Intelligent Dialog & Intent Manager v7.9.4. Store-agnostic."""
 
     def __init__(self, ctx, llm_selector):
         self.ctx             = ctx
@@ -41,7 +51,7 @@ class DialogManager:
         self._negative_examples_cache: Optional[List] = None
 
         self._init_db()
-        logger.info(f"✅ [DM_INIT] DialogManager v7.8.4 Active. Store: {self.slug}")
+        logger.info(f"✅ [DM_INIT] DialogManager v7.9.4 Active. Store: {self.slug}")
 
     # ── DB Init ───────────────────────────────────────────────────────────────
 
@@ -127,7 +137,12 @@ class DialogManager:
             conn.close()
             if row and now - row[1] < ttl:
                 intent = json.loads(row[0])
-                entry  = {"ts": row[1], "intent": intent}
+                entry  = {
+                    "ts":                     row[1],
+                    "intent":                 intent,
+                    "clarification_count":    intent.get("_clarification_count", 0),
+                    "clarification_category": intent.get("_clarification_category", ""),
+                }
                 self._intent_cache[key] = entry
                 return entry
         except Exception as e:
@@ -135,18 +150,35 @@ class DialogManager:
 
         return None
 
-    def _cache_set(self, chat_id: str, intent: dict) -> None:
+    def _cache_set(
+        self,
+        chat_id: str,
+        intent: dict,
+        clarification_count: int = 0,
+        clarification_category: str = "",
+    ) -> None:
         key   = str(chat_id)
         now   = time.time()
-        entry = {"ts": now, "intent": intent}
+        entry = {
+            "ts":                     now,
+            "intent":                 intent,
+            "clarification_count":    clarification_count,
+            "clarification_category": clarification_category,
+        }
         self._intent_cache[key] = entry
 
+        # Сохраняем служебные поля внутри intent_json для persistence
+        intent_to_save = {
+            **intent,
+            "_clarification_count":    clarification_count,
+            "_clarification_category": clarification_category,
+        }
         try:
             conn = sqlite3.connect(self.session_db_path, timeout=5.0)
             conn.execute(
                 "INSERT OR REPLACE INTO intent_cache (chat_id, intent_json, ts) "
                 "VALUES (?, ?, ?)",
-                (key, json.dumps(intent, ensure_ascii=False), now),
+                (key, json.dumps(intent_to_save, ensure_ascii=False), now),
             )
             conn.commit()
             conn.close()
@@ -531,17 +563,131 @@ class DialogManager:
             return random.choice(troll_responses)
         return "🙃"
 
-    async def _rewrite_query(self, user_text: str, chat_context: str) -> str:
-        """Переписывает короткий follow-up в полноценный поисковый запрос."""
+    def _load_clarification_config(self) -> dict:
+        path = os.path.join(self.base_path, "clarification_config.json")
+        try:
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+        except Exception as e:
+            logger.warning(f"[{self.slug}] clarification_config.json load error: {e}")
+        return {"max_clarifications": 2, "vague_threshold_words": 4}
+
+    def _is_vague_query(self, intent: dict, user_text: str = "") -> bool:
+        """Запрос считается vague если: есть category, но нет animal/brand/properties.
+        Возвращает False если пользователь явно просит показать результаты."""
+        if user_text:
+            text_low = user_text.lower()
+            if any(p in text_low for p in _FORCE_SEARCH_PATTERNS):
+                return False
+        entities = intent.get("entities", {})
+        category = entities.get("category")
+        if not category:
+            return False
+        brand      = entities.get("brand")
+        price      = entities.get("price_limit")
+        props      = entities.get("properties") or {}
+        # Считаем только непустые значения в properties
+        has_props  = any(str(v).strip() for v in props.values() if v is not None)
+        has_detail = bool(brand or price or has_props)
+        return not has_detail
+
+    async def _classify_and_rewrite(
+        self, user_text: str, chat_context: str
+    ) -> Dict[str, Any]:
+        """Лёгкая LLM: классифицирует запрос и обогащает его контекстом.
+        Возвращает: {intent, refined_query, missing_info}"""
         prompt = (
-            "You are a search query rewriter for an online store.\n"
-            "Given a dialog history and a short follow-up question, "
-            "rewrite the follow-up as a standalone search query.\n"
-            "Preserve the language of the follow-up.\n"
-            "Output ONLY the rewritten query, nothing else. No explanation.\n\n"
+            "You are a search assistant for an online pet store.\n"
+            "Analyze the message and dialog history. Return JSON only.\n\n"
             f"Dialog history:\n{chat_context}\n\n"
-            f"Follow-up: {user_text}\n"
-            "Rewritten query:"
+            f"User message: {user_text}\n\n"
+            "Return JSON with fields:\n"
+            '- "intent": "search" | "clarify" | "talk"\n'
+            '  search = clear product query ready for search\n'
+            '  clarify = need more info to search (missing animal, size, breed etc)\n'
+            '  talk = greeting, off-topic, not a product query\n'
+            '- "refined_query": full standalone search query (combine context + message)\n'
+            '- "missing_info": list of what is missing for precise search, empty if nothing\n\n'
+            "RESPOND WITH JSON ONLY. NO MARKDOWN. NO EXPLANATION."
+        )
+        try:
+            # Используем light tier — fast (gpt-oss-20b) возвращает пустые ответы на JSON промпты
+            result_obj = await self.selector.get_light()
+            if isinstance(result_obj, tuple):
+                client, model = result_obj
+            else:
+                client = result_obj
+                model  = getattr(result_obj, 'model_name', None)
+            response = await asyncio.wait_for(
+                client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.0,
+                    max_tokens=120,
+                ),
+                timeout=6.0,
+            )
+            if response.choices:
+                raw = response.choices[0].message.content or ""
+                if not raw.strip():
+                    logger.debug(f"[{self.slug}] _classify_and_rewrite: empty response from {model}")
+                    return {"intent": "search", "refined_query": user_text, "missing_info": []}
+                # Убираем CoT reasoning тэги (qwen/deepseek thinking models)
+                raw = re.sub(r'<think>.*?</think>', '', raw, flags=re.DOTALL).strip()
+                raw = re.sub(r'^```(?:json)?\s*', '', raw, flags=re.IGNORECASE)
+                raw = re.sub(r'\s*```$', '', raw.strip()).strip()
+                parsed = json.loads(raw)
+                intent       = parsed.get("intent", "search")
+                refined      = parsed.get("refined_query", user_text).strip()
+                # Дополнительная очистка refined на случай если think просочился
+                refined = re.sub(r'<think>.*?</think>', '', refined, flags=re.DOTALL).strip()
+                missing_info = parsed.get("missing_info", [])
+                if refined and len(refined) >= len(user_text):
+                    logger.info(
+                        f"[{self.slug}] Classify+Rewrite: intent={intent} "
+                        f"'{user_text}' → '{refined}' missing={missing_info}"
+                    )
+                else:
+                    refined = user_text
+                return {"intent": intent, "refined_query": refined, "missing_info": missing_info}
+        except Exception as e:
+            logger.debug(f"[{self.slug}] _classify_and_rewrite failed: {e}")
+        return {"intent": "search", "refined_query": user_text, "missing_info": []}
+
+    async def _generate_clarification(
+        self, category: str, missing_info: List[str]
+    ) -> str:
+        """Лёгкая LLM генерирует уточняющий вопрос по промпту магазина."""
+        prompt_path = os.path.join(
+            self.base_path,
+            self._load_clarification_config().get("clarification_prompt", "clarification_prompt.md")
+        )
+        prompt_template = ""
+        if os.path.exists(prompt_path):
+            try:
+                with open(prompt_path, 'r', encoding='utf-8') as f:
+                    prompt_template = f.read()
+            except Exception:
+                pass
+
+        if not prompt_template:
+            prompt_template = (
+                "You are a friendly consultant for {store_name}.\n"
+                "Ask ONE short clarifying question to help find the right product.\n"
+                "Category: {category}\n"
+                "Missing info: {missing_info}\n"
+                "Language: {language}\n"
+                "Output ONLY the question, nothing else."
+            )
+
+        store_name   = getattr(self.ctx, 'slug', 'store')
+        missing_str  = ", ".join(missing_info) if missing_info else "details"
+        prompt = prompt_template.format(
+            store_name=store_name,
+            category=category,
+            missing_info=missing_str,
+            language=self.language,
         )
         try:
             result_obj = await self.selector.get_fast()
@@ -554,19 +700,25 @@ class DialogManager:
                 client.chat.completions.create(
                     model=model,
                     messages=[{"role": "user", "content": prompt}],
-                    temperature=0.0,
-                    max_tokens=40,
+                    temperature=0.5,
+                    max_tokens=60,
                 ),
-                timeout=5.0,
+                timeout=6.0,
             )
             if response.choices:
-                rewritten = response.choices[0].message.content.strip()
-                if rewritten and len(rewritten) > len(user_text):
-                    logger.info(f"[{self.slug}] Query rewritten: '{user_text}' → '{rewritten}'")
-                    return rewritten
+                raw_question = response.choices[0].message.content.strip()
+                # Берём только первую строку — один вопрос, не анкета
+                lines = [l.strip() for l in raw_question.split('\n') if l.strip()]
+                question = lines[0] if lines else raw_question
+                if question:
+                    return question
         except Exception as e:
-            logger.debug(f"[{self.slug}] Query rewrite failed: {e}")
-        return user_text
+            logger.debug(f"[{self.slug}] _generate_clarification failed: {e}")
+
+        # Fallback — базовый вопрос
+        if self.language == "Ukrainian":
+            return "Розкажіть більше — для якої тварини і які побажання? 🐾"
+        return "Расскажите подробнее — для какого питомца и какие пожелания? 🐾"
 
     # ── Intent analysis ───────────────────────────────────────────────────────
 
@@ -574,19 +726,18 @@ class DialogManager:
         self, user_text: str, chat_id: str, session_id: Optional[str] = None
     ) -> dict:
         try:
-            user_text = str(user_text)
+            user_text     = str(user_text)
+            original_text = user_text
             await asyncio.wait_for(self.selector.ensure_ready(), timeout=5.0)
-            chat_context = await self.get_chat_context(chat_id)
-
-            # Query Rewriting — только для коротких follow-up при наличии истории
-            if chat_context and len(user_text.split()) <= 5:
-                user_text = await self._rewrite_query(user_text, chat_context)
-
             patterns = self.get_negative_examples()
 
-            if user_text.lower().strip() in patterns:
+            # ── Fast-Reject: known troll patterns — ДО classify (экономия токенов) ──
+            def _normalize_for_check(t: str) -> str:
+                return re.sub(r'[^\w\s]', '', t.lower()).strip()
+
+            if (_normalize_for_check(user_text) in [_normalize_for_check(p) for p in patterns]
+                    or user_text.lower().strip() in patterns):
                 logger.warning(f"🛡️ [INTENT_TRACE] Fast-Reject: Known Troll Pattern for {chat_id}")
-                # Полный сброс кэша — следующий запрос будет чистым стартом
                 self._intent_cache.pop(str(chat_id), None)
                 try:
                     conn = sqlite3.connect(self.session_db_path, timeout=5.0)
@@ -595,7 +746,7 @@ class DialogManager:
                     conn.close()
                 except Exception as _e:
                     logger.debug(f"[{self.slug}] Cache clear on TROLL error: {_e}")
-                witty = await self._handle_troll_response(user_text)
+                witty = await self._handle_troll_response(original_text)
                 return {
                     "action":      "TROLL",
                     "temperature": "VIBE_CHECK",
@@ -604,12 +755,55 @@ class DialogManager:
                     "witty_text":  witty,
                 }
 
-            # Pre-LLM Guard: проверка unsupported keywords до вызова LLM
+            chat_context = await self.get_chat_context(chat_id)
+
+            # ── Classify + Rewrite (лёгкая LLM) ──────────────────────────────
+            classify_result = None
+            if chat_context or len(user_text.split()) <= 6:
+                classify_result = await self._classify_and_rewrite(user_text, chat_context)
+                cr_intent  = classify_result.get("intent", "search")
+                refined    = classify_result.get("refined_query", user_text)
+                missing    = classify_result.get("missing_info", [])
+
+                if cr_intent == "talk":
+                    return {
+                        "action":      "CHAT",
+                        "temperature": "VIBE_CHECK",
+                        "entities":    {"properties": {}},
+                        "language":    self.language,
+                        "reason":      "classifier:talk",
+                    }
+
+                # #6 fallback на original если refined пустой или короче
+                if refined and len(refined.strip()) >= len(original_text):
+                    user_text = refined.strip()
+
+            # ── Fast-Reject: известные troll паттерны ────────────────────────
+            if user_text.lower().strip() in patterns or original_text.lower().strip() in patterns:
+                logger.warning(f"🛡️ [INTENT_TRACE] Fast-Reject: Known Troll Pattern for {chat_id}")
+                self._intent_cache.pop(str(chat_id), None)
+                try:
+                    conn = sqlite3.connect(self.session_db_path, timeout=5.0)
+                    conn.execute("DELETE FROM intent_cache WHERE chat_id = ?", (str(chat_id),))
+                    conn.commit()
+                    conn.close()
+                except Exception as _e:
+                    logger.debug(f"[{self.slug}] Cache clear on TROLL error: {_e}")
+                witty = await self._handle_troll_response(original_text)
+                return {
+                    "action":      "TROLL",
+                    "temperature": "VIBE_CHECK",
+                    "entities":    {"properties": {}},
+                    "language":    self.language,
+                    "witty_text":  witty,
+                }
+
+            # ── Pre-LLM Guard: unsupported keywords ──────────────────────────
             negative_keywords = self._intent_hints.get("negative_keywords", [])
             if negative_keywords:
                 text_low = user_text.lower()
                 if any(kw.lower() in text_low for kw in negative_keywords):
-                    logger.info(f"[{self.slug}] Pre-LLM Guard: unsupported keyword detected → CONSULT")
+                    logger.info(f"[{self.slug}] Pre-LLM Guard: unsupported keyword → CONSULT")
                     return {
                         "action":      "CONSULT",
                         "temperature": "SOFT_ADVISORY",
@@ -618,6 +812,7 @@ class DialogManager:
                         "reason":      "unsupported_keyword",
                     }
 
+            # ── Intent Classification (основная LLM) ─────────────────────────
             _cached      = self._cache_get(str(chat_id))
             _is_followup = bool(_cached and time.time() - _cached.get("ts", 0) < 2700)
 
@@ -626,7 +821,6 @@ class DialogManager:
                 self.selector.get_heavy() if tier_hint == "heavy"
                 else self.selector.get_light()
             )
-
             if isinstance(result_obj, tuple):
                 client, model = result_obj
             else:
@@ -638,8 +832,7 @@ class DialogManager:
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug(
                     f"\n--- [PROMPT_OUT] Chat: {chat_id} | Session: {session_id} ---\n"
-                    f"{prompt}\n"
-                    f"User query: {user_text}\n"
+                    f"{prompt}\nUser query: {user_text}\n"
                     f"--------------------------------------------------"
                 )
 
@@ -659,16 +852,13 @@ class DialogManager:
                 return self._get_fallback_intent(user_text)
 
             content = getattr(response.choices[0].message, 'content', '{}')
-
             content = re.sub(r'^```(?:json)?\s*', '', content.strip(), flags=re.IGNORECASE)
-            content = re.sub(r'\s*```$', '', content.strip())
-            content = content.strip()
+            content = re.sub(r'\s*```$', '', content.strip()).strip()
 
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug(
                     f"\n--- [RESPONSE_IN] Chat: {chat_id} | Session: {session_id} ---\n"
-                    f"{content}\n"
-                    f"-------------------------------------------------"
+                    f"{content}\n-------------------------------------------------"
                 )
 
             raw_intent   = safe_extract_json(content)
@@ -676,11 +866,10 @@ class DialogManager:
             if isinstance(raw_entities, dict):
                 raw_intent["entities"] = self._normalize_entities(raw_entities)
 
-            schema_keys = set(getattr(self.ctx, "schema_keys", []))
             intent_ents = raw_intent.get("entities", {})
             top_level   = {k for k in intent_ents if k not in _ALLOWED_ENTITY_KEYS}
             if top_level:
-                logger.warning(f"🚨 [KEY_MISMATCH] Unexpected top-level entity keys after normalize: {top_level}")
+                logger.warning(f"🚨 [KEY_MISMATCH] Unexpected top-level keys: {top_level}")
 
             prev_intent  = _cached["intent"] if _is_followup else {"entities": {}}
             category_map = getattr(self.ctx, 'category_map', {})
@@ -690,13 +879,83 @@ class DialogManager:
                 result["temperature"] = (
                     "HARD_SEARCH" if result.get("action") == "SEARCH" else "SOFT_ADVISORY"
                 )
-
             if "entities" not in result:
                 result["entities"] = {}
             if "properties" not in result.get("entities", {}):
                 result["entities"]["properties"] = {}
 
-            self._cache_set(str(chat_id), result)
+            # ── Consultation Gate ─────────────────────────────────────────────
+            clarif_cfg      = self._load_clarification_config()
+            max_clarif      = clarif_cfg.get("max_clarifications", 2)
+            prev_clarif_cnt = _cached.get("clarification_count", 0) if _cached else 0
+            prev_clarif_cat = _cached.get("clarification_category", "") if _cached else ""
+            new_category    = str(result.get("entities", {}).get("category") or "")
+
+            # Сбрасываем счётчик при смене категории или животного
+            prev_animal = (prev_intent.get("entities", {}).get("properties") or {}).get("Тварина", "")
+            new_animal  = (result.get("entities", {}).get("properties") or {}).get("Тварина", "")
+            category_changed = bool(new_category and new_category != prev_clarif_cat)
+            animal_changed   = bool(new_animal != prev_animal)
+
+            if category_changed or animal_changed:
+                clarif_count = 0
+                logger.info(f"[{self.slug}] Clarification counter reset (topic change).")
+            else:
+                clarif_count = prev_clarif_cnt
+
+            # Применяем Gate только если classify сказал "clarify" ИЛИ запрос vague
+            # Если пользователь явно просит показать — сбрасываем Gate до лимита
+            force_search = any(p in original_text.lower() for p in _FORCE_SEARCH_PATTERNS)
+            if force_search:
+                clarif_count = max_clarif
+                logger.info(f"[{self.slug}] Force search detected — skipping Consultation Gate.")
+                # Если classify упал и user_text остался как "просто покажи" —
+                # восстанавливаем реальный запрос из предыдущего intent кэша
+                if user_text.lower().strip() in {p.lower() for p in _FORCE_SEARCH_PATTERNS}:
+                    prev_category = (prev_intent.get("entities", {}).get("category") or "")
+                    prev_animal   = ((prev_intent.get("entities", {}).get("properties") or {}).get("Тварина") or "")
+                    if prev_category:
+                        parts = [prev_category]
+                        if prev_animal:
+                            parts.append(f"для {prev_animal}")
+                        restored = " ".join(parts)
+                        logger.info(f"[{self.slug}] Force search: restored query '{user_text}' → '{restored}'")
+                        user_text = restored
+
+            needs_clarif = (
+                not force_search
+                and result.get("action") == "SEARCH"
+                and self._is_vague_query(result, user_text)
+            )
+
+            if needs_clarif and clarif_count < max_clarif:
+                missing = (classify_result or {}).get("missing_info", [])
+                question = await self._generate_clarification(new_category, missing)
+                clarif_count += 1
+                self._cache_set(
+                    str(chat_id), result,
+                    clarification_count=clarif_count,
+                    clarification_category=new_category,
+                )
+                logger.info(
+                    f"[{self.slug}] Consultation Gate: clarification #{clarif_count}/{max_clarif} "
+                    f"cat='{new_category}' missing={missing}"
+                )
+                return {
+                    "action":       "CLARIFY",
+                    "temperature":  "SOFT_ADVISORY",
+                    "entities":     result.get("entities", {}),
+                    "language":     self.language,
+                    "witty_text":   question,
+                    "reason":       f"clarification_{clarif_count}",
+                }
+
+            # После max_clarif уточнений — ищем без Gate
+            self._cache_set(
+                str(chat_id), result,
+                clarification_count=clarif_count,
+                clarification_category=new_category,
+            )
 
             ms_spent = round((time.perf_counter() - t_start_llm) * 1000, 1)
             log_event("INTENT_RESULT", {
@@ -709,6 +968,10 @@ class DialogManager:
                 "model":       model,
                 "reason":      result.get("reason", "N/A"),
             }, session_id=session_id)
+
+            # Сохраняем переписанный запрос для retrieval в kernel
+            if user_text and user_text != original_text:
+                result["refined_query"] = user_text
 
             return result
 
@@ -829,8 +1092,8 @@ class DialogManager:
             return products_to_process[:top_k]
 
     def __repr__(self):
-        return f"<DialogManager v7.8.4 slug={self.slug}>"
+        return f"<DialogManager v7.9.4 slug={self.slug}>"
 
 
 def get_version():
-    return "7.8.4"
+    return "7.9.4"

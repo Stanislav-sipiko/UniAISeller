@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/core/retrieval.py v9.7.2
+# /root/ukrsell_v4/core/retrieval.py v9.7.4
 
 from typing import List, Dict, Optional, Any, Union
 import os
@@ -22,7 +22,7 @@ RELEVANCE_SCORE_THRESHOLD = 0.30
 
 class RetrievalEngine:
     """
-    Universal SaaS Retrieval Engine v9.7.2.
+    Universal SaaS Retrieval Engine v9.7.4.
 
     v9.7.0:
       - _apply_attribute_filter: агностик-фильтр вместо _apply_animal_filter.
@@ -123,7 +123,7 @@ class RetrievalEngine:
                 )
             else:
                 logger.info(
-                    f"🚀 [{self.slug}] Retrieval Engine v9.7.2 READY in {init_elapsed}s "
+                    f"🚀 [{self.slug}] Retrieval Engine v9.7.4 READY in {init_elapsed}s "
                     f"(items={len(self.metadata)}, ids={len(self.id_list)})"
                 )
 
@@ -489,35 +489,46 @@ class RetrievalEngine:
         if not attr_cfg:
             return 1.0
 
-        hard_filter = attr_cfg.get("hard_filter", True)
-        score_match = float(attr_cfg.get("score_match", 1.3))
-        exclusions  = attr_cfg.get("title_exclusions", {})
+        hard_filter   = attr_cfg.get("hard_filter", True)
+        score_match   = float(attr_cfg.get("score_match", 1.3))
+        exclusions    = attr_cfg.get("title_exclusions", {})
+        translations  = attr_cfg.get("value_translations", {})
 
         query_attr = self._get_attribute_value_from_entities(entities)
         if not query_attr:
             return 1.0
 
-        _, query_val      = query_attr
-        product_attr_val  = self._get_attribute_value_from_product(product)
+        _, query_val     = query_attr
+        product_attr_val = self._get_attribute_value_from_product(product)
 
         if not product_attr_val:
             return 0.0 if hard_filter else 1.0
 
-        # Стемминг для корректного матчинга склонений: "кіт" → "котів"
-        query_stems   = {get_stem(t) for t in query_val.split()}
-        product_stems = {get_stem(t) for t in product_attr_val.split()}
-        if not (query_stems & product_stems):
-            return 0.0 if hard_filter else 1.0
+        # Расширяем query_val через translations (кіт → [cat, кот, кіт, котик])
+        query_variants = {query_val}
+        if translations and query_val in translations:
+            query_variants.update(v.lower() for v in translations[query_val])
 
-        # title_exclusions — только если attribute совпал, как дополнительная защита
-        if exclusions and query_val in exclusions:
-            title = str(product.get("title") or product.get("name", "")).lower()
-            for excl_word in exclusions[query_val]:
-                if excl_word.lower() in title:
-                    logger.debug(f"[{self.slug}] title_exclusion hit: '{excl_word}' in '{title[:50]}'")
-                    return 0.0
+        # Разбиваем по запятой и пробелу — поддержка формата "cat, dog"
+        product_tokens = {t for t in re.split(r'[,\s]+', product_attr_val) if t}
+        product_stems  = {get_stem(t) for t in product_tokens}
 
-        return score_match
+        # Проверяем: есть ли пересечение query_variants со стемами/токенами продукта
+        for qv in query_variants:
+            qv_stems = {get_stem(t) for t in re.split(r'[,\s]+', qv) if t}
+            if qv_stems & product_stems:
+                # Совпадение найдено — проверяем title_exclusions
+                if exclusions and query_val in exclusions:
+                    title = str(product.get("title") or product.get("name", "")).lower()
+                    for excl_word in exclusions[query_val]:
+                        if excl_word.lower() in title:
+                            logger.debug(
+                                f"[{self.slug}] title_exclusion hit: '{excl_word}' in '{title[:50]}'"
+                            )
+                            return 0.0
+                return score_match
+
+        return 0.0 if hard_filter else 1.0
 
     def _apply_unified_filters(
         self,
@@ -1091,9 +1102,9 @@ class RetrievalEngine:
         self.index = None
         self.id_list.clear()
         self.metadata.clear()
-        logger.info(f"🛑 [{self.slug}] Retrieval Engine v9.7.2 closed.")
+        logger.info(f"🛑 [{self.slug}] Retrieval Engine v9.7.4 closed.")
 
     def __repr__(self):
         return (
-            f"<RetrievalEngine v9.7.2 slug={self.slug} items={len(self.metadata)}>"
+            f"<RetrievalEngine v9.7.4 slug={self.slug} items={len(self.metadata)}>"
         )
