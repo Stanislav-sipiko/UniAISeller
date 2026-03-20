@@ -85,9 +85,27 @@ class UkrSellKernel:
         if kwargs:
             try:
                 text = text.format(**kwargs)
-            except (KeyError, ValueError):
+            except KeyError as e:
+                missing = e.args[0]
+                defaults = {"category": "товару", "animal": "", "query": "", "categories": ""}
+                fallback_val = defaults.get(missing, "")
+                kwargs.setdefault(missing, fallback_val)
+                try:
+                    text = text.format(**kwargs)
+                except (KeyError, ValueError):
+                    pass
+            except ValueError:
                 pass
         return text
+
+    @staticmethod
+    def _intent_ctx_vars(intent: Dict, query: str = "") -> Dict[str, str]:
+        """Извлекает category/animal/query из intent для подстановки в шаблоны _p."""
+        ents     = intent.get("entities", {}) or {}
+        props    = ents.get("properties") or {}
+        category = str(ents.get("category") or "товару")
+        animal   = str(props.get("Тварина") or "")
+        return {"category": category, "animal": animal, "query": query}
 
     # ── Инициализация ─────────────────────────────────────────────────────────
 
@@ -490,7 +508,7 @@ class UkrSellKernel:
         if not products:
             logger.info(f"[{slug_for_log}] format_products: empty products → Light Path (template).")
             fallback_reason = intent.get("fallback_reason") if intent else None
-            return await self._build_template_response(ctx, [], raw_text, fallback_reason=fallback_reason)
+            return await self._build_template_response(ctx, [], raw_text, fallback_reason=fallback_reason, intent=intent)
 
         if intent is None:
             intent = {"action": "SEARCH", "entities": {}}
@@ -564,6 +582,7 @@ class UkrSellKernel:
         result = await self._build_template_response(
             ctx, products, raw_text,
             fallback_reason=intent.get("fallback_reason") if intent else None,
+            intent=intent,
         )
         logger.info(f"[{slug_for_log}] format_products: Light Path (template), response_chars={len(result)}.")
         return result
@@ -631,28 +650,29 @@ class UkrSellKernel:
             if action == "CLARIFY":
                 response_text = intent.get("witty_text", "")
                 if not response_text:
-                    response_text = self._p(prompts, "advisory_fallback", language)
+                    _cv = self._intent_ctx_vars(intent, text)
+                    response_text = self._p(prompts, "advisory_fallback", language, **_cv)
                 _save("user", text); _save("assistant", response_text)
                 return _result(response_text, "CLARIFY")
 
             search_results = {"products": [], "status": "EMPTY"}
             if action not in ("OFF_TOPIC", "CHAT"):
-                # Используем переписанный запрос если есть — иначе оригинал
-                search_query = intent.get("refined_query") or text
                 search_results = await ctx.retrieval.search(
-                    query=search_query, entities=intent.get("entities", {}), top_k=5,
+                    query=text, entities=intent.get("entities", {}), top_k=5,
                 )
 
             status = search_results.get("status")
+            _cv    = self._intent_ctx_vars(intent, text)
 
             if status == "NO_CATEGORY":
                 response_text = self._p(prompts, "no_category", language,
-                    categories=', '.join(getattr(ctx, 'profile', {}).get('expertise_fields', [])[:4]))
+                    categories=', '.join(getattr(ctx, 'profile', {}).get('expertise_fields', [])[:4]),
+                    **_cv)
                 _save("user", text); _save("assistant", response_text)
                 return _result(response_text, action)
 
             if status == "NOT_FOUND_SECURE":
-                response_text = self._p(prompts, "not_found_secure", language)
+                response_text = self._p(prompts, "not_found_secure", language, **_cv)
                 _save("user", text); _save("assistant", response_text)
                 return _result(response_text, action)
 
@@ -666,7 +686,7 @@ class UkrSellKernel:
                 if action in ("OFF_TOPIC", "CHAT"):
                     response_text = self._p(prompts, "off_topic", language)
                 else:
-                    response_text = await self._build_template_response(ctx, products, text)
+                    response_text = await self._build_template_response(ctx, products, text, intent=intent)
 
             _save("user", text); _save("assistant", response_text)
             return _result(response_text, action, len(products))
@@ -779,9 +799,7 @@ class UkrSellKernel:
             return str(intent.get("response_text") or self._p(prompts, "off_topic", language))
 
         search_results = await ctx.retrieval.search(
-            query=intent.get("refined_query") or query,
-            entities=intent.get("entities", {}),
-            top_k=top_k * 3,
+            query=query, entities=intent.get("entities", {}), top_k=top_k * 3,
         )
 
         if search_results.get("status") == "NO_CATEGORY":
@@ -825,6 +843,7 @@ class UkrSellKernel:
     async def _build_template_response(
         self, ctx: StoreContext, products: List[Dict], query: str,
         fallback_reason: Optional[str] = None,
+        intent: Optional[Dict] = None,
     ) -> str:
         language    = getattr(ctx, "language", "Ukrainian")
         prompts     = getattr(ctx, "kernel_prompts", self._default_prompts)
@@ -832,15 +851,16 @@ class UkrSellKernel:
         view_label  = store_p.get("view_button", "Переглянути")
         price_label = store_p.get("price_label", "Ціна")
         currency    = getattr(ctx, "currency", "грн")
+        _cv         = self._intent_ctx_vars(intent or {}, query)
 
         if not products:
-            return self._p(prompts, "no_results", language)
+            return self._p(prompts, "no_results", language, **_cv)
 
         if fallback_reason in ("no_results_with_properties", "no_results_without_properties",
                                 "no_results_faiss_only"):
-            intro = self._p(prompts, "similar_found", language)
+            intro = self._p(prompts, "similar_found", language, **_cv)
         else:
-            intro = self._p(prompts, "results_found", language)
+            intro = self._p(prompts, "results_found", language, **_cv)
 
         parts = [intro, ""]
 

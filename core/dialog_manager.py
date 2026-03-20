@@ -507,7 +507,7 @@ class DialogManager:
             "action":      "SEARCH",
             "temperature": "HARD_SEARCH",
             "entities": {
-                "category":    category,
+                "category":    category or "товару",
                 "brand":       brand,
                 "price_limit": price_limit,
                 "properties":  {},
@@ -727,6 +727,11 @@ class DialogManager:
     ) -> dict:
         try:
             user_text     = str(user_text)
+            # Санитизация: убираем escape-последовательности терминала ([2~, [A, etc.)
+            user_text = re.sub(r'\x1b\[[0-9;]*[a-zA-Z~]', '', user_text)
+            user_text = re.sub(r'\[[0-9]+~', '', user_text).strip()
+            if not user_text:
+                return self._get_fallback_intent("")
             original_text = user_text
             await asyncio.wait_for(self.selector.ensure_ready(), timeout=5.0)
             patterns = self.get_negative_examples()
@@ -968,10 +973,6 @@ class DialogManager:
                 "model":       model,
                 "reason":      result.get("reason", "N/A"),
             }, session_id=session_id)
-
-            # Сохраняем переписанный запрос для retrieval в kernel
-            if user_text and user_text != original_text:
-                result["refined_query"] = user_text
 
             return result
 
