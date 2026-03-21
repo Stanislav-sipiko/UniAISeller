@@ -1,4 +1,4 @@
-# /root/ukrsell_v4/core/intelligence.py v7.7.3
+# /root/ukrsell_v4/core/intelligence.py v7.7.4
 
 import numpy as np
 import re
@@ -293,12 +293,26 @@ def merge_followup(prev_intent: dict, new_intent: dict, category_map: dict = Non
     merged["entities"] = merged_ents
     prev_action = prev_intent.get("action", "SEARCH")
     new_action  = new_intent.get("action", "SEARCH")
+    new_reason  = str(new_intent.get("reason", "")).lower()
 
-    # Если предыдущий был SEARCH и новый CONSULT без категории —
-    # это ответ на уточняющий вопрос, сохраняем SEARCH
-    if (prev_action == "SEARCH"
+    # Unsupported keywords в reason — явный сигнал что тема вне ассортимента.
+    # Не переключаем на SEARCH и не наследуем старую category.
+    _UNSUPPORTED_SIGNALS = {
+        "vitamin", "вітамін", "витамин", "ліки", "лекарств", "корм", "їжа",
+        "вакцин", "таблетк", "клітк", "вольєр", "наповнювач", "туалет",
+        "ласощ", "смаколик", "not a product", "unsupported",
+    }
+    is_unsupported = any(sig in new_reason for sig in _UNSUPPORTED_SIGNALS)
+
+    if is_unsupported:
+        # Unsupported тема — возвращаем CONSULT как есть, без наследования category
+        merged["action"]   = "CONSULT"
+        merged["entities"] = new_ents  # пустые entities, не тянем лежанки
+        logger.info(f"[MERGE] Unsupported topic detected in reason — keeping CONSULT, clearing category.")
+    elif (prev_action == "SEARCH"
             and new_action == "CONSULT"
             and not new_ents.get("category")):
+        # Ответ на уточняющий вопрос — сохраняем SEARCH с prev category
         merged["action"] = "SEARCH"
         logger.info("[MERGE] action: CONSULT→SEARCH (clarification answer, no new category)")
     else:
@@ -341,4 +355,4 @@ def deduplicate_products(products: list, top_k: int = 5) -> list:
     return result
 
 def get_version():
-    return "7.7.3"
+    return "7.7.4"

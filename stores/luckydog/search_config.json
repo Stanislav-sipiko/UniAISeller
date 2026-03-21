@@ -1,6 +1,10 @@
 {
   "_comment": "Store-level search & dialog policy. Kernel reads this, never hardcodes it.",
 
+  "use_llm_retrieval": true,
+
+  "catalog_fields": ["category", "animal"],
+
   "score_threshold": 0.30,
   "on_zero_results": "ABORT",
   "abort_categories": ["meds", "vet", "pharmacy", "медикаменти", "ліки"],
@@ -13,8 +17,11 @@
     "value_translations": {
       "кіт":    ["cat", "кот", "кіт", "котик", "кошка"],
       "кішка":  ["cat", "кот", "кіт", "котик", "кошка"],
+      "кот":    ["cat", "кот", "кіт", "котик", "кошка"],
+      "кошка":  ["cat", "кот", "кіт", "котик", "кошка"],
       "собака": ["dog", "собака", "пес", "пёс"],
-      "пес":    ["dog", "собака", "пес", "пёс"]
+      "пес":    ["dog", "собака", "пес", "пёс"],
+      "пёс":    ["dog", "собака", "пес", "пёс"]
     },
     "title_exclusions": {
       "кіт": ["для собак", "собачий"],

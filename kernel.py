@@ -17,6 +17,7 @@ from core.llm_selector import LLMSelector
 from core.analyzer import Analyzer
 from core.registry import StoreRegistry
 from core.retrieval import RetrievalEngine
+from core.retrieval_v2 import LLMRetrievalEngine
 from core.store_context import StoreContext
 from core.translator import TextTranslator
 from core.confidence import evaluate as confidence_evaluate
@@ -85,27 +86,9 @@ class UkrSellKernel:
         if kwargs:
             try:
                 text = text.format(**kwargs)
-            except KeyError as e:
-                missing = e.args[0]
-                defaults = {"category": "товару", "animal": "", "query": "", "categories": ""}
-                fallback_val = defaults.get(missing, "")
-                kwargs.setdefault(missing, fallback_val)
-                try:
-                    text = text.format(**kwargs)
-                except (KeyError, ValueError):
-                    pass
-            except ValueError:
+            except (KeyError, ValueError):
                 pass
         return text
-
-    @staticmethod
-    def _intent_ctx_vars(intent: Dict, query: str = "") -> Dict[str, str]:
-        """Извлекает category/animal/query из intent для подстановки в шаблоны _p."""
-        ents     = intent.get("entities", {}) or {}
-        props    = ents.get("properties") or {}
-        category = str(ents.get("category") or "товару")
-        animal   = str(props.get("Тварина") or "")
-        return {"category": category, "animal": animal, "query": query}
 
     # ── Инициализация ─────────────────────────────────────────────────────────
 
@@ -130,10 +113,26 @@ class UkrSellKernel:
             ctx.negative_examples = self._load_store_negative_examples(ctx.base_path)
             ctx.kernel_prompts    = self._load_prompts(ctx.base_path)
 
-            ctx.analyzer       = Analyzer(ctx)
-            ctx.retrieval      = RetrievalEngine(ctx, self.model)
-            ctx.semantic_cache = SemanticCache(ctx, self.model)
+            # Analyzer и semantic_cache убраны — LLMReasoning единственный мозг
             ctx.dialog_manager = DialogManager(ctx, self.selector)
+
+            # Базовый retrieval — нужен всегда (FAISS индекс + metadata)
+            base_retrieval = RetrievalEngine(ctx, self.model)
+
+            # Флаг из search_config.json: use_llm_retrieval: true/false
+            search_cfg_path = os.path.join(ctx.base_path, "search_config.json")
+            use_llm = False
+            try:
+                with open(search_cfg_path, 'r', encoding='utf-8') as f:
+                    use_llm = json.load(f).get("use_llm_retrieval", False)
+            except Exception:
+                pass
+
+            if use_llm:
+                ctx.retrieval = LLMRetrievalEngine(base_retrieval, self.selector)
+                logger.info(f"[{ctx.slug}] 🤖 LLM Retrieval v2 ENABLED")
+            else:
+                ctx.retrieval = base_retrieval
 
             if not hasattr(ctx, 'data_ready'):
                 ctx.data_ready = asyncio.Event()
@@ -176,6 +175,10 @@ class UkrSellKernel:
                 logger.error(f"⚠️ LLM Warmup attempt {attempt} failed: {e}")
             await asyncio.sleep(2.0)
         logger.critical("🚨 KERNEL STARTUP CRITICAL: All LLM stacks remain OFFLINE.")
+        raise RuntimeError(
+            "All LLM stacks are OFFLINE after 3 attempts. "
+            "Kernel will not start — fix API keys and restart."
+        )
 
     # ── Утилиты нормализации ──────────────────────────────────────────────────
 
@@ -238,8 +241,12 @@ class UkrSellKernel:
                 if len(result) >= max_attrs:
                     break
                 val = attrs.get(key)
-                if val is not None and str(val).strip():
-                    result[key] = val
+                if val is None:
+                    continue
+                val_str = re.sub(r'<[^>]*>', '', str(val)).strip()
+                if not val_str:
+                    continue
+                result[key] = val_str  # сохраняем очищенную строку
         for key, val in attrs.items():
             if len(result) >= max_attrs:
                 break
@@ -247,11 +254,9 @@ class UkrSellKernel:
                 continue
             if key.lower() in ATTRS_BLACKLIST:
                 continue
-            val_str = str(val) if val is not None else ""
-            if "<" in val_str and ">" in val_str:
-                continue
-            if val_str.strip():
-                result[key] = val
+            val_str = re.sub(r'<[^>]*>', '', str(val) if val is not None else "").strip()
+            if val_str:
+                result[key] = val_str  # сохраняем очищенную строку
         return result
 
     def _normalize_product(self, res: Dict[str, Any]) -> Dict[str, Any]:
@@ -372,7 +377,10 @@ class UkrSellKernel:
             b.lower()
             for b in profile.get("brand_matrix", {}).get("top_brands", [])
         ]
-        price_avg = float(profile.get("price_analytics", {}).get("avg", 0) or 0)
+        try:
+            price_avg = float(profile.get("price_analytics", {}).get("avg", 0) or 0)
+        except (TypeError, ValueError):
+            price_avg = 0.0
 
         raw_price_limit = (
             intent.get("entities", {}).get("price_limit")
@@ -432,13 +440,21 @@ class UkrSellKernel:
         products_block      = "\n\n".join(product_cards) if product_cards else "Товарів не знайдено."
         store_context_block = self._build_dynamic_context(ctx, intent)
 
-        role  = prompts.get("dynamic_prompt_role", "You are an expert sales consultant.")
-        rules = prompts.get("dynamic_prompt_rules", [])
+        role       = prompts.get("dynamic_prompt_role", "You are an expert sales consultant.")
+        rules      = prompts.get("dynamic_prompt_rules", [])
         rules_text = "\n".join(f"- {r.format(max_products=MAX_PRODUCTS_IN_PROMPT, view_label=view_label)}" for r in rules)
+
+        # response_mode берётся из LLMReasoning решения — не вычисляется здесь
+        response_mode = (intent or {}).get("response_mode", "products")
+        if response_mode == "availability":
+            mode_note = "Be brief: show 1–2 items max, no pressure, end with a soft question."
+        else:
+            mode_note = f"Show up to {MAX_PRODUCTS_IN_PROMPT} relevant items with short descriptions."
 
         system_prompt = (
             f"{store_context_block}\n\n"
             f"РОЛЬ: {role}\n\n"
+            f"NOTE: {mode_note}\n\n"
             f"ПРАВИЛА:\n{rules_text}\n\n"
             f"ЗНАЙДЕНІ ТОВАРИ:\n{products_block}"
         )
@@ -507,21 +523,15 @@ class UkrSellKernel:
 
         if not products:
             logger.info(f"[{slug_for_log}] format_products: empty products → Light Path (template).")
-            fallback_reason = intent.get("fallback_reason") if intent else None
-            return await self._build_template_response(ctx, [], raw_text, fallback_reason=fallback_reason, intent=intent)
+            return await self._build_template_response(ctx, [], raw_text)
 
         if intent is None:
             intent = {"action": "SEARCH", "entities": {}}
 
-        entities   = intent.get("entities", {}) or {}
-        n_entities = len([
-            v for v in entities.values()
-            if v and str(v).lower() not in ("none", "null", "any", "")
-        ])
-        is_complex = (
-            n_entities >= COMPLEX_ENTITIES_THRESHOLD
-            or len(raw_text.strip()) > COMPLEX_QUERY_LENGTH
-        )
+        # Ограничиваем список по response_mode от LLMReasoning
+        response_mode = intent.get("response_mode", "products")
+        max_items = 2 if response_mode == "availability" else MAX_PRODUCTS_IN_PROMPT
+        products  = products[:max_items]
 
         valid_count = self._count_valid_products(products)
         if valid_count < MIN_VALID_PRODUCTS_FOR_LLM:
@@ -531,58 +541,50 @@ class UkrSellKernel:
             )
             return await self._build_template_response(ctx, products, raw_text)
 
-        if is_complex:
-            try:
-                client, model = await asyncio.wait_for(
-                    self.selector.get_heavy(), timeout=5.0
-                )
-                system_prompt, user_message = self._build_dynamic_prompt(
-                    ctx, products, intent, raw_text
-                )
-                max_tokens = min(
-                    BASE_MAX_TOKENS + len(products[:MAX_PRODUCTS_IN_PROMPT]) * TOKENS_PER_PRODUCT,
-                    MAX_TOKENS_CAP,
-                )
-                logger.info(
-                    f"[{slug_for_log}] format_products: Heavy Path "
-                    f"({model}), products={len(products)}, valid={valid_count}, "
-                    f"entities={n_entities}, prompt_chars={len(system_prompt)}, "
-                    f"max_tokens={max_tokens}."
-                )
-                response = await asyncio.wait_for(
-                    client.chat.completions.create(
-                        model=model,
-                        messages=[
-                            {"role": "system", "content": system_prompt},
-                            {"role": "user",   "content": user_message},
-                        ],
-                        temperature=0.4,
-                        max_tokens=max_tokens,
-                    ),
-                    timeout=25.0,
-                )
-                result = response.choices[0].message.content or ""
-
-                if self._validate_llm_response(result, ctx):
-                    logger.info(f"[{slug_for_log}] format_products: Heavy Path OK, response_chars={len(result)}.")
-                    return result.strip()
-
-                logger.warning(f"[{slug_for_log}] format_products: Heavy Path failed validation → template.")
-
-            except asyncio.TimeoutError:
-                logger.warning(f"[{slug_for_log}] format_products: Heavy Path timeout → template.")
-            except Exception as e:
-                logger.warning(f"[{slug_for_log}] format_products: Heavy Path error: {e} → template.")
-        else:
-            logger.info(
-                f"[{slug_for_log}] format_products: Light Path "
-                f"(entities={n_entities}, query_len={len(raw_text.strip())})."
+        try:
+            client, model = await asyncio.wait_for(
+                self.selector.get_heavy(), timeout=5.0
             )
+            system_prompt, user_message = self._build_dynamic_prompt(
+                ctx, products, intent, raw_text
+            )
+            max_tokens = min(
+                BASE_MAX_TOKENS + len(products) * TOKENS_PER_PRODUCT,
+                MAX_TOKENS_CAP,
+            )
+            logger.info(
+                f"[{slug_for_log}] format_products: Heavy Path "
+                f"({model}), products={len(products)}, valid={valid_count}, "
+                f"prompt_chars={len(system_prompt)}, max_tokens={max_tokens}."
+            )
+            response = await asyncio.wait_for(
+                client.chat.completions.create(
+                    model=model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user",   "content": user_message},
+                    ],
+                    temperature=0.4,
+                    max_tokens=max_tokens,
+                ),
+                timeout=25.0,
+            )
+            result = response.choices[0].message.content or ""
+
+            if self._validate_llm_response(result, ctx):
+                logger.info(f"[{slug_for_log}] format_products: Heavy Path OK, response_chars={len(result)}.")
+                return result.strip()
+
+            logger.warning(f"[{slug_for_log}] format_products: Heavy Path failed validation → template.")
+
+        except asyncio.TimeoutError:
+            logger.warning(f"[{slug_for_log}] format_products: Heavy Path timeout → template.")
+        except Exception as e:
+            logger.warning(f"[{slug_for_log}] format_products: Heavy Path error: {e} → template.")
 
         result = await self._build_template_response(
             ctx, products, raw_text,
             fallback_reason=intent.get("fallback_reason") if intent else None,
-            intent=intent,
         )
         logger.info(f"[{slug_for_log}] format_products: Light Path (template), response_chars={len(result)}.")
         return result
@@ -610,14 +612,6 @@ class UkrSellKernel:
         start_time_perf = time.perf_counter()
 
         try:
-            if hasattr(ctx, "dialog_manager"):
-                intent = await ctx.dialog_manager.analyze_intent(
-                    user_text=text, chat_id=chat_id,
-                )
-            else:
-                intent = await ctx.analyzer.extract_intent(text, chat_context="")
-
-            action   = intent.get("action", "SEARCH")
             language = getattr(ctx, "language", "Ukrainian")
             prompts  = getattr(ctx, "kernel_prompts", self._default_prompts)
 
@@ -634,62 +628,60 @@ class UkrSellKernel:
                     "status":         "SUCCESS",
                     "model":          active_model,
                     "ms":             int((time.perf_counter() - start_time_perf) * 1000),
-                    "trace":          {"entities": intent.get("entities", {}), "count": count, "chat_id": chat_id, "slug": target_slug},
+                    "trace":          {"chat_id": chat_id, "slug": target_slug},
                 }
 
-            if action == "CONSULT":
-                response_text = await self._build_advisory_response(ctx, text, prompts)
-                _save("user", text); _save("assistant", response_text)
-                return _result(response_text, "CONSULT")
+            # История диалога — единственный контекст для LLMReasoning
+            chat_history = ""
+            if hasattr(ctx, "dialog_manager"):
+                chat_history = await ctx.dialog_manager.get_chat_context(chat_id)
 
-            if action == "TROLL":
-                response_text = intent.get("witty_text") or await self._handle_troll_response(ctx, prompts)
+            # Единственный путь: LLMReasoning решает всё
+            search_results = await ctx.retrieval.search(
+                query=text,
+                top_k=5,
+                history=chat_history,
+            )
+
+            status = search_results.get("status")
+
+            # TROLL — LLM сам определил агрессию
+            if status == "TROLL":
+                response_text = search_results.get("message") or await self._handle_troll_response(ctx, prompts)
                 _save("user", text); _save("assistant", response_text)
                 return _result(response_text, "TROLL")
 
-            if action == "CLARIFY":
-                response_text = intent.get("witty_text", "")
+            # CLARIFY — LLM хочет уточнить
+            if status == "CLARIFY":
+                response_text = search_results.get("question") or search_results.get("message", "")
                 if not response_text:
-                    _cv = self._intent_ctx_vars(intent, text)
-                    response_text = self._p(prompts, "advisory_fallback", language, **_cv)
+                    response_text = self._p(prompts, "advisory_fallback", language)
                 _save("user", text); _save("assistant", response_text)
                 return _result(response_text, "CLARIFY")
 
-            search_results = {"products": [], "status": "EMPTY"}
-            if action not in ("OFF_TOPIC", "CHAT"):
-                search_results = await ctx.retrieval.search(
-                    query=text, entities=intent.get("entities", {}), top_k=5,
-                )
-
-            status = search_results.get("status")
-            _cv    = self._intent_ctx_vars(intent, text)
-
-            if status == "NO_CATEGORY":
-                response_text = self._p(prompts, "no_category", language,
-                    categories=', '.join(getattr(ctx, 'profile', {}).get('expertise_fields', [])[:4]),
-                    **_cv)
+            # EMPTY — ничего не найдено, LLM объяснил почему
+            if status == "EMPTY":
+                explanation   = search_results.get("explanation", "")
+                response_text = explanation or self._p(prompts, "no_results", language, category="товару", animal="", query=text)
                 _save("user", text); _save("assistant", response_text)
-                return _result(response_text, action)
-
-            if status == "NOT_FOUND_SECURE":
-                response_text = self._p(prompts, "not_found_secure", language, **_cv)
-                _save("user", text); _save("assistant", response_text)
-                return _result(response_text, action)
+                return _result(response_text, "EMPTY")
 
             products = search_results.get("products", [])
 
+            # Если LLM вернул message (объяснение/альтернативы) — используем его напрямую
+            llm_message = search_results.get("explanation", "")
+            response_mode = search_results.get("response_mode", "products")
+
             response_text = await self.format_products(
-                raw_text=text, products=products, user_id=chat_id, ctx=ctx, intent=intent,
+                raw_text=text, products=products, user_id=str(chat_id), ctx=ctx,
+                intent={"action": "SEARCH", "entities": {}, "response_mode": response_mode},
             )
 
             if not response_text:
-                if action in ("OFF_TOPIC", "CHAT"):
-                    response_text = self._p(prompts, "off_topic", language)
-                else:
-                    response_text = await self._build_template_response(ctx, products, text, intent=intent)
+                response_text = llm_message or self._p(prompts, "no_results", language, category="товару", animal="", query=text)
 
             _save("user", text); _save("assistant", response_text)
-            return _result(response_text, action, len(products))
+            return _result(response_text, "SEARCH", len(products))
 
         except Exception as e:
             logger.error(f"Kernel handle_message error: {e}")
@@ -750,92 +742,51 @@ class UkrSellKernel:
         top_k: int = 5,
         user_id: int = None,
     ) -> str:
-        start_time   = time.time()
+        """Legacy entry point — теперь использует единый LLMReasoning pipeline."""
         slug_for_log = getattr(ctx, "slug", "?")
         language     = getattr(ctx, "language", "Ukrainian")
         prompts      = getattr(ctx, "kernel_prompts", self._default_prompts)
 
-        _cached_answer_candidate = None
-        if hasattr(ctx, 'semantic_cache'):
-            cached_answer = ctx.semantic_cache.get_answer(query)
-            if cached_answer and not isinstance(cached_answer, (dict, list)):
-                _cached_answer_candidate = str(cached_answer)
-
-        dialog_context = ""
+        # История диалога
+        chat_history = ""
         if hasattr(ctx, "dialog_manager") and ctx.dialog_manager:
-            dialog_context = await ctx.dialog_manager.get_chat_context(user_id, minutes=5)
+            chat_history = await ctx.dialog_manager.get_chat_context(user_id, minutes=5)
 
-        intent = await ctx.analyzer.extract_intent(query, chat_context=dialog_context)
-
-        if filters:
-            if not intent.get("entities"):
-                intent["entities"] = {}
-            intent["entities"].update(filters)
-
-        _intent_entities   = intent.get("entities", {}) or {}
-        _nonempty_entities = [
-            v for v in _intent_entities.values()
-            if v and str(v).lower() not in ("none", "null", "any", "")
-        ]
-        if _cached_answer_candidate and not _nonempty_entities:
-            log_pipeline_step("SEMANTIC_CACHE_HIT", time.time() - start_time)
-            logger.info(f"[{slug_for_log}] get_recommendations: cache hit (no entities).")
-            return _cached_answer_candidate
-
-        log_pipeline_step("INTENT_ANALYSIS", time.time() - start_time, extra={"intent": intent})
-
-        action = intent.get("action", "SEARCH")
-
-        if action == "CONSULT":
-            return await self._build_advisory_response(ctx, query, prompts)
-
-        if action == "TROLL":
-            return intent.get("witty_text") or await self._handle_troll_response(ctx, prompts)
-
-        if action == "CLARIFY":
-            return intent.get("witty_text") or self._p(prompts, "advisory_fallback", language)
-
-        if action in ("CHAT", "OFF_TOPIC"):
-            return str(intent.get("response_text") or self._p(prompts, "off_topic", language))
-
+        # Единственный мозг — LLMReasoning
         search_results = await ctx.retrieval.search(
-            query=query, entities=intent.get("entities", {}), top_k=top_k * 3,
+            query=query,
+            top_k=top_k,
+            history=chat_history,
         )
 
-        if search_results.get("status") == "NO_CATEGORY":
-            return self._p(prompts, "no_category", language,
-                categories=', '.join(getattr(ctx, 'profile', {}).get('expertise_fields', [])[:4]))
+        status = search_results.get("status")
 
-        if search_results.get("status") == "NOT_FOUND_SECURE":
-            return self._p(prompts, "not_found_secure", language)
+        if status == "TROLL":
+            return search_results.get("message") or await self._handle_troll_response(ctx, prompts)
 
-        if search_results.get("fallback_reason"):
-            intent["fallback_reason"] = search_results["fallback_reason"]
+        if status == "CLARIFY":
+            return search_results.get("question") or search_results.get("message", "") \
+                   or self._p(prompts, "advisory_fallback", language)
 
-        final_products = await ctx.dialog_manager.process_search_pipeline(
-            chat_id=str(user_id), search_response=search_results, intent=intent, top_k=top_k,
-        )
+        if status == "EMPTY":
+            return search_results.get("explanation", "") \
+                   or self._p(prompts, "no_results", language, category="товару", animal="", query=query)
 
-        confidence_result = confidence_evaluate(
-            search_result={**search_results, "products": final_products},
-            intent=intent,
-            user_query=query,
-            profile=getattr(ctx, "profile", None),
-            category_map=getattr(ctx, "category_map", None),
-        )
-        log_pipeline_step("CONFIDENCE", time.time() - start_time, extra=confidence_result)
+        products = search_results.get("products", [])
+        if not products:
+            return self._p(prompts, "no_results", language, category="товару", animal="", query=query)
 
+        response_mode = search_results.get("response_mode", "products")
         response_text = await self.format_products(
-            raw_text=query, products=final_products, user_id=user_id, ctx=ctx, intent=intent,
+            raw_text=query, products=products, user_id=str(user_id or ""), ctx=ctx,
+            intent={"action": "SEARCH", "entities": {}, "response_mode": response_mode},
         )
 
         if not response_text:
-            logger.warning(f"[{slug_for_log}] get_recommendations: format_products returned None → fallback.")
-            response_text = self._p(prompts, "off_topic", language)
+            response_text = search_results.get("explanation", "") \
+                            or self._p(prompts, "no_results", language, category="товару", animal="", query=query)
 
-        if hasattr(ctx, 'semantic_cache') and final_products and len(response_text) > 20:
-            ctx.semantic_cache.add(query, response_text)
-
+        logger.info(f"[{slug_for_log}] get_recommendations: done, chars={len(response_text)}")
         return response_text
 
     # ── Шаблонный ответ ───────────────────────────────────────────────────────
@@ -843,7 +794,6 @@ class UkrSellKernel:
     async def _build_template_response(
         self, ctx: StoreContext, products: List[Dict], query: str,
         fallback_reason: Optional[str] = None,
-        intent: Optional[Dict] = None,
     ) -> str:
         language    = getattr(ctx, "language", "Ukrainian")
         prompts     = getattr(ctx, "kernel_prompts", self._default_prompts)
@@ -851,16 +801,15 @@ class UkrSellKernel:
         view_label  = store_p.get("view_button", "Переглянути")
         price_label = store_p.get("price_label", "Ціна")
         currency    = getattr(ctx, "currency", "грн")
-        _cv         = self._intent_ctx_vars(intent or {}, query)
 
         if not products:
-            return self._p(prompts, "no_results", language, **_cv)
+            return self._p(prompts, "no_results", language)
 
         if fallback_reason in ("no_results_with_properties", "no_results_without_properties",
                                 "no_results_faiss_only"):
-            intro = self._p(prompts, "similar_found", language, **_cv)
+            intro = self._p(prompts, "similar_found", language)
         else:
-            intro = self._p(prompts, "results_found", language, **_cv)
+            intro = self._p(prompts, "results_found", language)
 
         parts = [intro, ""]
 
